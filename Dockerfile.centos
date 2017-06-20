@@ -1,0 +1,79 @@
+ARG BASEIMAGE_NAME=centos
+ARG BASEIMAGE_TAG=latest
+FROM ${BASEIMAGE_NAME}:${BASEIMAGE_TAG}
+
+ARG DOCKER_IMAGE_NAME
+ARG DOCKER_TAG
+ARG DOCKER_DESCRIPTION
+ARG DOCKER_PROJECT_URL
+ARG BUILD_DATE
+ARG GITHUB_URL
+ARG VCS_REF
+
+ARG JQ_VERSION
+ARG RUNIT_VERSION
+ARG SU_EXEC_VERSION
+ARG TINI_VERSION
+
+LABEL org.label-schema.schema-version="1.0"
+LABEL org.label-schema.name="${DOCKER_IMAGE_NAME}"
+LABEL org.label-schema.version="${DOCKER_TAG}"
+LABEL org.label-schema.description="${DOCKER_DESCRIPTION}"
+LABEL org.label-schema.url="${DOCKER_PROJECT_URL}"
+LABEL org.label-schema.vcs-url="${GITHUB_URL}"
+LABEL org.label-schema.vcs-ref="${VCS_REF}"
+LABEL org.label-schema.build-date="${BUILD_DATE}"
+
+RUN set -ex \
+  # Update system
+  && yum update -y \
+  # Install packages
+  && yum install -y \
+      less \
+      openssl \
+  # Install jq
+  && curl -L -o /usr/local/bin/jq https://github.com/stedolan/jq/releases/download/jq-${JQ_VERSION}/jq-linux64 \
+  && chmod +x /usr/local/bin/jq \
+  # Install tini
+  && curl -L -o /sbin/tini https://github.com/krallin/tini/releases/download/v${TINI_VERSION}/tini \
+  && chmod +x /sbin/tini \
+  # Install development dependencies
+  && yum history new \
+  || yum history new \
+  && yum install -y \
+      gcc \
+      glibc-static \
+      make \
+  # Install runit
+  && mkdir /package \
+  && cd /package \
+  && curl -L http://smarden.org/runit/runit-${RUNIT_VERSION}.tar.gz | tar xzf - \
+  && cd admin/runit-${RUNIT_VERSION} \
+  && package/install \
+  # Install su-exec
+  && curl -L https://github.com/ncopa/su-exec/archive/v${SU_EXEC_VERSION}.tar.gz | tar xfz - \
+  && cd su-exec-${SU_EXEC_VERSION} \
+  && make \
+  && mv su-exec /usr/local/bin \
+  && cd / \
+  && rm -rf su-exec-${SU_EXEC_VERSION} \
+  # Uninstall development dependencies
+  && yum history -y undo 1 \
+  # Cleanup yum
+  && yum clean all \
+  # Make bash more friendly
+  && echo 'alias ll="ls -al"' >> /etc/bash.bashrc \
+  && echo '. /etc/bash.bashrc' >> /root/.bashrc \
+  && echo '"\e[A": history-search-backward' >> /etc/inputrc \
+  && echo '"\e[B": history-search-forward' >> /etc/inputrc \
+  && echo 'if [ -f ~/.bashrc ]; then . ~/.bashrc; fi' >> /root/.bash_profile \
+  && bash --version \
+  ;
+
+COPY config /
+RUN set -ex && chmod +x /docker-entrypoint.sh
+
+ENTRYPOINT ["/sbin/tini", "--", "/docker-entrypoint.sh"]
+
+ENV DOCKER_COMMAND="/bin/bash"
+CMD ["/bin/bash"]
