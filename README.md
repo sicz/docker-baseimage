@@ -2,7 +2,7 @@
 
 [![CircleCI Status Badge](https://circleci.com/gh/sicz/docker-baseimage.svg?style=shield&circle-token=TODO)](https://circleci.com/gh/sicz/docker-baseimage)
 
-**This Docker images are not aimed at public consumption.
+**This project is not aimed at public consumption.
 It exists to serve as a single endpoint for SICZ containers.**
 
 Docker base images modified for Docker-friendliness.
