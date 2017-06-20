@@ -21,6 +21,7 @@ MAKE_GOALS		+= all \
 			   restart \
 			   status \
 			   logs \
-			   test
+			   test \
+			   docker-pull-baseimage
 
 ################################################################################
