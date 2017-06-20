@@ -63,9 +63,22 @@ jobs:
   centos/7:
     <<: *build_image
 
+  trigger_builds:
+    docker:
+      - image: sicz/dockerspec:3.6
+    steps:
+      - deploy:
+          name: Trigger subsequent builds
+          command: |
+            curl -XPOST https://circleci.com/api/v1.1/project/github/sicz/docker-dockerspec/tree/master?circle-token=$CIRCLE_BUILD_TOKEN
+
 workflows:
   version: 2
   build:
     jobs:
       - alpine/3.6
       - centos/7
+      - trigger_builds
+          requires:
+            - alpine/3.6
+            - centos/7
