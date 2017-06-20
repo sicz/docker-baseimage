@@ -7,7 +7,6 @@ DOCKER_DESCRIPTION	= CentOS based image modified for Docker-friendliness
 DOCKER_PROJECT_URL	= https://centos.org
 DOCKER_FILE		= Dockerfile.$(BASEIMAGE_NAME)
 
-
 ################################################################################
 
 JQ_VERSION		= 1.5
