@@ -89,9 +89,8 @@ ENV DOCKER_USER=MY_USER
 RUN set -ex && adduser -D -H -u 1000 ${DOCKER_USER}
 # Install some packages
 RUN set -ex && apk add --no-cache SOME PACKAGES
-# Copy your own entrypoint scripts into image
+# Copy your own entrypoint scripts and packages configuration
 COPY dockerfile-entrypoint.d /dockerfile-entrypoint.d
-# Dockerfile does not allow ${DOCKER_COMMAND} variable in CMD
 CMD ["MY_COMMAND"]
 ```
 
@@ -106,9 +105,8 @@ ENV DOCKER_USER=MY_USER
 RUN set -ex && adduser -M -U -u 1000 ${DOCKER_USER}
 # Install some packages
 RUN set -ex && yum install -y SOME PACKAGES && yum clean all
-# Copy your own entrypoint scripts into image
+# Copy your own entrypoint scripts and packages configuration
 COPY dockerfile-entrypoint.d /dockerfile-entrypoint.d
-# Dockerfile does not allow ${DOCKER_COMMAND} variable in CMD
 CMD ["MY_COMMAND"]
 ```
 
