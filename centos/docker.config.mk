@@ -2,7 +2,7 @@
 
 DOCKER_VARIANT		= centos
 DOCKER_NAME		= $(DOCKER_NAME_PREFIX)-$(DOCKER_VARIANT)
-DOCKER_DESCRIPTION	= CentOS based image modified for Docker-friendliness.
+DOCKER_DESCRIPTION	= CentOS based image modified for Docker-friendliness
 DOCKER_PROJECT_URL	= https://centos.org
 DOCKER_FILE		= Dockerfile.$(DOCKER_VARIANT)
 
