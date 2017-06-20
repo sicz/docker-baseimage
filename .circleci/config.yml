@@ -28,12 +28,12 @@ jobs:
           command: |
             docker version
       - run:
-          name: Build Docker image
+          name: Build image
           command: |
             cd ${CIRCLE_STAGE}
             make rebuild
       - run:
-          name: Run Docker container
+          name: Run container
           command: |
             cd ${CIRCLE_STAGE}
             make run
@@ -52,6 +52,7 @@ jobs:
             make test DOCKER_TEST_CMD="--format doc"
 
       - deploy:
+          name: Push image to Docker Hub
           command: |
             if [ "${CIRCLE_BRANCH}" == "master" ]; then
               cd ${CIRCLE_STAGE}
