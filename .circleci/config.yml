@@ -1,6 +1,7 @@
 version: 2
 
 jobs:
+
   # Build image macro
   build_image: &build_image
     # docker:
