@@ -51,6 +51,13 @@ jobs:
             cd ${CIRCLE_STAGE}
             make test DOCKER_TEST_CMD="--format doc"
 
+      - deploy:
+          command: |
+            if [ "${CIRCLE_BRANCH}" == "master" ]; then
+              docker login -u ${DOCKER_HUB_USER} -p ${DOCKER_HUB_PASSWD}
+              make docker-push
+            fi
+
   alpine/3.6:
     <<: *build_image
   centos/7:
