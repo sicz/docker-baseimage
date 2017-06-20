@@ -70,7 +70,7 @@ jobs:
       - deploy:
           name: Trigger subsequent builds
           command: |
-            curl -XPOST https://circleci.com/api/v1.1/project/github/sicz/docker-dockerspec/tree/master?circle-token=$CIRCLE_BUILD_TOKEN
+            curl -XPOST https://circleci.com/api/v1.1/project/github/sicz/docker-dockerspec/tree/master?circle-token=${CIRCLE_BUILD_TOKEN}
 
 workflows:
   version: 2
