@@ -1,12 +1,14 @@
 #!/bin/bash -e
 
 ################################################################################
+
 # Default directory locations
 : ${SERVER_CRT_DIR:=/etc/ssl/certs}
 : ${SERVER_KEY_DIR:=/etc/ssl/private}
 mkdir -p ${SERVER_CRT_DIR} ${SERVER_KEY_DIR}
 
 ################################################################################
+
 # Default CA certificate file location
 if [ -e /run/secrets/ca_crt.pem ]; then
   : ${CA_CRT:=/run/secrets/ca_crt.pem}
@@ -15,6 +17,7 @@ else
 fi
 
 ################################################################################
+
 # Default server certificate subject
 : ${SERVER_CRT_SUBJECT:=CN=${DOCKER_CONTAINER_NAME}}
 
@@ -40,6 +43,7 @@ else
 fi
 
 ################################################################################
+
 # Default Simple CA user name
 : ${CA_USER:=agent007}
 
@@ -49,3 +53,5 @@ if [ -e /run/secrets/ca_user.pwd ]; then
 else
   : ${CA_USER_PWD_FILE:=${SERVER_KEY_DIR}/ca_user.pwd}
 fi
+
+################################################################################

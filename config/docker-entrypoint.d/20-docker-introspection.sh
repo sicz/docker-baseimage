@@ -5,6 +5,7 @@
 # - https://github.com/docker/docker/pull/26331
 
 ################################################################################
+
 # Docker introspection
 if [ -S /var/run/docker.sock ]; then
 
@@ -59,7 +60,10 @@ if [ -S /var/run/docker.sock ]; then
 fi
 
 ################################################################################
+
 # Fallback to container ID
 : ${DOCKER_CONTAINER_NAME:=${HOSTNAME}}
 
 info "Docker container name: ${DOCKER_CONTAINER_NAME}"
+
+################################################################################

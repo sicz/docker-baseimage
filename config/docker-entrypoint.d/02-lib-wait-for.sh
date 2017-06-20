@@ -1,6 +1,7 @@
 #!/bin/bash -e
 
 ################################################################################
+
 # URL Regex pattern:
 # \1 - http://hostname:port
 # \2 - http://
@@ -14,6 +15,7 @@
 URL_PATTERN="((([a-zA-Z]+)://)?(([a-zA-Z0-9._-]+|\[[0-9a-fA-F:.]+\])(:([0-9]+))?))(.*)"
 
 ################################################################################
+
 # Default timeouts for wait_for_* functions
 : ${WAIT_FOR_TIMEOUT:=60}
 : ${WAIT_FOR_DNS_TIMEOUT:=${WAIT_FOR_TIMEOUT}}
@@ -21,6 +23,7 @@ URL_PATTERN="((([a-zA-Z]+)://)?(([a-zA-Z0-9._-]+|\[[0-9a-fA-F:.]+\])(:([0-9]+))?
 : ${WAIT_FOR_URL_TIMEOUT:=${WAIT_FOR_TIMEOUT}}
 
 ################################################################################
+
 # Wait for DNS name resolution
 wait_for_dns () {
   local URL
@@ -48,6 +51,7 @@ wait_for_dns () {
 }
 
 ################################################################################
+
 # Wait for TCP connection
 wait_for_tcp () {
   local URL
@@ -78,6 +82,7 @@ wait_for_tcp () {
 }
 
 ################################################################################
+
 # Wait for URL connection
 wait_for_url () {
   local URL
@@ -101,3 +106,5 @@ wait_for_url () {
     fi
   done
 }
+
+################################################################################

@@ -2,7 +2,6 @@ version: 2
 
 jobs:
 
-  # Build image macro
   build_image: &build_image
     # docker:
     #   - image: sicz/dockerspec:3.6
@@ -50,7 +49,6 @@ jobs:
           command: |
             cd ${CIRCLE_STAGE}
             make test DOCKER_TEST_CMD="--format doc"
-
       - deploy:
           name: Push image to Docker Hub
           command: |
