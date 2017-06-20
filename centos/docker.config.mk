@@ -1,12 +1,12 @@
 ################################################################################
 
-DOCKER_VARIANT		= centos
-DOCKER_NAME		= $(DOCKER_NAME_PREFIX)-$(DOCKER_VARIANT)
+BASEIMAGE_NAME		= centos
+
+DOCKER_NAME		= $(DOCKER_NAME_PREFIX)-$(BASEIMAGE_NAME)
 DOCKER_DESCRIPTION	= CentOS based image modified for Docker-friendliness
 DOCKER_PROJECT_URL	= https://centos.org
-DOCKER_FILE		= Dockerfile.$(DOCKER_VARIANT)
+DOCKER_FILE		= Dockerfile.$(BASEIMAGE_NAME)
 
-BASEIMAGE_NAME		= $(DOCKER_VARIANT)
 
 ################################################################################
 

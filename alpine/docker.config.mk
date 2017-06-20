@@ -1,11 +1,11 @@
 ################################################################################
 
-DOCKER_VARIANT		= alpine
-DOCKER_NAME		= $(DOCKER_NAME_PREFIX)-$(DOCKER_VARIANT)
+BASEIMAGE_NAME		= alpine
+
+DOCKER_NAME		= $(DOCKER_NAME_PREFIX)-$(BASEIMAGE_NAME)
 DOCKER_DESCRIPTION	= Alpine Linux based image modified for Docker-friendliness
 DOCKER_PROJECT_URL	= https://alpinelinux.org
-DOCKER_FILE		= Dockerfile.$(DOCKER_VARIANT)
+DOCKER_FILE		= Dockerfile.$(BASEIMAGE_NAME)
 
-BASEIMAGE_NAME		= $(DOCKER_VARIANT)
 
 ################################################################################
