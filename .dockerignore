@@ -4,4 +4,11 @@
 .git
 
 # Tests
-**/spec
+spec
+
+# Simple CA secrets
+secrets
+
+# Docker image variants
+devel
+centos

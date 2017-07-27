@@ -1,50 +1,6 @@
 # encoding: UTF-8
 require "docker_helper"
 
-describe "Operating system" do
-  subject do
-    os
-  end
-  it "is CentOS #{ENV["DOCKER_TAG"]}" do
-    expect(subject[:family]).to eq("redhat")
-    expect(subject[:release]).to match(/^#{Regexp.escape(ENV["DOCKER_TAG"])}\./)
-    expect(file("/etc/centos-release")).to exist
-  end
-end
-
-describe "Package" do
-  [
-    "bash",
-    "ca-certificates",
-    "curl",
-    "openssl",
-  ].each do |package|
-    context package do
-      it "is installed" do
-        expect(package(package)).to be_installed
-      end
-    end
-  end
-end
-
-describe "Command" do
-  [
-    "/usr/local/bin/jq",
-    "/usr/local/bin/runit",
-    "/usr/local/bin/runsvdir",
-    "/usr/local/bin/su-exec",
-    "/sbin/tini",
-  ].each do |command|
-    context command do
-      it "is installed" do
-        expect(file(command)).to exist
-        expect(file(command)).to be_file
-        expect(file(command)).to be_executable
-      end
-    end
-  end
-end
-
 describe "Docker entrypoint file" do
   context "/docker-entrypoint.sh" do
     it "is installed" do

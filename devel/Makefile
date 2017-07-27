@@ -1,10 +1,12 @@
 ################################################################################
 
-BASEIMAGE_TAG		= 7
-DOCKER_TAG		= $(BASEIMAGE_TAG)
+BASEIMAGE_TAG		?= edge
+DOCKER_TAG		?= 3
+DOCKER_TAGS		?= devel
 
 ################################################################################
 
-include ../../docker.version.mk
+DOCKER_HOME_DIR		?= ..
+include $(DOCKER_HOME_DIR)/Makefile
 
 ################################################################################

@@ -13,7 +13,7 @@ Docker base images modified for Docker-friendliness.
 
 This container only contains essential components:
 * Official [Alpine Linux image](https://store.docker.com/images/alpine) as base system
-* Modular [Docker entrypoint](https://github.com/sicz/docker-entrypoint)
+* Modular Docker entrypoint
 * `bash` as shell
 * `ca-certificates` contains common CA certificates
 * `curl` for transferring data using various protocols
@@ -27,7 +27,7 @@ This container only contains essential components:
 
 This container only contains essential components:
 * Official [CentOS image](https://store.docker.com/images/centos) as base system
-* Modular [Docker entrypoint](https://github.com/sicz/docker-entrypoint)
+* Modular Docker entrypoint
 * `bash` as shell
 * `ca-certificates` contains common CA certificates
 * `curl` for transferring data using various protocols
@@ -56,6 +56,7 @@ Use command `make` to simplify Docker container development tasks:
 ```bash
 make all        # Destroy running container, build new image and run tests
 make build      # Build new image
+make refresh    # Refresh Dockerfile
 make rebuild    # Build new image without caching
 make run        # Run container
 make stop       # Stop running container
@@ -63,16 +64,18 @@ make start      # Start stopped container
 make restart    # Restart container
 make status     # Show container status
 make logs       # Show container logs
-make test       # Run tests
-make rm         # Destroy running container
-make clean      # Destroy running container and clean
-```
-
-In image version directories you can use additional make commands:
-```bash
 make logs-tail  # Connect to container logs
 make shell      # Open shell in running container
+make test       # Run tests
+make rm         # Destroy running container
+make clean      # Destroy running container and clean working files
 ```
+
+Directories with Docker image variants:
+* `.` - Alpine Linux latest release
+* `devel` - Alpine Linux edge branch
+* `centos` - CentOS latest branch
+* `centos/devel` - currently CentOS latest branch
 
 ## Deployment
 
@@ -89,7 +92,7 @@ ENV DOCKER_USER=MY_USER
 RUN set -ex && adduser -D -H -u 1000 ${DOCKER_USER}
 # Install some packages
 RUN set -ex && apk add --no-cache SOME PACKAGES
-# Copy your own entrypoint scripts and packages configuration
+# Copy your own entrypoint scripts
 COPY dockerfile-entrypoint.d /dockerfile-entrypoint.d
 CMD ["MY_COMMAND"]
 ```
@@ -105,7 +108,7 @@ ENV DOCKER_USER=MY_USER
 RUN set -ex && adduser -M -U -u 1000 ${DOCKER_USER}
 # Install some packages
 RUN set -ex && yum install -y SOME PACKAGES && yum clean all
-# Copy your own entrypoint scripts and packages configuration
+# Copy your own entrypoint scripts
 COPY dockerfile-entrypoint.d /dockerfile-entrypoint.d
 CMD ["MY_COMMAND"]
 ```

@@ -4,4 +4,7 @@
 *~
 
 # Info about running containers
-.container_id
+.container_*
+
+# Simple CA secrets
+secrets

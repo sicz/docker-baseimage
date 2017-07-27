@@ -1,5 +1,5 @@
-ARG BASEIMAGE_NAME=alpine
-ARG BASEIMAGE_TAG=latest
+ARG BASEIMAGE_NAME
+ARG BASEIMAGE_TAG
 FROM ${BASEIMAGE_NAME}:${BASEIMAGE_TAG}
 
 ARG DOCKER_IMAGE_NAME
@@ -32,17 +32,14 @@ RUN set -ex \
       runit \
       su-exec \
       tini \
-  # Make bash more friendly
-  && echo 'alias ll="ls -al"' >> /etc/bash.bashrc \
-  && echo '. /etc/bash.bashrc' >> /root/.bashrc \
-  && echo '"\e[A": history-search-backward' >> /etc/inputrc \
-  && echo '"\e[B": history-search-forward' >> /etc/inputrc \
-  && echo 'if [ -f ~/.bashrc ]; then . ~/.bashrc; fi' >> /root/.bash_profile \
-  && bash --version \
   ;
 
 COPY config /
-RUN set -ex && chmod +x /docker-entrypoint.sh
+RUN set -ex \
+  && chmod +x /docker-entrypoint.sh \
+  # Check custom bash config files
+  && bash -i -l -c "true" \
+  ;
 
 ENTRYPOINT ["/sbin/tini", "--", "/docker-entrypoint.sh"]
 

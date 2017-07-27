@@ -1,71 +1,71 @@
 version: 2
-
 jobs:
-
-  build_image: &build_image
-    # docker:
-    #   - image: sicz/dockerspec:3.6
-    machine: true
-    working_directory: ~/docker-baseimage
+  build:
+    docker:
+      - image: sicz/dockerspec@sha256:fcc2eb828bc8ba898af410b46484725e424b9851d580278f5a2c4abdec5e5780
     environment:
       - MAKEFLAGS=--no-print-directory
     steps:
-      - run:
-          name: Upgrade Docker Engine
-          command: |
-            docker version
-            curl -fsSL https://raw.githubusercontent.com/StefanScherer/docker-init/master/ubuntu/install-docker-ce.sh | sh
-      - run:
-          name: Set up Environment
-          command: |
-            curl -sSL https://github.com/SICZ/Mk/archive/master.tar.gz | tar -xzf -
-            mv Mk-master ~/Mk
       - checkout
-      # - setup_remote_docker
       - run:
-          name: Docker Engine version
+          name: Checkout make files
+          command: |
+            cd ..
+            curl -sSL https://github.com/SICZ/Mk/archive/master.tar.gz | tar -xzf -
+            mv Mk-master Mk
+      - setup_remote_docker:
+          version: 17.06.0-ce
+      - run:
+          name: Remote Docker engine version
           command: |
             docker version
       - run:
-          name: Build image
+          name: Build and test latest Alpine Linux Docker image
           command: |
-            cd ${CIRCLE_STAGE}
-            make rebuild
+            make ci-rebuild-and-test DOCKER_TEST_IMAGE=
       - run:
-          name: Run container
+          name: Build and test development Alpine Linux Docker image
+          working_directory: devel
           command: |
-            cd ${CIRCLE_STAGE}
-            make run
-            make logs
-      # - run:
-      #     name: Run tests
-      #     command: |
-      #       cd ${CIRCLE_STAGE}
-      #       ln -s ../.rspec .rspec
-      #       ln -s ../spec spec
-      #       env DOCKER_CONTAINER_ID=$(cat .container_id) rspec --format doc
+            make ci-rebuild-and-test DOCKER_TEST_IMAGE=
       - run:
-          name: Run tests
+          name: Build and test latest CentOS Docker image
+          working_directory: centos
           command: |
-            cd ${CIRCLE_STAGE}
-            make test DOCKER_TEST_CMD="--format doc"
+            make ci-rebuild-and-test DOCKER_TEST_IMAGE=
+      - run:
+          name: Build and test development CentOS Docker image
+          working_directory: centos/devel
+          command: |
+            make ci-rebuild-and-test DOCKER_TEST_IMAGE=
       - deploy:
-          name: Push image to Docker Hub
+          name: Push latest Alpine Linux Docker image to Docker Hub
           command: |
             if [ "${CIRCLE_BRANCH}" == "master" ]; then
-              cd ${CIRCLE_STAGE}
               docker login -u ${DOCKER_HUB_USER} -p ${DOCKER_HUB_PASSWD}
               make docker-push
             fi
-
-  alpine/3.6:
-    <<: *build_image
-  centos/7:
-    <<: *build_image
-
-workflows:
-  version: 2
-  build:
-    jobs:
-      - alpine/3.6
-      - centos/7
+      - deploy:
+          name: Push development Alpine Linux Docker image to Docker Hub
+          working_directory: devel
+          command: |
+            if [ "${CIRCLE_BRANCH}" == "master" ]; then
+              docker login -u ${DOCKER_HUB_USER} -p ${DOCKER_HUB_PASSWD}
+              make docker-push
+            fi
+      - deploy:
+          name: Push latest CentOS Docker image to Docker Hub
+          working_directory: centos
+          command: |
+            if [ "${CIRCLE_BRANCH}" == "master" ]; then
+              docker login -u ${DOCKER_HUB_USER} -p ${DOCKER_HUB_PASSWD}
+              make docker-push
+            fi
+      - deploy:
+          name: Push development CentOS Docker image to Docker Hub
+          working_directory: centos/devel
+          command: |
+            if [ "${CIRCLE_BRANCH}" == "master" ]; then
+              docker login -u ${DOCKER_HUB_USER} -p ${DOCKER_HUB_PASSWD}
+              make docker-push
+            fi
