@@ -82,7 +82,7 @@ deploy-simple-ca: destroy-simple-ca
 		$(DOCKER_PROJECT)/simple-ca > /dev/null; \
 	i=0; \
 	while [ ! -e $(DOCKER_HOME_DIR)/secrets/ca_crt.pem ]; do \
-		if [ $$i -ge 10 ]; then \
+		if [ $$i -ge 60 ]; then \
 			$(ECHO) "ERROR: timeout has been reached"; \
 			docker logs $${DOCKER_SIMPLE_CA_ID}; \
 			exit 1; \
