@@ -43,7 +43,7 @@ status: docker-status
 logs: docker-logs
 logs-tail: docker-logs-tail
 shell: docker-shell
-test: destroy deploy-simple-ca
+test: destroy # deploy-simple-ca
 	@DOCKER_RUN_OPTS="$(DOCKER_RUN_OPTS)"; \
 	DOCKER_RUN_OPTS="$${DOCKER_RUN_OPTS} -v $(abspath $(DOCKER_HOME_DIR))/secrets/ca_crt.pem:/run/secrets/ca_crt.pem"; \
 	DOCKER_RUN_OPTS="$${DOCKER_RUN_OPTS} -v $(abspath $(DOCKER_HOME_DIR))/secrets/ca_user.pwd:/run/secrets/ca_user.pwd"; \
