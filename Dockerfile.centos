@@ -27,6 +27,7 @@ ARG TINI_VERSION
 RUN set -exo pipefail ; \
   # Update system
   yum update -y ; \
+  cat /etc/centos-release ; \
   # Install packages
   yum install -y \
       less \

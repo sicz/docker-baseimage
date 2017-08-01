@@ -11,6 +11,7 @@ LABEL org.label-schema.vcs-ref="${VCS_REF}"
 RUN set -exo pipefail ; \
   # Upgrade system
   apk upgrade --no-cache ; \
+  cat /etc/alpine-release ; \
   # Install base image packages
   apk add --no-cache \
     bash \
