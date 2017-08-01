@@ -2,13 +2,32 @@ ARG BASEIMAGE_NAME
 ARG BASEIMAGE_TAG
 FROM ${BASEIMAGE_NAME}:${BASEIMAGE_TAG}
 
+ARG BUILD_DATE
+ARG VCS_REF
+
+LABEL org.label-schema.build-date="${BUILD_DATE}"
+LABEL org.label-schema.vcs-ref="${VCS_REF}"
+
+RUN set -exo pipefail ; \
+  # Upgrade system
+  apk upgrade --no-cache ; \
+  # Install base image packages
+  apk add --no-cache \
+    bash \
+    ca-certificates \
+    curl \
+    jq \
+    libressl \
+    runit \
+    su-exec \
+    tini \
+    ;
+
 ARG DOCKER_IMAGE_NAME
 ARG DOCKER_TAG
 ARG DOCKER_DESCRIPTION
 ARG DOCKER_PROJECT_URL
-ARG BUILD_DATE
 ARG GITHUB_URL
-ARG VCS_REF
 
 LABEL org.label-schema.schema-version="1.0"
 LABEL org.label-schema.name="${DOCKER_IMAGE_NAME}"
@@ -16,32 +35,56 @@ LABEL org.label-schema.version="${DOCKER_TAG}"
 LABEL org.label-schema.description="${DOCKER_DESCRIPTION}"
 LABEL org.label-schema.url="${DOCKER_PROJECT_URL}"
 LABEL org.label-schema.vcs-url="${GITHUB_URL}"
-LABEL org.label-schema.vcs-ref="${VCS_REF}"
-LABEL org.label-schema.build-date="${BUILD_DATE}"
 
-RUN set -ex \
-  # Upgrade system
-  && apk upgrade --no-cache \
-  # Install base image packages
-  && apk add --no-cache \
-      bash \
-      ca-certificates \
-      curl \
-      jq \
-      libressl \
-      runit \
-      su-exec \
-      tini \
-  ;
+ARG DOCKER_NAME
+ARG DOCKER_VERSION
 
 COPY config /
-RUN set -ex \
-  && chmod +x /docker-entrypoint.sh \
-  # Check custom bash config files
-  && bash -i -l -c "true" \
-  ;
+RUN set -exo pipefail ; \
+  chmod +x /docker-entrypoint.sh ; \
+  #
+  # Install sicz/dockerspec software
+  #
+  if [ "${DOCKER_NAME}" = "dockerspec" ]; then \
+    # Install packages needed to runn the tests
+    apk add --no-cache \
+      git \
+      make \
+      openssh-client \
+      python2 \
+      ruby \
+      ruby-io-console \
+      ruby-irb \
+      ruby-rdoc \
+      ; \
+    # Install Docker
+    curl -fL "https://download.docker.com/linux/static/stable/x86_64/docker-${DOCKER_VERSION}.tgz" \
+     | tar xfz - -C /tmp ; \
+    mv /tmp/docker/* /usr/bin ; \
+    rm -rf /tmp/docker ; \
+    docker --version ; \
+    # Install Docker Compose
+    apk add --no-cache --virtual .build-dependencies \
+      py2-pip \
+      ; \
+    pip install --upgrade pip ; \
+    pip install docker-compose ; \
+    apk del --no-cache .build-dependencies ; \
+    docker-compose --version ; \
+    # Install rspec and serverspec
+    gem install \
+      docker-api \
+      rspec \
+      serverspec \
+      ; \
+    gem list -q docker-api ; \
+    gem list -q rspec ; \
+    gem list -q serverspec ; \
+    rspec --version ; \
+    rm -rf /root/.cache /root/.gem ; \
+  fi
 
 ENTRYPOINT ["/sbin/tini", "--", "/docker-entrypoint.sh"]
 
-ENV DOCKER_COMMAND="bash"
-CMD ["bash"]
+ENV DOCKER_COMMAND="/bin/bash"
+CMD ["${DOCKER_COMMAND}"]

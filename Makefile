@@ -9,11 +9,11 @@ BASEIMAGE_TAG		?= 3.6
 ################################################################################
 
 DOCKER_PROJECT		?= sicz
-DOCKER_NAME		= baseimage-$(BASEIMAGE_NAME)
+DOCKER_NAME		?= baseimage-$(BASEIMAGE_NAME)
 DOCKER_TAG		?= $(BASEIMAGE_TAG)
 DOCKER_TAGS		?= latest
-DOCKER_DESCRIPTION	= $(BASEIMAGE_OS_NAME) based image modified for Docker-friendliness
-DOCKER_PROJECT_URL	= $(BASEIMAGE_OS_URL)
+DOCKER_DESCRIPTION	?= $(BASEIMAGE_OS_NAME) based image modified for Docker-friendliness
+DOCKER_PROJECT_URL	?= $(BASEIMAGE_OS_URL)
 
 DOCKER_RUN_OPTS		+= -v /var/run/docker.sock:/var/run/docker.sock \
 			   $(DOCKER_SHELL_OPTS)
@@ -22,7 +22,7 @@ DOCKER_RUN_OPTS		+= -v /var/run/docker.sock:/var/run/docker.sock \
 
 DOCKER_FILE		= Dockerfile.$(BASEIMAGE_NAME)
 
-DOCKER_SUBDIRS		= devel centos centos/devel
+DOCKER_SUBDIRS		= devel dockerspec dockerspec/devel centos centos/devel
 
 ################################################################################
 
@@ -45,6 +45,7 @@ logs-tail: docker-logs-tail
 shell: docker-shell
 test: destroy # deploy-simple-ca
 	@DOCKER_RUN_OPTS="$(DOCKER_RUN_OPTS)"; \
+	touch $(DOCKER_HOME_DIR)/secrets/ca_crt.pem $(DOCKER_HOME_DIR)/secrets/ca_user.pwd; \
 	DOCKER_RUN_OPTS="$${DOCKER_RUN_OPTS} -v $(abspath $(DOCKER_HOME_DIR))/secrets/ca_crt.pem:/run/secrets/ca_crt.pem"; \
 	DOCKER_RUN_OPTS="$${DOCKER_RUN_OPTS} -v $(abspath $(DOCKER_HOME_DIR))/secrets/ca_user.pwd:/run/secrets/ca_user.pwd"; \
 	$(MAKE) start DOCKER_RUN_OPTS="$${DOCKER_RUN_OPTS}"; \
@@ -69,6 +70,8 @@ clean-secrets:
 		fi; \
 	fi
 
+# TODO: copy ca_crt.pem and ca_user.pwd from simple_ca into container
+# because on CircleCI we cannot use host volumes
 deploy-simple-ca: destroy-simple-ca
 	@$(ECHO) -n "Deploying container: "; \
 	DOCKER_SIMPLE_CA_ID="$(DOCKER_CONTAINER_NAME)_simple_ca"; \

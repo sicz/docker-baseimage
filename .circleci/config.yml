@@ -20,33 +20,43 @@ jobs:
           command: |
             docker version
       - run:
-          name: Build and test latest Alpine Linux Docker image
+          name: Build and test latest Alpine Linux image
           command: |
-            make ci-rebuild-and-test DOCKER_TEST_IMAGE=
+            make ci-build-and-test DOCKER_TEST_IMAGE=
       - run:
-          name: Build and test development Alpine Linux Docker image
+          name: Build and test development Alpine Linux image
           working_directory: devel
           command: |
-            make ci-rebuild-and-test DOCKER_TEST_IMAGE=
+            make ci-build-and-test DOCKER_TEST_IMAGE=
       - run:
-          name: Build and test latest CentOS Docker image
+          name: Build and test latest Dockerspec image
+          working_directory: dockerspec
+          command: |
+            make ci-build-and-test DOCKER_TEST_IMAGE=
+      - run:
+          name: Build and test development Dockerspec image
+          working_directory: dockerspec/devel
+          command: |
+            make ci-build-and-test DOCKER_TEST_IMAGE=
+      - run:
+          name: Build and test latest CentOS image
           working_directory: centos
           command: |
-            make ci-rebuild-and-test DOCKER_TEST_IMAGE=
+            make ci-build-and-test DOCKER_TEST_IMAGE=
       - run:
-          name: Build and test development CentOS Docker image
+          name: Build and test development CentOS image
           working_directory: centos/devel
           command: |
-            make ci-rebuild-and-test DOCKER_TEST_IMAGE=
+            make ci-build-and-test DOCKER_TEST_IMAGE=
       - deploy:
-          name: Push latest Alpine Linux Docker image to Docker Hub
+          name: Push latest Alpine Linux image to Docker Hub
           command: |
             if [ "${CIRCLE_BRANCH}" == "master" ]; then
               docker login -u ${DOCKER_HUB_USER} -p ${DOCKER_HUB_PASSWD}
               make docker-push
             fi
       - deploy:
-          name: Push development Alpine Linux Docker image to Docker Hub
+          name: Push development Alpine Linux image to Docker Hub
           working_directory: devel
           command: |
             if [ "${CIRCLE_BRANCH}" == "master" ]; then
@@ -54,7 +64,23 @@ jobs:
               make docker-push
             fi
       - deploy:
-          name: Push latest CentOS Docker image to Docker Hub
+          name: Push latest Dockerspec image to Docker Hub
+          working_directory: dockerspec
+          command: |
+            if [ "${CIRCLE_BRANCH}" == "master" ]; then
+              docker login -u ${DOCKER_HUB_USER} -p ${DOCKER_HUB_PASSWD}
+              make docker-push
+            fi
+      - deploy:
+          name: Push development Dockerspec image to Docker Hub
+          working_directory: dockerspec/devel
+          command: |
+            if [ "${CIRCLE_BRANCH}" == "master" ]; then
+              docker login -u ${DOCKER_HUB_USER} -p ${DOCKER_HUB_PASSWD}
+              make docker-push
+            fi
+      - deploy:
+          name: Push latest CentOS image to Docker Hub
           working_directory: centos
           command: |
             if [ "${CIRCLE_BRANCH}" == "master" ]; then
@@ -62,7 +88,7 @@ jobs:
               make docker-push
             fi
       - deploy:
-          name: Push development CentOS Docker image to Docker Hub
+          name: Push development CentOS image to Docker Hub
           working_directory: centos/devel
           command: |
             if [ "${CIRCLE_BRANCH}" == "master" ]; then

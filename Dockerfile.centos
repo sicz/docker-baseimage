@@ -24,60 +24,57 @@ ARG RUNIT_VERSION
 ARG SU_EXEC_VERSION
 ARG TINI_VERSION
 
-RUN set -ex \
+RUN set -exo pipefail ; \
   # Update system
-  && yum update -y \
+  yum update -y ; \
   # Install packages
-  && yum install -y \
+  yum install -y \
       less \
       openssl \
+      ; \
   # Install jq
-  && curl -fL -o /usr/bin/jq https://github.com/stedolan/jq/releases/download/jq-${JQ_VERSION}/jq-linux64 \
-  && chmod +x /usr//bin/jq \
+  curl -fL -o /usr/bin/jq https://github.com/stedolan/jq/releases/download/jq-${JQ_VERSION}/jq-linux64 ; \
+  chmod +x /usr//bin/jq ; \
   # Install tini
-  && curl -fL -o /sbin/tini https://github.com/krallin/tini/releases/download/v${TINI_VERSION}/tini \
-  && chmod +x /sbin/tini \
+  curl -fL -o /sbin/tini https://github.com/krallin/tini/releases/download/v${TINI_VERSION}/tini ; \
+  chmod +x /sbin/tini ; \
   # Install development dependencies
-  && yum history new \
-  || yum history new \
-  && yum install -y \
+  yum history new || yum history new ; \
+  yum install -y \
       gcc \
       glibc-static \
       make \
+      ; \
   # Install runit
-  && mkdir /package \
-  && cd /package \
-  && curl http://smarden.org/runit/runit-${RUNIT_VERSION}.tar.gz | tar xzf - \
-  && cd admin/runit-${RUNIT_VERSION} \
-  && package/compile \
-  && package/check \
-  && mv command/* /sbin \
-  && mkdir -p /etc/service \
-  && cd / \
-  && rm -rf /package \
+  mkdir /package ; \
+  cd /package ; \
+  curl http://smarden.org/runit/runit-${RUNIT_VERSION}.tar.gz | tar xzf - ; \
+  cd admin/runit-${RUNIT_VERSION} ; \
+  package/compile ; \
+  package/check ; \
+  mv command/* /sbin ; \
+  mkdir -p /etc/service ; \
+  cd / ; \
+  rm -rf /package ; \
   # Install su-exec
-  && cd /tmp \
-  && curl -fL https://github.com/ncopa/su-exec/archive/v${SU_EXEC_VERSION}.tar.gz | tar xfz - \
-  && cd su-exec-${SU_EXEC_VERSION} \
-  && make \
-  && mv su-exec /sbin \
-  && cd .. \
-  && rm -rf su-exec-${SU_EXEC_VERSION} \
-  && cd / \
+  curl -fL https://github.com/ncopa/su-exec/archive/v${SU_EXEC_VERSION}.tar.gz \
+    | tar xfz - -C /tmp ; \
+  cd /tmp/su-exec-${SU_EXEC_VERSION} ; \
+  make ; \
+  mv su-exec /sbin ; \
+  cd .. ; \
+  rm -rf su-exec-${SU_EXEC_VERSION} ; \
+  cd / ; \
   # Uninstall development dependencies
-  && yum history -y undo 1 \
+  yum history -y undo 1 ; \
   # Cleanup yum
-  && yum clean all \
-  ;
+  yum clean all
 
 COPY config /
-RUN set -ex \
-  && chmod +x /docker-entrypoint.sh \
-  # Check custom bash config files
-  && bash -i -l -c "true" \
-  ;
+RUN set -exo pipefail ; \
+  chmod +x /docker-entrypoint.sh
 
 ENTRYPOINT ["/sbin/tini", "--", "/docker-entrypoint.sh"]
 
 ENV DOCKER_COMMAND="/bin/bash"
-CMD ["/bin/bash"]
+CMD ["${DOCKER_COMMAND}"]

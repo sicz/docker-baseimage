@@ -14,7 +14,7 @@ if ENV["BASEIMAGE_NAME"] == "alpine" then
   end
 
   describe "Package" do
-    [
+    @packages = [
       "bash",
       "ca-certificates",
       "curl",
@@ -23,7 +23,21 @@ if ENV["BASEIMAGE_NAME"] == "alpine" then
       "runit",
       "su-exec",
       "tini",
-    ].each do |package|
+    ]
+
+    if ENV["DOCKER_NAME"] == "dockerspec" then
+      @packages += [
+        "git",
+        "make",
+        "openssh-client",
+        "ruby",
+        "ruby-io-console",
+        "ruby-irb",
+        "ruby-rdoc",
+      ]
+    end
+
+    @packages.each do |package|
       context package do
         it "is installed" do
           expect(package(package)).to be_installed
@@ -32,4 +46,36 @@ if ENV["BASEIMAGE_NAME"] == "alpine" then
     end
   end
 
+end
+
+if ENV["DOCKER_NAME"] == "dockerspec" then
+  describe "Command" do
+    [
+      "/usr/bin/docker",
+      "/usr/bin/docker-compose",
+      "/usr/bin/rspec"
+    ].each do |command|
+      context command do
+        it "is installed" do
+          expect(file(command)).to exist
+          expect(file(command)).to be_file
+          expect(file(command)).to be_executable
+        end
+      end
+    end
+  end
+
+  describe "Ruby gem" do
+    [
+      "docker-api",
+      "rspec",
+      "serverspec",
+    ].each do |package|
+      context package do
+        it "is installed" do
+          expect(package(package)).to be_installed.by('gem')
+        end
+      end
+    end
+  end
 end
