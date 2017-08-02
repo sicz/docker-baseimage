@@ -32,8 +32,8 @@ DOCKER_SUBDIRS		= devel dockerspec dockerspec/devel centos centos/devel
 
 all: destroy build test
 info: docker-info github-info
-build: docker-build
-rebuild: docker-rebuild
+build: docker-build $(BUILD_TARGET_HELPER)
+rebuild: docker-rebuild $(BUILD_TARGET_HELPER)
 deploy run up: docker-deploy
 destroy down rm: docker-destroy
 start: docker-start
