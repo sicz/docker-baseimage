@@ -1,5 +1,8 @@
 ################################################################################
 
+# Alpine Linux edge reports wrong version in tests, we must use numeric
+# DOCKER_TAG and remove it after build.
+
 BASEIMAGE_TAG		?= edge
 DOCKER_TAG		?= 3
 DOCKER_TAGS		?= edge devel
