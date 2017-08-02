@@ -20,6 +20,7 @@ if ENV["BASEIMAGE_NAME"] == "centos" then
       "curl",
       "less",
       "openssl",
+      "which",
     ].each do |package|
       context package do
         it "is installed" do

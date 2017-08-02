@@ -32,6 +32,7 @@ RUN set -exo pipefail ; \
   yum install -y \
       less \
       openssl \
+      which \
       ; \
   # Install jq
   curl -fL -o /usr/bin/jq https://github.com/stedolan/jq/releases/download/jq-${JQ_VERSION}/jq-linux64 ; \
