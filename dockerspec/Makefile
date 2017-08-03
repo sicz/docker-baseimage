@@ -3,8 +3,14 @@
 DOCKER_NAME		= dockerspec
 DOCKER_DESCRIPTION	= An image intended to run Docker image tests using RSpec and ServerSpec
 DOCKER_PROJECT_URL	= http://serverspec.org
+DOCKER_VARIANT_DIR	?= $(DOCKER_HOME_DIR)/$(DOCKER_NAME)
 
-DOCKER_BUILD_VARS	+= DOCKER_VERSION
+DOCKER_BUILD_VARS	+= DOCKER_VERSION \
+			   DOCKER_COMPOSE_VERSION \
+			   GEM_DOCKER_API_VERSION \
+			   GEM_RSPEC_VERSION \
+			   GEM_SERVERSPEC_VERSION \
+			   RUBY_VERSION
 
 DOCKER_RUN_OPTS		+= -v $(abspath $(DOCKER_HOME_DIR))/.rspec:/.rspec \
 			   -v $(abspath $(DOCKER_HOME_DIR))/spec:/spec
@@ -16,6 +22,12 @@ DOCKER_RUN_OPTS		+= -v $(abspath $(DOCKER_HOME_DIR))/.rspec:/.rspec \
 # - docker-compose: 3.3
 DOCKER_VERSION		?= 17.06.0-ce
 DOCKER_COMPOSE_VERSION	?= 1.15.0
+
+RUBY_VERSION		?= 2.4.1-r3
+
+GEM_DOCKER_API_VERSION	?= 1.33.6
+GEM_RSPEC_VERSION	?= 3.6.0
+GEM_SERVERSPEC_VERSION	?= 2.39.1
 
 ################################################################################
 
