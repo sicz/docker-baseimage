@@ -9,7 +9,7 @@ Docker base images modified for Docker-friendliness.
 
 ## Contents
 
-### Alpine Linux base image
+### Alpine Linux based images
 
 This container only contains essential components:
 * Official [Alpine Linux image](https://store.docker.com/images/alpine) as base system
@@ -23,7 +23,7 @@ This container only contains essential components:
 * `su_exec` for process impersonation
 * `tini` as init process
 
-### CentOS base image
+### CentOS based images
 
 This container only contains essential components:
 * Official [CentOS image](https://store.docker.com/images/centos) as base system
@@ -56,7 +56,6 @@ Use command `make` to simplify Docker container development tasks:
 ```bash
 make all        # Destroy running container, build new image and run tests
 make build      # Build new image
-make refresh    # Refresh Dockerfile
 make rebuild    # Build new image without caching
 make run        # Run container
 make stop       # Stop running container
@@ -94,7 +93,7 @@ RUN set -ex && adduser -D -H -u 1000 ${DOCKER_USER}
 RUN set -ex && apk add --no-cache SOME PACKAGES
 # Copy your own entrypoint scripts
 COPY dockerfile-entrypoint.d /dockerfile-entrypoint.d
-CMD ["MY_COMMAND"]
+CMD ["${DOCKER_COMMAND}"]
 ```
 
 ### CentOS base image
@@ -110,7 +109,7 @@ RUN set -ex && adduser -M -U -u 1000 ${DOCKER_USER}
 RUN set -ex && yum install -y SOME PACKAGES && yum clean all
 # Copy your own entrypoint scripts
 COPY dockerfile-entrypoint.d /dockerfile-entrypoint.d
-CMD ["MY_COMMAND"]
+CMD ["${DOCKER_COMMAND}"]
 ```
 
 ## Authors

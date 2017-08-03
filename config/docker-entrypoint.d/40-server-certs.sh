@@ -10,7 +10,7 @@ if [ -n "${SIMPLE_CA_URL}" ]; then
 
   # Get root CA certificate
   if [ ! -e ${CA_CRT} ]; then
-    info "Getting root CA certificate from ${SIMPLE_CA_URL}/ca.pem"
+    info "Getting root CA certificate ${SIMPLE_CA_URL}/ca.pem"
     curl -fksS ${SIMPLE_CA_URL}/ca.pem > ${CA_CRT}
   else
     info "Using root CA certificate ${CA_CRT}"
@@ -18,23 +18,31 @@ if [ -n "${SIMPLE_CA_URL}" ]; then
 
   # Create server private key and certificate
   if [ ! -e ${SERVER_CRT} ]; then
-    if [ ! -e ${CA_USER_PWD_FILE} ]; then
-      error "Missing CA user password ${CA_USER_PWD_FILE}"
+    if [ ! -e ${CA_USER_NAME_FILE} ]; then
+      error "Missing CA user name file ${CA_USER_NAME_FILE}"
       exit 1
     fi
-    info "Creating server private key ${SERVER_KEY}"
-    info "Creating server certificate ${SERVER_CRT}"
+    if [ ! -e ${CA_USER_PWD_FILE} ]; then
+      error "Missing CA user password file ${CA_USER_PWD_FILE}"
+      exit 1
+    fi
     # Subject alternative names
-    SERVER_CRT_NAMES="${HOSTNAME},localhost,${SERVER_CRT_NAMES}"
+    info "Creating server certificate ${SERVER_CRT}"
+    SERVER_CRT_NAMES="${SERVER_CRT_NAMES},${HOSTNAME},localhost"
     # Container IPv4 addresses
     SERVER_CRT_IP=$(
       ifconfig |
-      grep "inet addr:" |
-      sed -E "s/.*inet addr:([^ ]*).*/\1/" |
+      egrep "<?inet>?" |
+      sed -E "s/.*inet (addr:)?([^ ]*).*/\2/" |
       tr "\n" "," |
       sed "s/,$//"
     )
+    info "DN: dn=${SERVER_CRT_SUBJECT}"
+    info "DNS: ${SERVER_CRT_NAMES}"
+    info "IP: ${SERVER_CRT_IP}"
+    info "RID: ${SERVER_CRT_RID}"
     # Server private key passphrase
+    info "Creating server private key ${SERVER_KEY}"
     if [ -e "${SERVER_KEY_PWD_FILE}" ]; then
       info "Using server private key passphrase ${SERVER_KEY_PWD_FILE}"
       SERVER_KEY_PWD=$(cat ${SERVER_KEY_PWD_FILE})
@@ -49,10 +57,10 @@ if [ -n "${SIMPLE_CA_URL}" ]; then
       -passout "pass:${SERVER_KEY_PWD}" |
     curl -fsS \
       --cacert "${CA_CRT}" \
-      --user "${CA_USER}:$(cat ${CA_USER_PWD_FILE})"
+      --user "$(cat ${CA_USER_NAME_FILE}):$(cat ${CA_USER_PWD_FILE})" \
       --data-binary @- \
       --output "${SERVER_CRT}" \
-      "${SIMPLE_CA_URL}/sign?dn=${SERVER_CRT_SUBJECT}&dns=${SERVER_CRT_NAMES}&ip=${SERVER_CRT_IP}&oid=${SERVER_CRT_OID}"
+      "${SIMPLE_CA_URL}/sign?dn=${SERVER_CRT_SUBJECT}&dns=${SERVER_CRT_NAMES}&ip=${SERVER_CRT_IP}&rid=${SERVER_CRT_OID}"
     # Set server private key permissions
     if [ -n "${DOCKER_USER}" ]; then
       chown ${DOCKER_USER}:${DOCKER_USER} ${SERVER_KEY}

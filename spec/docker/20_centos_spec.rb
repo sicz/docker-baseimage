@@ -1,30 +1,29 @@
-# encoding: UTF-8
 require "docker_helper"
 
 if ENV["BASEIMAGE_NAME"] == "centos" then
 
   describe "Operating system" do
-    subject do
-      os
-    end
     it "is CentOS #{ENV["DOCKER_TAG"]}" do
-      expect(subject[:family]).to eq("redhat")
-      expect(subject[:release]).to match(/^#{Regexp.escape(ENV["DOCKER_TAG"])}\./)
+      expect(os[:family]).to eq("redhat")
+      expect(os[:release]).to match(/^#{Regexp.escape(ENV["DOCKER_TAG"])}\./)
     end
   end
 
   describe "Package" do
     [
       "bash",
+      "bind-utils",
       "ca-certificates",
       "curl",
       "less",
       "openssl",
+      "net-tools",
       "which",
-    ].each do |package|
+    ].each do |package, version|
       context package do
         it "is installed" do
-          expect(package(package)).to be_installed
+          expect(package(subject)).to be_installed
+          expect(package(subject)).to be_installed.with_version(version) unless version.nil?
         end
       end
     end
@@ -37,12 +36,29 @@ if ENV["BASEIMAGE_NAME"] == "centos" then
       "/sbin/runsvdir",
       "/sbin/su-exec",
       "/sbin/tini",
-    ].each do |command|
+    ].each do |command, version|
       context command do
         it "is installed" do
-          expect(file(command)).to exist
-          expect(file(command)).to be_file
-          expect(file(command)).to be_executable
+          expect(file(subject)).to exist
+          expect(file(subject)).to be_file
+          expect(file(subject)).to be_executable
+          expect(command("#{subject} --version").stdout).to match(version) unless version.nil?
+        end
+      end
+    end
+  end
+
+  describe Process do
+    [
+      ["tini", 1],
+    ].each do |process, pid|
+      context process do
+        subject do
+          process(process)
+        end
+        it "is running" do
+          expect(subject).to be_running
+          expect(subject.pid).to eq(pid) unless pid.nil?
         end
       end
     end

@@ -33,7 +33,8 @@ wait_for_dns () {
     # Extract hostname from URL
     HOST=$(sed -E "s;^${URL_PATTERN}$;\5;" <<< "${URL}")
     local i=0
-    while ! nslookup ${HOST:=localhost} >/dev/null 2>&1; do
+    #while ! nslookup ${HOST:=localhost} >/dev/null 2>&1; do
+    while ! getent ahosts ${HOST:=localhost} >/dev/null 2>&1; do
       if [ $i -eq 0 ]; then
         info "Waiting for ${HOST} name resolution up to ${TIMEOUT}s"
       fi

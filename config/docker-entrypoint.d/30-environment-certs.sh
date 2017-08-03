@@ -47,6 +47,13 @@ fi
 # Default Simple CA user name
 : ${CA_USER:=agent007}
 
+# Default Simple CA user name file location
+if [ -e /run/secrets/ca_user.pwd ]; then
+  : ${CA_USER_NAME_FILE:=/run/secrets/ca_user.name}
+else
+  : ${CA_USER_NAME_FILE:=${SERVER_KEY_DIR}/ca_user.name}
+fi
+
 # Default Simple CA user password location
 if [ -e /run/secrets/ca_user.pwd ]; then
   : ${CA_USER_PWD_FILE:=/run/secrets/ca_user.pwd}

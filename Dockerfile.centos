@@ -32,7 +32,9 @@ RUN set -exo pipefail ; \
   cat /etc/centos-release ; \
   # Install packages
   yum install -y \
+      bind-utils \
       less \
+      net-tools \
       openssl \
       which \
       ; \

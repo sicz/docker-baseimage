@@ -2,9 +2,10 @@
 
 BASEIMAGE_OS_NAME	?= Alpine Linux
 BASEIMAGE_OS_URL	?= https://alpinelinux.org
+BASEIMAGE_OS_VERSION	?= 3.6
 
 BASEIMAGE_NAME		?= alpine
-BASEIMAGE_TAG		?= 3.6
+BASEIMAGE_TAG		?= $(BASEIMAGE_OS_VERSION)
 
 ################################################################################
 
@@ -16,103 +17,151 @@ DOCKER_DESCRIPTION	?= $(BASEIMAGE_OS_NAME) based image modified for Docker-frien
 DOCKER_PROJECT_URL	?= $(BASEIMAGE_OS_URL)
 
 DOCKER_RUN_OPTS		+= -v /var/run/docker.sock:/var/run/docker.sock \
+			   -e SERVER_P12=/etc/ssl/private/server.p12 \
+			   -e SIMPLE_CA_URL=https://simple-ca.local \
+			   --link $(DOCKER_SIMPLE_CA_NAME):simple-ca.local \
 			   $(DOCKER_SHELL_OPTS)
-#		   	   -v $(abspath $(DOCKER_HOME_DIR))/secrets/ca_crt.pem:/run/secrets/ca_crt.pem
-#			   -v $(abspath $(DOCKER_HOME_DIR))/secrets/ca_user.pwd:/run/secrets/ca_user.pwd
+
+DOCKER_TEST_VARS	+= BASEIMAGE_OS_VERSION
+DOCKER_TEST_OPTS	+= -v $(abspath $(DOCKER_BUILD_DIR))/config:/config
 
 DOCKER_FILE		= Dockerfile.$(BASEIMAGE_NAME)
 
-DOCKER_SUBDIRS		= devel dockerspec dockerspec/devel centos centos/devel
+DOCKER_SUBDIRS		= devel \
+			  dockerspec \
+			  dockerspec/devel \
+			  centos \
+			  centos/devel
+
+DOCKER_ALL_TARGETS	+= all build rebuild clean test
 
 ################################################################################
 
-.PHONY: all info clean clean-all
-.PHONY: build rebuild deploy run up destroy down rm start stop restart
-.PHONY: status logs shell test
+.PHONY: all info build rebuild deploy run up destroy down rm create start stop
+.PHONY: restart status logs logs-tail shell test clean
 
-all: destroy build test
-info: docker-info github-info
-build: docker-build $(BUILD_TARGET_HELPER)
-rebuild: docker-rebuild $(BUILD_TARGET_HELPER)
-deploy run up: docker-deploy
+define BASEIMAGE_INFO
+DOCKER_SIMPLE_CA_NAME:	$(DOCKER_SIMPLE_CA_NAME)
+
+endef
+export BASEIMAGE_INFO
+
+all: destroy build start logs test
+
+info: github-info docker-info
+	@$(ECHO) "$${BASEIMAGE_INFO}"
+
+build: docker-build
+
+rebuild: docker-rebuild
+
+deploy run up: destroy start
+
 destroy down rm: docker-destroy
-start: docker-start
+
+create: deploy-simple-ca docker-create
+	@if [ -z "$$(docker container ps --quiet --filter name=^/$(DOCKER_CONTAINER_NAME)$$)" ]; then \
+		DOCKER_SECRETS="$(addprefix $(DOCKER_HOME_DIR)/secrets/,ca_crt.pem)"; \
+		$(ECHO) "Copying secrets $${DOCKER_SECRETS} to $(DOCKER_CONTAINER_NAME):/etc/ssl/certs"; \
+		for DOCKER_SECRET in $${DOCKER_SECRETS}; do \
+			docker cp $${DOCKER_SECRET} $(DOCKER_CONTAINER_NAME):/etc/ssl/certs/; \
+		done; \
+		DOCKER_SECRETS="$(addprefix $(DOCKER_HOME_DIR)/secrets/,ca_user.name ca_user.pwd server_key.pwd)"; \
+		$(ECHO) "Copying secrets $${DOCKER_SECRETS} to $(DOCKER_CONTAINER_NAME):/etc/ssl/private"; \
+		docker cp /var/empty $(DOCKER_CONTAINER_NAME):/etc/ssl/private; \
+		for DOCKER_SECRET in $${DOCKER_SECRETS}; do \
+			docker cp $${DOCKER_SECRET} $(DOCKER_CONTAINER_NAME):/etc/ssl/private/; \
+		done; \
+		$(MAKE) docker-start; \
+	fi
+
+start: create docker-start
+
 stop: docker-stop
-restart: docker-stop docker-start
+
+restart: stop start
+
 status: docker-status
-logs: docker-logs
-logs-tail: docker-logs-tail
-shell: docker-shell
-test: destroy # deploy-simple-ca
-	@DOCKER_RUN_OPTS="$(DOCKER_RUN_OPTS)"; \
-	touch $(DOCKER_HOME_DIR)/secrets/ca_crt.pem $(DOCKER_HOME_DIR)/secrets/ca_user.pwd; \
-	DOCKER_RUN_OPTS="$${DOCKER_RUN_OPTS} -v $(abspath $(DOCKER_HOME_DIR))/secrets/ca_crt.pem:/run/secrets/ca_crt.pem"; \
-	DOCKER_RUN_OPTS="$${DOCKER_RUN_OPTS} -v $(abspath $(DOCKER_HOME_DIR))/secrets/ca_user.pwd:/run/secrets/ca_user.pwd"; \
-	$(MAKE) start DOCKER_RUN_OPTS="$${DOCKER_RUN_OPTS}"; \
-	$(MAKE) logs docker-test destroy-simple-ca
-clean: destroy docker-clean clean-secrets
-clean-all: ; @$(MAKE) docker-all TARGET=clean
 
-################################################################################
+logs: start docker-logs
 
-# Start and destroy Simple CA container to support tests
-DOCKER_SIMPLE_CA_ID	= .container_simple_ca_id
+logs-tail: start docker-logs-tail
 
-.PHONY: clean-secrets deploy-simple-ca destroy-simple-ca
+shell: start docker-shell
 
-clean-secrets:
+test: start docker-test
+
+clean: destroy docker-clean
 	@if [ "$(realpath $(CURDIR))" = "$(realpath $(DOCKER_HOME_DIR))" ]; then \
-		DOCKER_SECRETS="$$(ls secrets/* 2>/dev/null | tr '\n' ' ')"; \
+		DOCKER_SECRETS="$$(find secrets -type f | tr '\n' ' ')"; \
 		if [ -n "$${DOCKER_SECRETS}" ]; then \
 			$(ECHO) "Removing secrets: $${DOCKER_SECRETS}"; \
-			chmod u+w secrets/*; \
+			chmod u+w $${DOCKER_SECRETS}; \
 			rm -f $${DOCKER_SECRETS}; \
 		fi; \
 	fi
-
-# TODO: copy ca_crt.pem and ca_user.pwd from simple_ca into container
-# because on CircleCI we cannot use host volumes
-deploy-simple-ca: destroy-simple-ca
-	@$(ECHO) -n "Deploying container: "; \
-	DOCKER_SIMPLE_CA_ID="$(DOCKER_CONTAINER_NAME)_simple_ca"; \
-	$(ECHO) $${DOCKER_SIMPLE_CA_ID} > $(DOCKER_SIMPLE_CA_ID); \
-	docker run \
-		-d \
-		-v /var/run/docker.sock:/var/run/docker.sock \
-		-v $(abspath $(DOCKER_HOME_DIR))/secrets:/var/lib/simple-ca/secrets \
-		--name $${DOCKER_SIMPLE_CA_ID} \
-		--rm \
-		$(DOCKER_PROJECT)/simple-ca > /dev/null; \
-	i=0; \
-	while [ ! -e $(DOCKER_HOME_DIR)/secrets/ca_crt.pem ]; do \
-		if [ $$i -ge 30 ]; then \
-			$(ECHO) "ERROR: timeout has been reached"; \
-			docker logs $${DOCKER_SIMPLE_CA_ID}; \
-			ls -al $(DOCKER_HOME_DIR)/secrets; \
-			exit 1; \
-		fi; \
-		i=$$((i+1)); \
-		sleep 1; \
-	done; \
-	$(ECHO) "$${DOCKER_SIMPLE_CA_ID}"; \
-	docker logs $${DOCKER_SIMPLE_CA_ID}
-
-destroy-simple-ca:
-	@touch $(DOCKER_SIMPLE_CA_ID); \
-	DOCKER_SIMPLE_CA_ID="$$(cat $(DOCKER_SIMPLE_CA_ID))"; \
-	if [ -n "$${DOCKER_SIMPLE_CA_ID}" ]; then \
-		if [ -n "$$(docker container ps --all --quiet --filter name=^/$${DOCKER_SIMPLE_CA_ID}$$)" ]; then \
-			$(ECHO) -n "Destroying container: "; \
-			docker container rm $(DOCKER_REMOVE_OPTS) -f $${DOCKER_SIMPLE_CA_ID} > /dev/null; \
-			$(ECHO) "$${DOCKER_SIMPLE_CA_ID}"; \
-		fi; \
-	fi; \
-	rm -f $(DOCKER_SIMPLE_CA_ID)
 
 ################################################################################
 
 DOCKER_HOME_DIR		?= .
 DOCKER_MK_DIR		?= $(DOCKER_HOME_DIR)/../Mk
 include $(DOCKER_MK_DIR)/docker.container.mk
+
+################################################################################
+
+# Start Simple CA container to support tests
+DOCKER_SIMPLE_CA_ID	= $(DOCKER_HOME_DIR)/.container_simple_ca_id
+DOCKER_SIMPLE_CA_SECRETS= $(DOCKER_HOME_DIR)/.container_simple_ca_secrets
+DOCKER_SIMPLE_CA_NAME	:= $(shell cat $(DOCKER_SIMPLE_CA_ID) 2> /dev/null || echo "$(DOCKER_CONTAINER_NAME)_simple_ca" )
+
+.PHONY: deploy-simple-ca
+
+deploy-simple-ca: $(DOCKER_HOME_DIR)/secrets/ca_user.pwd $(DOCKER_HOME_DIR)/secrets/server_key.pwd
+	@set -e; \
+	if [ -z "$$(docker container ps --all --quiet --filter name=^/$(DOCKER_SIMPLE_CA_NAME)$$)" ]; then \
+		$(MAKE) docker-create \
+			DOCKER_CONTAINER_ID=$(DOCKER_SIMPLE_CA_ID) \
+			DOCKER_CONTAINER_NAME=$(DOCKER_SIMPLE_CA_NAME) \
+			DOCKER_RUN_OPTS=" \
+				-it \
+				-e DOCKER_ENTRYPOINT_INFO=yes \
+				-e SERVER_CRT_NAMES=simple-ca.local \
+				-v /var/run/docker.sock:/var/run/docker.sock \
+				--rm \
+			"\
+			DOCKER_IMAGE=$(DOCKER_PROJECT)/simple-ca \
+			; \
+		DOCKER_SECRETS="$$(find $(DOCKER_HOME_DIR)/secrets -type f | tr '\n' ' ')"; \
+		$(ECHO) "Copying secrets $${DOCKER_SECRETS} to $(DOCKER_SIMPLE_CA_NAME):/var/lib/secrets"; \
+		docker cp $(DOCKER_HOME_DIR)/secrets $(DOCKER_SIMPLE_CA_NAME):/var/lib/simple-ca; \
+		$(MAKE) docker-start \
+			DOCKER_CONTAINER_ID=$(DOCKER_SIMPLE_CA_ID) \
+		; \
+	fi
+
+$(DOCKER_HOME_DIR)/secrets:
+	@mkdir -p $(DOCKER_HOME_DIR)/secrets
+
+$(DOCKER_HOME_DIR)/secrets/ca_user.pwd: | $(DOCKER_HOME_DIR)/secrets
+	@$(MAKE) docker-rm \
+		DOCKER_CONTAINER_ID=$(DOCKER_SIMPLE_CA_SECRETS) \
+		; \
+	DOCKER_CONTAINER_ID="$(DOCKER_SIMPLE_CA_NAME)_secrets"; \
+	$(ECHO) "Deploying container: $${DOCKER_CONTAINER_ID}"; \
+	$(ECHO) "$${DOCKER_CONTAINER_ID}" > $(DOCKER_SIMPLE_CA_SECRETS); \
+	docker run \
+		-it \
+		-e DOCKER_ENTRYPOINT_INFO=yes \
+		-v /var/run/docker.sock:/var/run/docker.sock \
+		--name $${DOCKER_CONTAINER_ID} \
+		$(DOCKER_PROJECT)/simple-ca secrets; \
+	$(ECHO) -n "Copying secrets from $${DOCKER_CONTAINER_ID}:/var/lib/secrets to "; \
+	docker cp $${DOCKER_CONTAINER_ID}:/var/lib/simple-ca/secrets $(DOCKER_HOME_DIR); \
+	$(ECHO) "$$(find $(DOCKER_HOME_DIR)/secrets -type f | tr '\n' ' ')"; \
+	$(MAKE) docker-rm DOCKER_CONTAINER_ID=$(DOCKER_SIMPLE_CA_SECRETS); \
+	$(MAKE) docker-rm DOCKER_CONTAINER_ID=$(DOCKER_SIMPLE_CA_ID)
+
+$(DOCKER_HOME_DIR)/secrets/server_key.pwd: | $(DOCKER_HOME_DIR)/secrets
+	@openssl rand -hex 32 > $(DOCKER_HOME_DIR)/secrets/server_key.pwd
 
 ################################################################################
