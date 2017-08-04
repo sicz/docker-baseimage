@@ -27,7 +27,7 @@ RUBY_VERSION		?= 2.4.1-r3
 
 GEM_DOCKER_API_VERSION	?= 1.33.6
 GEM_RSPEC_VERSION	?= 3.6.0
-GEM_SERVERSPEC_VERSION	?= 2.39.1
+GEM_SERVERSPEC_VERSION	?= 2.39.2
 
 ################################################################################
 

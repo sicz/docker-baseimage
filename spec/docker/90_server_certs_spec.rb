@@ -28,13 +28,12 @@ describe "Server PEM certificate file" do
       expect(file(subject)).to be_grouped_into("root")
       expect(file(subject)).not_to be_readable.by("others")
     end
-    # it "is valid key" do
-    #   # TODO: Serverspec does not support PKCS£8 (see RFC7468) format of encrypted private keys
-    #   # expect(x509_private_key(subject)).to be_encrypted
-    #   # TODO: Serverspec does not support encrypted private keys
-    #   # expect(x509_private_key(subject)).to be_valid
-    #   # expect(x509_private_key(subject)).to have_matching_certificate(crt)
-    # end
+    it "is valid encrypted key" do
+      expect(x509_private_key(subject)).to be_encrypted
+      # TODO: Serverspec does not support encrypted private keys
+      # expect(x509_private_key(subject)).to be_valid
+      # expect(x509_private_key(subject)).to have_matching_certificate(crt)
+    end
   end
   context pwd do
     # TODO: we currently only check the existence of the file
