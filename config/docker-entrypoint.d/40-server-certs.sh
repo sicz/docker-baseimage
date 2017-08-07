@@ -37,9 +37,9 @@ if [ -n "${SIMPLE_CA_URL}" ]; then
       tr "\n" "," |
       sed "s/,$//"
     )
-    info "DN: dn=${SERVER_CRT_SUBJECT}"
+    info "DN:  dn=${SERVER_CRT_SUBJECT}"
     info "DNS: ${SERVER_CRT_NAMES}"
-    info "IP: ${SERVER_CRT_IP}"
+    info "IP:  ${SERVER_CRT_IP}"
     info "RID: ${SERVER_CRT_RID}"
     # Server private key passphrase
     info "Creating server private key ${SERVER_KEY}"

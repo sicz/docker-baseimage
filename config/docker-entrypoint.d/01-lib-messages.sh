@@ -16,22 +16,22 @@ msg() {
 
 # Message with severity
 error() {
-  msg "ERROR" ${DOCKER_ENTRYPOINT:-$0} $*
+  msg "ERROR" ${DOCKER_ENTRYPOINT:-$0} "$*"
 }
 
 warn() {
-  msg "WARN" ${DOCKER_ENTRYPOINT:-$0} $*
+  msg "WARN" ${DOCKER_ENTRYPOINT:-$0} "$*"
 }
 
 info() {
   if [ -n "${DOCKER_ENTRYPOINT_INFO}" -o -n "${DOCKER_ENTRYPOINT_DEBUG}" ]; then
-    msg "INFO" ${DOCKER_ENTRYPOINT:-$0} $*
+    msg "INFO" ${DOCKER_ENTRYPOINT:-$0} "$*"
   fi
 }
 
 debug() {
   if [ -n "${DOCKER_ENTRYPOINT_DEBUG}" ]; then
-    msg "DEBUG" ${DOCKER_ENTRYPOINT:-$0} $*
+    msg "DEBUG" ${DOCKER_ENTRYPOINT:-$0} "$*"
   fi
 }
 
