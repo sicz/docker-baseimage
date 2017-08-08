@@ -11,37 +11,49 @@ Docker base images modified for Docker-friendliness.
 
 ### Alpine Linux based images
 
-This container only contains essential components:
-* Official [Alpine Linux image](https://store.docker.com/images/alpine) as base system
+This image only contains essential components:
+* Official [Alpine Linux image](https://store.docker.com/images/alpine) as a base system
 * Modular Docker entrypoint
-* `bash` as shell
+* `bash` as a shell
 * `ca-certificates` contains common CA certificates
 * `curl` for transferring data using various protocols
 * `jq` for JSON parsing
 * `libressl` for PKI and TLS
-* `runit` for service supervision and management
+* `runit` for services supervision and management
 * `su_exec` for process impersonation
 * `tini` as init process
 
 ### CentOS based images
 
-This container only contains essential components:
-* Official [CentOS image](https://store.docker.com/images/centos) as base system
+This image only contains essential components:
+* Official [CentOS image](https://store.docker.com/images/centos) as a base system
 * Modular Docker entrypoint
-* `bash` as shell
+* `bash` as a shell
 * `ca-certificates` contains common CA certificates
 * `curl` for transferring data using various protocols
 * `jq` for JSON parsing
 * `openssl` for PKI and TLS
-* `runit` for service supervision and management
+* `runit` for services supervision and management
 * `su_exec` for process impersonation
 * `tini` as init process
 
+### DockerSpec images
+
+This image contains tools for testing Docker images:
+* [Alpine Linux based image](#Alpine Linux based images)
+* [Docker](https://docs.docker.com/engine/) provides Docker command line tools and engine
+* [Docker Compose](https://docs.docker.com/compose/) provides Docker command line tools
+* [RSpec](http://rspec.info) provides Ruby testing framework
+* [ServerSpec](http://serverspec.org) provides server testing framework for RSpec
+* [Docker API](https://github.com/swipely/docker-api) provides interface for Docker Remote API for ServerSpec
+<!--
+* [DockerSpec](https://github.com/zuazo/dockerspec) provides Docker plugin for ServerSpec
+-->
 ## Getting started
 
 These instructions will get you a copy of the project up and running on your
-local machine for development and testing purposes. See deployment for notes
-on how to deploy the project on a live system.
+local machine for development and testing purposes. See [Deployment](#deployment)
+for notes on how to deploy the project on a live system.
 
 ### Installing
 
@@ -52,7 +64,16 @@ git clone https://github.com/sicz/docker-baseimage
 
 ### Usage
 
-Use command `make` to simplify Docker container development tasks:
+Directories with Docker image variants:
+* `.` - Alpine Linux latest release
+* `devel` - Alpine Linux edge branch
+* `centos` - CentOS latest branch
+* `centos/devel` - currently CentOS latest branch
+* `dockerspec` - DockerSpec based on Alpine Linux latest release
+* `dockerspec/devel` - DockerSpec based on Alpine Linux edge branch
+
+Use command `make` to simplify Docker container development tasks in
+directories with Docker image variants:
 ```bash
 make all        # Destroy running container, build new image and run tests
 make build      # Build new image
@@ -69,12 +90,6 @@ make test       # Run tests
 make rm         # Destroy running container
 make clean      # Destroy running container and clean working files
 ```
-
-Directories with Docker image variants:
-* `.` - Alpine Linux latest release
-* `devel` - Alpine Linux edge branch
-* `centos` - CentOS latest branch
-* `centos/devel` - currently CentOS latest branch
 
 ## Deployment
 
@@ -127,5 +142,5 @@ This project is licensed under the Apache License, Version 2.0 - see the
 
 ## Acknowledgments
 
-This Docker base images are inspired by
+This project is inspired by
 [baseimage-docker](https://hub.docker.com/r/phusion/baseimage/).
