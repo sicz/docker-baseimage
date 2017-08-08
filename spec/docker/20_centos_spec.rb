@@ -3,9 +3,9 @@ require "docker_helper"
 if ENV["BASEIMAGE_NAME"] == "centos" then
 
   describe "Operating system" do
-    it "is CentOS #{ENV["DOCKER_TAG"]}" do
-      expect(os[:family]).to eq("redhat")
-      expect(os[:release]).to match(/^#{Regexp.escape(ENV["DOCKER_TAG"])}\./)
+    it "is #{ENV["BASEIMAGE_OS_NAME"]} #{ENV["BASEIMAGE_OS_VERSION"]}"  do
+      expect(os[:family]).to eq(ENV["BASEIMAGE_OS_FAMILY"])
+      expect(os[:release]).to match(/^#{Regexp.escape(ENV["BASEIMAGE_OS_VERSION"])}\./)
     end
   end
 
@@ -48,7 +48,7 @@ if ENV["BASEIMAGE_NAME"] == "centos" then
     end
   end
 
-  describe Process do
+  describe "Process" do
     [
       ["tini", 1],
     ].each do |process, pid|

@@ -1,15 +1,15 @@
 ################################################################################
 
-BASEIMAGE_OS_NAME	= CentOS
-BASEIMAGE_OS_URL	= https://centos.org
-BASEIMAGE_OS_VERSION	?= 7
+BASEIMAGE_NAME		?= centos
+BASEIMAGE_TAG		?= $(BASEIMAGE_OS_VERSION)
 
-BASEIMAGE_NAME		= centos
+BASEIMAGE_OS_NAME	?= CentOS
+BASEIMAGE_OS_URL	?= https://centos.org
+BASEIMAGE_OS_FAMILY	?= redhat
+BASEIMAGE_OS_VERSION	?= 7
 
 ################################################################################
 
-DOCKER_TAG		?= $(BASEIMAGE_OS_VERSION)
-#$(shell echo $(BASEIMAGE_TAG) | sed -E "s/\..*//")
 DOCKER_VARIANT_DIR	?= $(DOCKER_HOME_DIR)/$(BASEIMAGE_NAME)
 
 DOCKER_BUILD_VARS	+= JQ_VERSION \

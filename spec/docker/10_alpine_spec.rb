@@ -3,8 +3,8 @@ require "docker_helper"
 if ENV["BASEIMAGE_NAME"] == "alpine" then
 
   describe "Operating system" do
-    it "is Alpine Linux #{ENV["DOCKER_TAG"]}" do
-      expect(os[:family]).to eq("alpine")
+    it "is #{ENV["BASEIMAGE_OS_NAME"]} #{ENV["BASEIMAGE_OS_VERSION"]}"  do
+      expect(os[:family]).to eq(ENV["BASEIMAGE_OS_FAMILY"])
       expect(os[:release]).to match(/^#{Regexp.escape(ENV["BASEIMAGE_OS_VERSION"])}\./)
     end
   end
@@ -77,7 +77,7 @@ if ENV["DOCKER_NAME"] == "dockerspec" then
     end
   end
 
-  describe Process do
+  describe "Process" do
     [
       ["/sbin/tini", 1],
     ].each do |process, pid|

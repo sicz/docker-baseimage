@@ -5,6 +5,7 @@ jobs:
       - image: sicz/dockerspec@sha256:6b84ce81f01e2e25e01483ce4aff1a3c996b4f775dbaa0a7d7f1589d52b69690
     environment:
       - MAKEFLAGS=--no-print-directory
+      - DOCKER_TEST_IMAGE=
     steps:
       - checkout
       - run:
@@ -22,32 +23,32 @@ jobs:
       - run:
           name: Build and test latest Alpine Linux image
           command: |
-            make ci-build-and-test DOCKER_TEST_IMAGE=
+            make all
       - run:
           name: Build and test development Alpine Linux image
           working_directory: devel
           command: |
-            make ci-build-and-test DOCKER_TEST_IMAGE=
+            make all
       - run:
           name: Build and test latest Dockerspec image
           working_directory: dockerspec
           command: |
-            make ci-build-and-test DOCKER_TEST_IMAGE=
+            make all
       - run:
           name: Build and test development Dockerspec image
           working_directory: dockerspec/devel
           command: |
-            make ci-build-and-test DOCKER_TEST_IMAGE=
+            make all
       - run:
           name: Build and test latest CentOS image
           working_directory: centos
           command: |
-            make ci-build-and-test DOCKER_TEST_IMAGE=
+            make all
       - run:
           name: Build and test development CentOS image
           working_directory: centos/devel
           command: |
-            make ci-build-and-test DOCKER_TEST_IMAGE=
+            make all
       - deploy:
           name: Push latest Alpine Linux image to Docker Hub
           command: |

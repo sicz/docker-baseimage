@@ -1,11 +1,12 @@
 ################################################################################
 
-BASEIMAGE_OS_NAME	?= Alpine Linux
-BASEIMAGE_OS_URL	?= https://alpinelinux.org
-BASEIMAGE_OS_VERSION	?= 3.6
-
 BASEIMAGE_NAME		?= alpine
 BASEIMAGE_TAG		?= $(BASEIMAGE_OS_VERSION)
+
+BASEIMAGE_OS_NAME	?= Alpine Linux
+BASEIMAGE_OS_URL	?= https://alpinelinux.org
+BASEIMAGE_OS_FAMILY	?= $(BASEIMAGE_NAME)
+BASEIMAGE_OS_VERSION	?= 3.6
 
 ################################################################################
 
@@ -16,13 +17,18 @@ DOCKER_TAGS		?= latest
 DOCKER_DESCRIPTION	?= $(BASEIMAGE_OS_NAME) based image modified for Docker-friendliness
 DOCKER_PROJECT_URL	?= $(BASEIMAGE_OS_URL)
 
+DOCKER_BUILD_TARGET	?= docker-build
+DOCKER_REBUILD_TARGET	?= docker-rebuild
+
 DOCKER_RUN_OPTS		+= -v /var/run/docker.sock:/var/run/docker.sock \
 			   -e SERVER_P12=/etc/ssl/private/server.p12 \
 			   -e SIMPLE_CA_URL=https://simple-ca.local \
 			   --link $(DOCKER_SIMPLE_CA_NAME):simple-ca.local \
 			   $(DOCKER_SHELL_OPTS)
 
-DOCKER_TEST_VARS	+= BASEIMAGE_OS_VERSION
+DOCKER_TEST_VARS	+= BASEIMAGE_OS_NAME \
+			   BASEIMAGE_OS_FAMILY \
+			   BASEIMAGE_OS_VERSION
 DOCKER_TEST_OPTS	+= -v $(abspath $(DOCKER_BUILD_DIR))/config:/config
 
 DOCKER_FILE		= Dockerfile.$(BASEIMAGE_NAME)
@@ -33,7 +39,7 @@ DOCKER_SUBDIRS		= devel \
 			  centos \
 			  centos/devel
 
-DOCKER_ALL_TARGETS	+= all build rebuild clean test
+DOCKER_ALL_TARGETS	+= all info build rebuild clean test
 
 ################################################################################
 
@@ -41,6 +47,9 @@ DOCKER_ALL_TARGETS	+= all build rebuild clean test
 .PHONY: restart status logs logs-tail shell test clean
 
 define BASEIMAGE_INFO
+DOCKER_BUILD_TARGET:	$(DOCKER_BUILD_TARGET)
+DOCKER_REBUILD_TARGET:	$(DOCKER_REBUILD_TARGET)
+
 DOCKER_SIMPLE_CA_NAME:	$(DOCKER_SIMPLE_CA_NAME)
 
 endef
@@ -51,9 +60,9 @@ all: destroy build start logs test
 info: github-info docker-info
 	@$(ECHO) "$${BASEIMAGE_INFO}"
 
-build: docker-build
+build: $(DOCKER_BUILD_TARGET)
 
-rebuild: docker-rebuild
+rebuild: $(DOCKER_REBUILD_TARGET)
 
 deploy run up: destroy start
 
