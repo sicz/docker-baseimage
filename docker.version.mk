@@ -44,6 +44,8 @@ STACK_SERVICE_NAME	?= baseimage
 ### DEFAULT_CONFIG #############################################################
 
 # Default configuration with Simple CA
+COMPOSE_VARS		+= SECRETS_DIR \
+			   SIMPLE_CA_IMAGE
 ifeq ($(DOCKER_CONFIG),default)
 DOCKER_EXECUTOR		?= compose
 COMPOSE_FILES		+= docker-compose.default.yml
@@ -127,6 +129,9 @@ SIMPLE_CA_IMAGE		?= $(SIMPLE_CA_IMAGE_NAME):$(SIMPLE_CA_IMAGE_TAG)
 # Simple CA service name in DOcker Compose file
 SIMPLE_CA_SERVICE_NAME	?= $(shell echo $(SIMPLE_CA_IMAGE_NAME) | sed -E -e "s|^.*/||" -e "s/[^[:alnum:]_]+/_/g")
 
+# Secrets directory
+SECRETS_DIR		?= $(CURDIR)
+
 ### DOCKER_MAKE_VARS ################################################################
 
 DOCKER_MAKE_VARS	?= GITHUB_MAKE_VARS \
@@ -161,6 +166,7 @@ SIMPLE_CA_IMAGE_NAME:	$(SIMPLE_CA_IMAGE_NAME)
 SIMPLE_CA_IMAGE_TAG:	$(SIMPLE_CA_IMAGE_TAG)
 SIMPLE_CA_IMAGE:	$(SIMPLE_CA_IMAGE)
 SIMPLE_CA_SERVICE_NAME:	$(SIMPLE_CA_SERVICE_NAME)
+SECRETS_DIR:		$(SECRETS_DIR)
 
 CA_CRT_FILE:		$(CA_CRT_FILE)
 CA_USER_NAME_FILE:	$(CA_USER_NAME_FILE)
@@ -294,7 +300,7 @@ secrets:
 	if [ ! -e secrets/ca_user.pwd ]; then \
 		$(COMPOSE_CMD) run --no-deps --rm $(SIMPLE_CA_SERVICE_NAME) secrets; \
 	fi
-	-find /root -name secrets
+	$(MAKE) vars
 	@if [ ! -e secrets/server_key.pwd ]; then \
 		openssl rand -hex 32 > secrets/server_key.pwd; \
 	fi

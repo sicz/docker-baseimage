@@ -9,7 +9,7 @@ networks:
 
 services:
   baseimage:
-    image: ${DOCKER_IMAGE:-sicz/baseimage-alpine:latest}
+    image: ${DOCKER_IMAGE}
     depends_on:
       - simple_ca
     environment:
@@ -30,7 +30,7 @@ services:
       - ${CURDIR}/secrets/server_key.pwd:${SERVER_KEY_PWD_FILE:-/etc/ssl/private/server_key.pwd}:ro
 
   simple_ca:
-    image: ${SIMPLE_CA_IMAGE:-sicz/simple-ca:latest}
+    image: ${SIMPLE_CA_IMAGE}
     environment:
       - DOCKER_ENTRYPOINT_INFO=true
       - SERVER_CRT_HOST=simple-ca.local
@@ -40,10 +40,10 @@ services:
           - simple-ca.local
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
-      - ${CURDIR}/secrets:/var/lib/simple-ca/secrets
+      - ${SECRETS_DIR}/secrets:/var/lib/simple-ca/secrets
 
   test:
-    image: ${TEST_IMAGE:-sicz/dockerspec:latest}
+    image: ${TEST_IMAGE}
     command: ${TEST_CMD:-rspec}
     depends_on:
       - baseimage
