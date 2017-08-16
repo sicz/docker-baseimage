@@ -1,20 +1,15 @@
 version: 2
 jobs:
   build:
-    machine:
-      enabled: true
-      image: circleci/classic:edge
+    docker:
+      - image: sicz/dockerspec:latest
     environment:
       - MAKEFLAGS=--no-print-directory
       - RSPEC_FORMAT=doc
     steps:
       - checkout
-      # - run:
-      #     name: Install Docker Compose
-      #     command: |
-      #       set -x
-      #       curl -L https://github.com/docker/compose/releases/download/1.15.0/docker-compose-`uname -s`-`uname -m` > /usr/local/bin/docker-compose
-      #       chmod +x /usr/local/bin/docker-compose
+      - setup_remote_docker
+          version: 17.06.0-ce
       - run:
           name: Remote Docker engine version and images
           command: |
