@@ -294,6 +294,7 @@ secrets:
 	if [ ! -e secrets/ca_user.pwd ]; then \
 		$(COMPOSE_CMD) run --no-deps --rm $(SIMPLE_CA_SERVICE_NAME) secrets; \
 	fi; \
+	find / -name secrets; \
 	if [ ! -e secrets/server_key.pwd ]; then \
 		openssl rand -hex 32 > secrets/server_key.pwd; \
 	fi
