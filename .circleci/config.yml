@@ -8,7 +8,7 @@ jobs:
       - RSPEC_FORMAT=doc
     steps:
       - checkout
-      - setup_remote_docker
+      - setup_remote_docker:
           version: 17.06.0-ce
       - run:
           name: Remote Docker engine version and images
