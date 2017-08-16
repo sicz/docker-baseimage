@@ -55,8 +55,8 @@ services:
           - test.local
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
-      - ${BUILD_DIR}/config:/root/config
-      - ${TEST_DIR}/.rspec:/root/.rspec
-      - ${TEST_DIR}/spec:/root/spec
-      - ${CURDIR}/secrets:/root/secrets
-    working_dir: /root
+      - ${TEST_PROJECT_VOLUME:-project_dir}:${PROJECT_DIR}
+    working_dir: ${TEST_DIR}
+
+volumes:
+  project_dir:
