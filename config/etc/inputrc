@@ -16,3 +16,7 @@ set mark-symlinked-directories on
 # Clever history browsing
 "\e[A": history-search-backward
 "\e[B": history-search-forward
+
+# Alt Left or Right jumps to next word
+"^[OD" backward-word
+"^[OC" forward-word
