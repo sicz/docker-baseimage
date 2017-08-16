@@ -1,21 +1,32 @@
-################################################################################
+### BASE_IMAGE #################################################################
+
+BASE_IMAGE_NAME		?= alpine
+BASE_IMAGE_TAG		?= $(BASE_IMAGE_OS_VERSION)
+
+BASE_IMAGE_OS_FAMILY	?= $(BASE_IMAGE_NAME)
+BASE_IMAGE_OS_NAME	?= Alpine Linux
+BASE_IMAGE_OS_VERSION	?= 3.6
+BASE_IMAGE_OS_URL	?= https://alpinelinux.org
+
+### DOCKER_IMAGE ###############################################################
 
 DOCKER_NAME		= dockerspec
-DOCKER_DESCRIPTION	= An image intended to run Docker image tests using RSpec and ServerSpec
+DOCKER_PROJECT_DESC	= An image intended to run Docker image tests using RSpec and ServerSpec
 DOCKER_PROJECT_URL	= http://serverspec.org
-DOCKER_VARIANT_DIR	?= $(DOCKER_HOME_DIR)/$(DOCKER_NAME)
+DOCKER_VARIANT_DIR	?= $(PROJECT_DIR)/$(DOCKER_NAME)
 
-DOCKER_BUILD_VARS	+= DOCKER_VERSION \
+### BUILD ######################################################################
+
+# Dockerfile lopcation
+BUILD_DOCKER_FILE	?= $(abspath $(PROJECT_DIR)/$(BASE_IMAGE_NAME)/$(DOCKER_FILE))
+
+# Docker image build variables
+BUILD_VARS		+= DOCKER_VERSION \
 			   DOCKER_COMPOSE_VERSION \
 			   GEM_DOCKER_API_VERSION \
 			   GEM_RSPEC_VERSION \
 			   GEM_SERVERSPEC_VERSION \
 			   RUBY_VERSION
-
-DOCKER_RUN_OPTS		+= -v $(abspath $(DOCKER_HOME_DIR))/.rspec:/.rspec \
-			   -v $(abspath $(DOCKER_HOME_DIR))/spec:/spec
-
-################################################################################
 
 # Docker Compose file version:
 # - docker: 3.3
@@ -27,11 +38,15 @@ RUBY_VERSION		?= 2.4.1-r3
 
 GEM_DOCKER_API_VERSION	?= 1.33.6
 GEM_RSPEC_VERSION	?= 3.6.0
-GEM_SERVERSPEC_VERSION	?= 2.39.2
+GEM_SERVERSPEC_VERSION	?= 2.40.0
 
-################################################################################
+### DOCKER_VERSION_TARGETS #####################################################
 
-DOCKER_HOME_DIR		?= ..
-include $(DOCKER_HOME_DIR)/Makefile
+DOCKER_VERSIONS		?= latest devel
+
+### MK_DOCKER_IMAGE ############################################################
+
+PROJECT_DIR		?= $(abspath ..)
+include $(PROJECT_DIR)/docker.version.mk
 
 ################################################################################

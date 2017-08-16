@@ -11,9 +11,9 @@ mkdir -p ${SERVER_CRT_DIR} ${SERVER_KEY_DIR}
 
 # Default CA certificate file location
 if [ -e /run/secrets/ca_crt.pem ]; then
-  : ${CA_CRT:=/run/secrets/ca_crt.pem}
+  : ${CA_CRT_FILE:=/run/secrets/ca_crt.pem}
 else
-  : ${CA_CRT:=${SERVER_CRT_DIR}/ca_crt.pem}
+  : ${CA_CRT_FILE:=${SERVER_CRT_DIR}/ca_crt.pem}
 fi
 
 ################################################################################
@@ -23,16 +23,16 @@ fi
 
 # Default server certificate file location
 if [ -e /run/secrets/server_crt.pem ]; then
-  : ${SERVER_CRT:=/run/secrets/server_crt.pem}
+  : ${SERVER_CRT_FILE:=/run/secrets/server_crt.pem}
 else
-  : ${SERVER_CRT:=${SERVER_CRT_DIR}/server_crt.pem}
+  : ${SERVER_CRT_FILE:=${SERVER_CRT_DIR}/server_crt.pem}
 fi
 
 # Default server private key file location
 if [ -e /run/secrets/server_key.pem ]; then
-  : ${SERVER_KEY:=/run/secrets/server_key.pem}
+  : ${SERVER_KEY_FILE:=/run/secrets/server_key.pem}
 else
-  : ${SERVER_KEY:=${SERVER_KEY_DIR}/server_key.pem}
+  : ${SERVER_KEY_FILE:=${SERVER_KEY_DIR}/server_key.pem}
 fi
 
 # Default server private key passphrase file location
@@ -44,9 +44,6 @@ fi
 
 ################################################################################
 
-# Default Simple CA user name
-: ${CA_USER:=agent007}
-
 # Default Simple CA user name file location
 if [ -e /run/secrets/ca_user.pwd ]; then
   : ${CA_USER_NAME_FILE:=/run/secrets/ca_user.name}
@@ -54,7 +51,7 @@ else
   : ${CA_USER_NAME_FILE:=${SERVER_KEY_DIR}/ca_user.name}
 fi
 
-# Default Simple CA user password location
+# Default Simple CA user password file location
 if [ -e /run/secrets/ca_user.pwd ]; then
   : ${CA_USER_PWD_FILE:=/run/secrets/ca_user.pwd}
 else

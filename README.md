@@ -65,30 +65,52 @@ git clone https://github.com/sicz/docker-baseimage
 ### Usage
 
 Directories with Docker image variants:
-* `.` - Alpine Linux latest release
-* `devel` - Alpine Linux edge branch
-* `centos` - CentOS latest branch
-* `centos/devel` - currently CentOS latest branch
-* `dockerspec` - DockerSpec based on Alpine Linux latest release
-* `dockerspec/devel` - DockerSpec based on Alpine Linux edge branch
+|Directory|Docker image|
+|---------|------------|
+|`alpine`|Alpine Linux latest release|
+|`alpine/devel`|Alpine Linux edge branch|
+|`centos`|CentOS latest branch|
+|`centos/devel`|Currently CentOS latest branch|
+|`dockerspec`|DockerSpec based on Alpine Linux latest release|
+|`dockerspec/devel`|DockerSpec based on Alpine Linux edge branch|
+
+Use command `make` in project directory:
+```bash
+make all        # Build and test all Docker images
+make build      # Build all Docker images
+make rebuild    # Rebuild all Docker images
+make test       # Test all Docker images
+make clean      # Destroy all running containers and clean working files
+make docker-pull              # Pull all images from Docker Registry
+make docker-pull-dependencies # Pull all image dependencies from Docker Registry
+make docker-pull-images       # Pull all project images from Docker Registry
+```
 
 Use command `make` to simplify Docker container development tasks in
 directories with Docker image variants:
 ```bash
-make all        # Destroy running container, build new image and run tests
+make all        # Destroy running containers, build new image and run tests
+make default-config # Switch to default configuration environment
+make secrets-config # Switch to configuration environment with Docker Swarm like secrets
+make custom-config  # Switch to heavily customized configuration environment
+make config     # Display `docker-compose` configuration for current configuration environment
+make info       # Display `make` variables for current configuration environment
 make build      # Build new image
 make rebuild    # Build new image without caching
-make run        # Run container
-make stop       # Stop running container
-make start      # Start stopped container
-make restart    # Restart container
-make status     # Show container status
-make logs       # Show container logs
-make logs-tail  # Connect to container logs
+make deploy     # Run containers
+make stop       # Stop running containers
+make start      # Start stopped containers
+make restart    # Restart containers
+make destroy    # Destroy running containers
+make logs       # Show containers logs
+make logs-tail  # Follow containers logs
 make shell      # Open shell in running container
-make test       # Run tests
-make rm         # Destroy running container
+make test       # Run tests in current configuration environment
+make test-all   # Run tests in all configuration environments
 make clean      # Destroy running container and clean working files
+make docker-pull              # Pull all images from Docker Registry
+make docker-pull-dependencies # Pull project images dependencies from Docker Registry
+make docker-pull-images       # Pull project images from Docker Registry
 ```
 
 ## Deployment
@@ -124,6 +146,30 @@ RUN set -ex && adduser -M -U -u 1000 ${DOCKER_USER}
 RUN set -ex && yum install -y SOME PACKAGES && yum clean all
 # Copy your own entrypoint scripts
 COPY dockerfile-entrypoint.d /dockerfile-entrypoint.d
+CMD ["${DOCKER_COMMAND}"]
+```
+
+### Multiple services in one container
+
+In case you need to run multiple services within one container, you can use the
+`runit`. In short, to create a service create /etc/service/<SERVICE>/run scripts
+which at the end execs into the service executable you want to run (and supervise
+to keep them running).
+
+Example `services/<SERVICE>/run`:
+```bash
+#!/bin/bash
+# Do some usefull stuff here
+exec <SERVICE_BINARY>
+```
+
+Example `Dockerfile`
+```Dockerfile
+FROM sicz/baseimage-alpine
+# Do some usefull stuff here
+COPY services /etc/services
+RUN find /etc/services -type f -exec chmod +x
+ENV DOCKER_COMMAND="/sbin/runsvcdir"
 CMD ["${DOCKER_COMMAND}"]
 ```
 

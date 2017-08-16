@@ -1,0 +1,21 @@
+###
+### For test with custom configuration
+###
+
+version: "3.3"
+
+services:
+  baseimage:
+    environment:
+      - CA_CRT_FILE=${CA_CRT_FILE}
+      - CA_USER_NAME_FILE=${CA_USER_NAME_FILE}
+      - CA_USER_PWD_FILE=${CA_USER_PWD_FILE}
+      - SERVER_CRT_SUBJECT=${SERVER_CRT_SUBJECT}
+      - SERVER_CRT_HOST=${SERVER_CRT_HOST}
+      - SERVER_CRT_IP=${SERVER_CRT_IP}
+      - SERVER_CRT_OID=${SERVER_CRT_OID}
+      - SERVER_CRT_DIR=${SERVER_CRT_DIR}
+      - SERVER_CRT_FILE=${SERVER_CRT_FILE}
+      - SERVER_KEY_DIR=${SERVER_KEY_DIR}
+      - SERVER_KEY_FILE=${SERVER_KEY_FILE}
+      - SERVER_KEY_PWD_FILE=${SERVER_KEY_PWD_FILE}
