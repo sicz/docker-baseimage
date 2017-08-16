@@ -248,7 +248,7 @@ test: secrets docker-test
 
 # Run tests for all executor configurations
 .PHONY: test-all
-test-all: $(addprefix test-,$(DOCKER_CONFIGS))
+test-all: secrets $(addprefix test-,$(DOCKER_CONFIGS))
 
 .PHONY: $(addprefix test-,$(DOCKER_CONFIGS))
 $(addprefix test-,$(DOCKER_CONFIGS)):
