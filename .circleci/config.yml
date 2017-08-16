@@ -2,8 +2,8 @@ version: 2
 jobs:
   build:
     machine:
-      - enabled: true
-      - image: circleci/classic:edge
+      enabled: true
+      image: circleci/classic:edge
     environment:
       - MAKEFLAGS=--no-print-directory
       - RSPEC_FORMAT=doc
