@@ -25,6 +25,10 @@ export PROJECT_DIR	= $(CURDIR)
 .PHONY: all
 all: ci-all
 
+# Clean project
+.PHONY: clean
+clean: clean-all
+
 # Subdir targets
 .PHONY: $(DOCKER_VARIANT_TARGETS)
 $(DOCKER_VARIANT_TARGETS):
