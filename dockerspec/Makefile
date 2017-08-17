@@ -13,7 +13,14 @@ BASE_IMAGE_OS_URL	?= https://alpinelinux.org
 DOCKER_NAME		= dockerspec
 DOCKER_PROJECT_DESC	= An image intended to run Docker image tests using RSpec and ServerSpec
 DOCKER_PROJECT_URL	= http://serverspec.org
+
+DOCKER_IMAGE_TAGS	?= latest
+
 DOCKER_VARIANT_DIR	?= $(PROJECT_DIR)/$(DOCKER_NAME)
+
+### DOCKER_VERSIONS ############################################################
+
+DOCKER_VERSIONS		?= latest devel
 
 ### BUILD ######################################################################
 
@@ -39,10 +46,6 @@ RUBY_VERSION		?= 2.4.1-r3
 GEM_DOCKER_API_VERSION	?= 1.33.6
 GEM_RSPEC_VERSION	?= 3.6.0
 GEM_SERVERSPEC_VERSION	?= 2.40.0
-
-### DOCKER_VERSION_TARGETS #####################################################
-
-DOCKER_VERSIONS		?= latest devel
 
 ### MK_DOCKER_IMAGE ############################################################
 

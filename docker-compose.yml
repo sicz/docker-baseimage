@@ -1,0 +1,60 @@
+###
+### Default configuration
+###
+
+version: "3.3"
+
+networks:
+  default:
+
+services:
+  baseimage:
+    image: ${DOCKER_IMAGE}
+    depends_on:
+      - simple_ca
+    environment:
+      - DOCKER_ENTRYPOINT_DEBUG=true
+      - DOCKER_ENTRYPOINT_INFO=true
+      - SERVER_CRT_HOST=baseimage.local
+      - SERVER_P12_FILE=${SERVER_P12_FILE}
+      - SIMPLE_CA_URL=https://simple-ca.local
+    networks:
+      default:
+        aliases:
+          - baseimage.local
+    tty: true
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+
+  simple_ca:
+    image: ${SIMPLE_CA_IMAGE}
+    environment:
+      - DOCKER_ENTRYPOINT_INFO=true
+      - SERVER_CRT_HOST=simple-ca.local
+    networks:
+      default:
+        aliases:
+          - simple-ca.local
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - simple_ca_secrets:/var/lib/simple-ca/secrets
+
+  test:
+    image: ${TEST_IMAGE}
+    command: ${TEST_CMD}
+    depends_on:
+      - baseimage
+    env_file:
+      - ${TEST_ENV_FILE}
+    networks:
+      default:
+        aliases:
+          - test.local
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - test_project:${PROJECT_DIR}
+    working_dir: ${TEST_DIR}
+
+volumes:
+  test_project:
+  simple_ca_secrets:

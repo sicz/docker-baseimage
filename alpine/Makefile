@@ -8,7 +8,11 @@ BASE_IMAGE_OS_NAME	?= Alpine Linux
 BASE_IMAGE_OS_VERSION	?= 3.6
 BASE_IMAGE_OS_URL	?= https://alpinelinux.org
 
-### DOCKER_VERSION_TARGETS #####################################################
+### DOCKER_IMAGE ###############################################################
+
+DOCKER_IMAGE_TAGS	?= latest
+
+### DOCKER_VERSIONS ###########################################################
 
 DOCKER_VERSIONS		?= latest devel
 

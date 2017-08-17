@@ -6,7 +6,6 @@ DOCKER_PROJECT_URL	?= $(BASE_IMAGE_OS_URL)
 
 DOCKER_NAME		?= baseimage-$(BASE_IMAGE_NAME)
 DOCKER_IMAGE_TAG	?= $(BASE_IMAGE_TAG)
-DOCKER_IMAGE_TAGS	?= latest
 DOCKER_IMAGE_DEPENDENCIES += $(SIMPLE_CA_IMAGE)
 
 ### BUILD ######################################################################
@@ -38,24 +37,24 @@ DOCKER_CONFIG		?= $(shell \
 			   )
 
 # Use the same service name for all configurations
-COMPOSE_SERVICE_NAME	?= baseimage
-STACK_SERVICE_NAME	?= baseimage
+SERVICE_NAME		?= baseimage
 
 ### DEFAULT_CONFIG #############################################################
 
 # Default configuration with Simple CA
-COMPOSE_VARS		+= SECRETS_DIR \
-			   SIMPLE_CA_IMAGE
-ifeq ($(DOCKER_CONFIG),default)
 DOCKER_EXECUTOR		?= compose
-COMPOSE_FILES		+= docker-compose.default.yml
+COMPOSE_VARS		+= SECRETS_DIR \
+			   SERVER_P12_FILE \
+			   SIMPLE_CA_IMAGE
+
+ifeq ($(DOCKER_CONFIG),default)
+SERVER_P12_FILE		?= /etc/ssl/private/server.p12
+endif
 
 ### SECRETS_CONFIG #############################################################
 
 # Default configuration with Simple CA and Docker Swarm like secrets
-else ifeq ($(DOCKER_CONFIG),secrets)
-DOCKER_EXECUTOR		?= compose
-COMPOSE_FILES		+= docker-compose.default.yml
+ifeq ($(DOCKER_CONFIG),secrets)
 COMPOSE_VARS		+= CA_CRT_FILE \
 			   CA_USER_NAME_FILE \
 			   CA_USER_PWD_FILE \
@@ -64,14 +63,13 @@ CA_CRT_FILE		?= /run/secrets/ca_crt.pem
 CA_USER_NAME_FILE	?= /run/secrets/ca_user.name
 CA_USER_PWD_FILE	?= /run/secrets/ca_user.pwd
 SERVER_KEY_PWD_FILE	?= /run/secrets/server_key.pwd
+SERVER_P12_FILE		?= /etc/ssl/private/server.p12
+endif
 
 ### CUSTOM_CONFIG ##############################################################
 
 # Custom configuration with Simple CA
-else ifeq ($(DOCKER_CONFIG),custom)
-DOCKER_EXECUTOR		?= compose
-COMPOSE_FILES		+= docker-compose.default.yml \
-			   docker-compose.custom.yml
+ifeq ($(DOCKER_CONFIG),custom)
 COMPOSE_VARS		+= CA_CRT_FILE \
 			   CA_USER_NAME_FILE \
 			   CA_USER_PWD_FILE \
@@ -83,7 +81,6 @@ COMPOSE_VARS		+= CA_CRT_FILE \
 			   SERVER_CRT_FILE \
 			   SERVER_KEY_DIR \
 			   SERVER_KEY_FILE \
-			   SERVER_KEY_PWD_FILE \
 			   SERVER_KEY_PWD_FILE \
 			   SERVER_P12_FILE
 CA_CRT_FILE		?= /root/ca.pem
@@ -99,14 +96,7 @@ SERVER_KEY_DIR		?= /var/lib
 SERVER_KEY_FILE		?= /root/key.pem
 SERVER_KEY_PWD_FILE	?= /root/key.pwd
 SERVER_P12_FILE		?= /root/keystore.p12
-
-# Unkown configuration
-else
-$(error Unknown Docker executor configuration $(DOCKER_CONFIG))
 endif
-
-# Docker Compose file for configuration environment
-COMPOSE_FILE		?= $(shell echo "$(foreach COMPOSE_FILE,$(COMPOSE_FILES),$(abspath $(PROJECT_DIR)/$(COMPOSE_FILE)))" | tr ' ' ':')
 
 ### TEST #######################################################################
 
@@ -116,7 +106,7 @@ TEST_VARS		+= BASE_IMAGE_OS_NAME \
 
 ### DOCKER_VERSION_TARGETS #####################################################
 
-DOCKER_VERSION_ALL_TARGETS ?= build rebuild ci clean
+DOCKER_ALL_VERSIONS_TARGETS ?= build rebuild ci clean
 DOCKER_VARIANT_DIR	?= $(PROJECT_DIR)/$(BASE_IMAGE_NAME)
 
 ### SIMPLE_CA ##################################################################
@@ -129,12 +119,27 @@ SIMPLE_CA_IMAGE		?= $(SIMPLE_CA_IMAGE_NAME):$(SIMPLE_CA_IMAGE_TAG)
 # Simple CA service name in DOcker Compose file
 SIMPLE_CA_SERVICE_NAME	?= $(shell echo $(SIMPLE_CA_IMAGE_NAME) | sed -E -e "s|^.*/||" -e "s/[^[:alnum:]_]+/_/g")
 
+# Simple CA container name
+# Docker container name
+ifeq ($(DOCKER_EXECUTOR),container)
+SIMPLE_CA_CONTAINER_NAME ?= $(DOCKER_EXECUTOR_ID)_$(SIMPLE_CA_SERVICE_NAME)
+else ifeq ($(DOCKER_EXECUTOR),compose)
+SIMPLE_CA_CONTAINER_NAME ?= $(DOCKER_EXECUTOR_ID)_$(SIMPLE_CA_SERVICE_NAME)_1
+else ifeq ($(DOCKER_EXECUTOR),stack)
+# TODO: Docker Swarm Stack executor
+SIMPLE_CA_CONTAINER_NAME ?= $(DOCKER_EXECUTOR_ID)_$(SIMPLE_CA_SERVICE_NAME)_1
+else
+$(error Unknown Docker executor "$(DOCKER_EXECUTOR)")
+endif
+
+SIMPLE_CA_CONTAINER_NAME ?= $(DOCKER_EXECUTOR_ID)_$(SIMPLE_CA_SERVICE_NAME)
+
 # Secrets directory
 SECRETS_DIR		?= $(CURDIR)
 
 ### DOCKER_MAKE_VARS ################################################################
 
-DOCKER_MAKE_VARS	?= GITHUB_MAKE_VARS \
+MAKE_VARS		?= GITHUB_MAKE_VARS \
 			   BASE_IMAGE_OS_MAKE_VARS \
 			   BASE_IMAGE_MAKE_VARS \
 			   DOCKER_IMAGE_MAKE_VARS \
@@ -166,6 +171,7 @@ SIMPLE_CA_IMAGE_NAME:	$(SIMPLE_CA_IMAGE_NAME)
 SIMPLE_CA_IMAGE_TAG:	$(SIMPLE_CA_IMAGE_TAG)
 SIMPLE_CA_IMAGE:	$(SIMPLE_CA_IMAGE)
 SIMPLE_CA_SERVICE_NAME:	$(SIMPLE_CA_SERVICE_NAME)
+SIMPLE_CA_CONTAINER_NAME: $(SIMPLE_CA_CONTAINER_NAME)
 SECRETS_DIR:		$(SECRETS_DIR)
 
 CA_CRT_FILE:		$(CA_CRT_FILE)
@@ -225,12 +231,33 @@ $(addsuffix -config,$(DOCKER_CONFIGS)): destroy
 	$(MAKE) set-executor-config DOCKER_CONFIG=$(shell echo $@ | sed "s/-config//")
 
 # Destroy containers and then start fresh ones
-.PHONY: deploy run
-deploy run: display-executor-config destroy start
+.PHONY: deploy run up
+deploy run up:
+	@set -e; \
+	$(MAKE) destroy start
+
+# Create containers
+.PHONY: create
+create: display-executor-config secrets docker-create .docker-$(DOCKER_EXECUTOR)-secrets
+	@true
+
+.docker-$(DOCKER_EXECUTOR)-secrets:
+	@$(ECHO) "Copying secrets to container $(CONTAINER_NAME)"
+	@CA_CRT_FILE=$(CA_CRT_FILE); \
+	 CA_USER_NAME_FILE=$(CA_USER_NAME_FILE); \
+	 CA_USER_PWD_FILE=$(CA_USER_PWD_FILE); \
+	 SERVER_KEY_PWD_FILE=$(SERVER_KEY_PWD_FILE); \
+	 docker cp secrets/ca_crt.pem     $(CONTAINER_NAME):$${CA_CRT_FILE:-/etc/ssl/certs/ca_crt.pem}; \
+	 docker cp secrets/ca_user.name   $(CONTAINER_NAME):$${CA_USER_NAME_FILE:-/etc/ssl/private/ca_user.name}; \
+	 docker cp secrets/ca_user.pwd    $(CONTAINER_NAME):$${CA_USER_PWD_FILE:-/etc/ssl/private/ca_user.pwd}; \
+	 docker cp secrets/server_key.pwd $(CONTAINER_NAME):$${SERVER_KEY_PWD_FILE:-/etc/ssl/private/server_key.pwd}
+	@$(ECHO) "Copying secrets to container $(SIMPLE_CA_CONTAINER_NAME)"
+	@@docker cp secrets $(SIMPLE_CA_CONTAINER_NAME):/var/lib/simple-ca
+	@$(ECHO) $(CONTAINER_NAME) > $@
 
 # Start containers
 .PHONY: start
-start: display-executor-config secrets docker-start
+start: create docker-start
 
 # List running containers
 .PHONY: ps
@@ -250,30 +277,27 @@ shell sh: start docker-shell
 
 # Run tests for current executor configuration
 .PHONY: test
-test: secrets docker-test
+test: start docker-test
 
 # Run tests for all executor configurations
 .PHONY: test-all
-test-all: secrets $(addprefix test-,$(DOCKER_CONFIGS))
+test-all: $(addprefix test-,$(DOCKER_CONFIGS))
 
 .PHONY: $(addprefix test-,$(DOCKER_CONFIGS))
-$(addprefix test-,$(DOCKER_CONFIGS)):
-	@set -eo pipefail; \
-	$(ECHO); \
-	$(ECHO); \
-	$(ECHO) "===> $(DOCKER_IMAGE) with $(shell echo $@ | sed -E -e "s/^test-//") configuration"; \
-	$(ECHO); \
-	$(ECHO); \
-	$(MAKE) $(shell echo "$@-config" | sed -E -e "s/^test-//"); \
-	$(MAKE) start; \
-	sleep 1; \
-	$(MAKE) logs test
+$(addprefix test-,$(DOCKER_CONFIGS)): secrets
+	@$(ECHO)
+	@$(ECHO)
+	@$(ECHO) "===> $(DOCKER_IMAGE) with $(shell echo $@ | sed -E -e "s/^test-//") configuration"
+	@$(ECHO)
+	@$(ECHO)
+	@$(MAKE) $$(echo "$@-config" | sed -E -e "s/^test-//")
+	@$(MAKE) start
+	@$(MAKE) logs test destroy
 
 # Run shell in test container
 .PHONY: test-shell tsh
 test-shell tsh:
-	@set -eo pipefail; \
-	$(MAKE) test TEST_CMD=/bin/bash
+	@$(MAKE) test TEST_CMD=/bin/bash
 
 # Stop containers
 .PHONY: stop
@@ -295,26 +319,32 @@ clean: docker-clean clean-secrets
 
 # Create Simple CA secrets
 .PHONY: secrets
-secrets:
-	@set -eo pipefail; \
-	if [ ! -e secrets/ca_user.pwd ]; then \
-		$(COMPOSE_CMD) run --no-deps --rm $(SIMPLE_CA_SERVICE_NAME) secrets; \
-	fi
-	$(MAKE) vars
-	@if [ ! -e secrets/server_key.pwd ]; then \
-		openssl rand -hex 32 > secrets/server_key.pwd; \
-	fi
+secrets: secrets/ca_user.pwd secrets/server_key.pwd
+	@true
+
+secrets/ca_user.pwd:
+	@$(ECHO) "Starting container $(SIMPLE_CA_CONTAINER_NAME) with command \"secrets\""
+	@docker run --interactive --tty --name=$(SIMPLE_CA_CONTAINER_NAME) $(SIMPLE_CA_IMAGE) secrets
+	@$(ECHO) "Copying secrets from container $(SIMPLE_CA_CONTAINER_NAME)"
+	@docker cp $(SIMPLE_CA_CONTAINER_NAME):/var/lib/simple-ca/secrets .
+	@$(ECHO) "Destroying container $(SIMPLE_CA_CONTAINER_NAME)"
+	@docker rm --force $(SIMPLE_CA_CONTAINER_NAME) > /dev/null
+
+secrets/server_key.pwd:
+	@mkdir -p secrets
+	@$(ECHO) "Generating random server key password"
+	@openssl rand -hex 32 > secrets/server_key.pwd
+	@chmod o-rwx secrets/server_key.pwd
 
 # Clean Simple CA secrets
 .PHONY: clean-secrets
 clean-secrets:
-	@set -eo pipefail; \
-	SECRET_FILES=$$(ls secrets/*.pem secrets/*.pwd secrets/*.name 2> /dev/null | tr '\n' ' ' || true); \
-	if [ -n "$${SECRET_FILES}" ]; then \
-		echo "Removing secrets: $${SECRET_FILES}"; \
+	@SECRET_FILES=$$(ls secrets/*.pem secrets/*.pwd secrets/*.name 2> /dev/null | tr '\n' ' ' || true); \
+	 if [ -n "$${SECRET_FILES}" ]; then \
+		$(ECHO) "Removing secrets: $${SECRET_FILES}"; \
 		chmod u+w $${SECRET_FILES}; \
 		rm -f $${SECRET_FILES}; \
-	fi
+	 fi
 
 ### MK_DOCKER_IMAGE ############################################################
 

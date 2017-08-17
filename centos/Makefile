@@ -8,6 +8,14 @@ BASE_IMAGE_OS_NAME	?= CentOS
 BASE_IMAGE_OS_VERSION	?= 7
 BASE_IMAGE_OS_URL	?= https://centos.org
 
+### DOCKER_IMAGE ###############################################################
+
+DOCKER_IMAGE_TAGS	?= latest
+
+### DOCKER_VERSIONS ############################################################
+
+DOCKER_VERSIONS		?= latest devel
+
 ### BUILD #######################################################################
 
 # Docker image build variables
@@ -20,10 +28,6 @@ JQ_VERSION		?= "1.5"
 RUNIT_VERSION		?= "2.1.2"
 SU_EXEC_VERSION		?= "0.2"
 TINI_VERSION		?= "0.14.0"
-
-### DOCKER_VERSION_TARGETS #####################################################
-
-DOCKER_VERSIONS		?= latest devel
 
 ### MK_DOCKER_IMAGE ############################################################
 
