@@ -10,9 +10,9 @@ BASE_IMAGE_OS_URL	?= https://alpinelinux.org
 
 ### DOCKER_IMAGE ###############################################################
 
-DOCKER_NAME		= dockerspec
-DOCKER_PROJECT_DESC	= An image intended to run Docker image tests using RSpec and ServerSpec
-DOCKER_PROJECT_URL	= http://serverspec.org
+DOCKER_NAME		?= dockerspec
+DOCKER_PROJECT_DESC	?= An image intended to run Docker image tests using RSpec and ServerSpec
+DOCKER_PROJECT_URL	?= http://serverspec.org
 
 DOCKER_IMAGE_TAGS	?= latest
 
