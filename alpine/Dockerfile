@@ -7,10 +7,10 @@ ARG VCS_REF
 LABEL org.label-schema.build-date="${BUILD_DATE}"
 LABEL org.label-schema.vcs-ref="${VCS_REF}"
 
-RUN set -exo pipefail ; \
+RUN set -exo pipefail; \
   # Upgrade system
-  apk upgrade --no-cache ; \
-  cat /etc/alpine-release ; \
+  apk upgrade --no-cache; \
+  cat /etc/alpine-release; \
   # Install base image packages
   apk add --no-cache \
     bash \
@@ -45,8 +45,8 @@ ARG GEM_RSPEC_VERSION
 ARG GEM_SERVERSPEC_VERSION
 
 COPY config /
-RUN set -exo pipefail ; \
-  chmod +x /docker-entrypoint.sh ; \
+RUN set -exo pipefail; \
+  chmod +x /docker-entrypoint.sh; \
   mkdir -p \
     /etc/ssl/certs \
     /etc/ssl/private \
@@ -69,18 +69,18 @@ RUN set -exo pipefail ; \
       ; \
     # Install Docker
     curl -fL "https://download.docker.com/linux/static/stable/x86_64/docker-${DOCKER_VERSION}.tgz" \
-     | tar xfz - -C /tmp ; \
-    mv /tmp/docker/* /usr/bin ; \
-    rm -rf /tmp/docker ; \
-    docker --version ; \
+     | tar xfz - -C /tmp; \
+    mv /tmp/docker/* /usr/bin; \
+    rm -rf /tmp/docker; \
+    docker --version; \
     # Install Docker Compose
     apk add --no-cache --virtual .build-dependencies \
       py2-pip \
       ; \
-    pip install --upgrade pip ; \
-    pip install docker-compose==${DOCKER_COMPOSE_VERSION} ; \
-    apk del --no-cache .build-dependencies ; \
-    docker-compose --version ; \
+    pip install --upgrade pip; \
+    pip install docker-compose==${DOCKER_COMPOSE_VERSION}; \
+    apk del --no-cache .build-dependencies; \
+    docker-compose --version; \
     # Install rspec and serverspec
     gem install \
       docker-api:${GEM_DOCKER_API_VERSION} \
@@ -92,7 +92,7 @@ RUN set -exo pipefail ; \
       rspec \
       serverspec \
       ; \
-    rm -rf /root/.cache /root/.gem ; \
+    rm -rf /root/.cache /root/.gem; \
   fi
 
 ENTRYPOINT ["/sbin/tini", "--", "/docker-entrypoint.sh"]

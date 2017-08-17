@@ -25,10 +25,10 @@ ARG RUNIT_VERSION
 ARG SU_EXEC_VERSION
 ARG TINI_VERSION
 
-RUN set -exo pipefail ; \
+RUN set -exo pipefail; \
   # Update system
-  yum update -y ; \
-  cat /etc/centos-release ; \
+  yum update -y; \
+  cat /etc/centos-release; \
   # Install packages
   yum install -y \
       bind-utils \
@@ -38,45 +38,45 @@ RUN set -exo pipefail ; \
       which \
       ; \
   # Install jq
-  curl -fL -o /usr/bin/jq https://github.com/stedolan/jq/releases/download/jq-${JQ_VERSION}/jq-linux64 ; \
-  chmod +x /usr//bin/jq ; \
+  curl -fL -o /usr/bin/jq https://github.com/stedolan/jq/releases/download/jq-${JQ_VERSION}/jq-linux64; \
+  chmod +x /usr//bin/jq; \
   # Install tini
-  curl -fL -o /sbin/tini https://github.com/krallin/tini/releases/download/v${TINI_VERSION}/tini ; \
-  chmod +x /sbin/tini ; \
+  curl -fL -o /sbin/tini https://github.com/krallin/tini/releases/download/v${TINI_VERSION}/tini; \
+  chmod +x /sbin/tini; \
   # Install development dependencies
-  yum history new || yum history new ; \
+  yum history new || yum history new; \
   yum install -y \
       gcc \
       glibc-static \
       make \
       ; \
   # Install runit
-  mkdir /package ; \
-  cd /package ; \
-  curl http://smarden.org/runit/runit-${RUNIT_VERSION}.tar.gz | tar xzf - ; \
-  cd admin/runit-${RUNIT_VERSION} ; \
-  package/compile ; \
-  package/check ; \
-  mv command/* /sbin ; \
-  mkdir -p /etc/service ; \
-  cd / ; \
-  rm -rf /package ; \
+  mkdir /package; \
+  cd /package; \
+  curl http://smarden.org/runit/runit-${RUNIT_VERSION}.tar.gz | tar xzf -; \
+  cd admin/runit-${RUNIT_VERSION}; \
+  package/compile; \
+  package/check; \
+  mv command/* /sbin; \
+  mkdir -p /etc/service; \
+  cd /; \
+  rm -rf /package; \
   # Install su-exec
   curl -fL https://github.com/ncopa/su-exec/archive/v${SU_EXEC_VERSION}.tar.gz \
-    | tar xfz - -C /tmp ; \
-  cd /tmp/su-exec-${SU_EXEC_VERSION} ; \
-  make ; \
-  mv su-exec /sbin ; \
-  cd .. ; \
-  rm -rf su-exec-${SU_EXEC_VERSION} ; \
-  cd / ; \
+    | tar xfz - -C /tmp; \
+  cd /tmp/su-exec-${SU_EXEC_VERSION}; \
+  make; \
+  mv su-exec /sbin; \
+  cd ..; \
+  rm -rf su-exec-${SU_EXEC_VERSION}; \
+  cd /; \
   # Uninstall development dependencies
-  yum history -y undo 1 ; \
+  yum history -y undo 1; \
   # Cleanup yum
   yum clean all
 
 COPY config /
-RUN set -exo pipefail ; \
+RUN set -exo pipefail; \
   chmod +x /docker-entrypoint.sh; \
   ln -s /etc/pki/tls/private /etc/ssl/private; \
   mkdir -p /run/secrets
