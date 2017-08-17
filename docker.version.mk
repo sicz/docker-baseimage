@@ -243,6 +243,9 @@ create: display-executor-config secrets docker-create .docker-$(DOCKER_EXECUTOR)
 
 .docker-$(DOCKER_EXECUTOR)-secrets:
 	@$(ECHO) "Copying secrets to container $(CONTAINER_NAME)"
+	-docker cp $(CONTAINER_NAME):/etc/ssl secrets
+	-docker cp $(CONTAINER_NAME):/run secrets
+	ls -lRat secrets
 	@CA_CRT_FILE=$(CA_CRT_FILE); \
 	 CA_USER_NAME_FILE=$(CA_USER_NAME_FILE); \
 	 CA_USER_PWD_FILE=$(CA_USER_PWD_FILE); \
