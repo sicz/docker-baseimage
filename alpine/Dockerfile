@@ -47,6 +47,11 @@ ARG GEM_SERVERSPEC_VERSION
 COPY config /
 RUN set -exo pipefail ; \
   chmod +x /docker-entrypoint.sh ; \
+  mkdir -p \
+    /etc/ssl/certs \
+    /etc/ssl/private \
+    /run/secrets \
+  ; \
   #
   # Install sicz/dockerspec software
   #

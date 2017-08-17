@@ -77,7 +77,9 @@ RUN set -exo pipefail ; \
 
 COPY config /
 RUN set -exo pipefail ; \
-  chmod +x /docker-entrypoint.sh
+  chmod +x /docker-entrypoint.sh; \
+  ln -s /etc/pki/tls/private /etc/ssl/private; \
+  mkdir -p /run/secrets
 
 ENTRYPOINT ["/sbin/tini", "--", "/docker-entrypoint.sh"]
 
