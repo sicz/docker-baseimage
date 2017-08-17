@@ -15,10 +15,6 @@ DOCKER_IMAGE_DEPENDENCIES += $(SIMPLE_CA_IMAGE)
 DOCKER_BUILD_TARGET	?= docker-build
 DOCKER_REBUILD_TARGET	?= docker-rebuild
 
-# Docker image build variables
-BUILD_VARS		+= DOCKER_PROJECT_DESC \
-			   DOCKER_PROJECT_URL
-
 ### DOCKER_EXECUTOR ############################################################
 
 # Use multiple Docker executor configurations
@@ -43,8 +39,7 @@ SERVICE_NAME		?= baseimage
 
 # Default configuration with Simple CA
 DOCKER_EXECUTOR		?= compose
-COMPOSE_VARS		+= SECRETS_DIR \
-			   SERVER_P12_FILE \
+COMPOSE_VARS		+= SERVER_P12_FILE \
 			   SIMPLE_CA_IMAGE
 
 ifeq ($(DOCKER_CONFIG),default)
@@ -132,12 +127,7 @@ else
 $(error Unknown Docker executor "$(DOCKER_EXECUTOR)")
 endif
 
-SIMPLE_CA_CONTAINER_NAME ?= $(DOCKER_EXECUTOR_ID)_$(SIMPLE_CA_SERVICE_NAME)
-
-# Secrets directory
-SECRETS_DIR		?= $(CURDIR)
-
-### DOCKER_MAKE_VARS ################################################################
+### MAKE_VARS ##################################################################
 
 MAKE_VARS		?= GITHUB_MAKE_VARS \
 			   BASE_IMAGE_OS_MAKE_VARS \
@@ -172,7 +162,6 @@ SIMPLE_CA_IMAGE_TAG:	$(SIMPLE_CA_IMAGE_TAG)
 SIMPLE_CA_IMAGE:	$(SIMPLE_CA_IMAGE)
 SIMPLE_CA_SERVICE_NAME:	$(SIMPLE_CA_SERVICE_NAME)
 SIMPLE_CA_CONTAINER_NAME: $(SIMPLE_CA_CONTAINER_NAME)
-SECRETS_DIR:		$(SECRETS_DIR)
 
 CA_CRT_FILE:		$(CA_CRT_FILE)
 CA_USER_NAME_FILE:	$(CA_USER_NAME_FILE)
@@ -200,6 +189,10 @@ export CONFIG_MAKE_VARS
 all: destroy build start logs test
 ci: build test-all destroy
 
+# Display make variables
+.PHONY: makevars vars
+makevars vars: display-makevars
+
 ### BUILD_TARGETS ##############################################################
 
 # Build Docker image with cached layers
@@ -221,10 +214,6 @@ config: display-executor-config
 # Display Docker COmpose/Swarm configuration file
 .PHONY: config-file
 config-file: display-config-file
-
-# Display make variables
-.PHONY: makevars vars
-vars: display-makevars
 
 # Change containers configuration
 .PHONY: $(addsuffix -config,$(DOCKER_CONFIGS))
