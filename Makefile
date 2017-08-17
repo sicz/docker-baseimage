@@ -32,8 +32,7 @@ clean: clean-all
 # Subdir targets
 .PHONY: $(DOCKER_VARIANT_TARGETS)
 $(DOCKER_VARIANT_TARGETS):
-	@set -eo pipefail; \
-	for SUBDIR in $(DOCKER_VARIANTS); do \
+	@for SUBDIR in $(DOCKER_VARIANTS); do \
 		cd $(PROJECT_DIR)/$${SUBDIR}; \
 		$(MAKE) $@; \
 	done
