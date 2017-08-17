@@ -205,10 +205,12 @@ ci: build test-all destroy
 # Build Docker image with cached layers
 .PHONY: build
 build: $(DOCKER_BUILD_TARGET)
+	@true
 
 # Build Docker image without cached layers
 .PHONY: rebuild
 rebuild: $(DOCKER_REBUILD_TARGET)
+	@true
 
 ### EXECUTOR_TARGETS ###########################################################
 
