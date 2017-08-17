@@ -1,8 +1,8 @@
 ### MAKE_TARGETS ###############################################################
 
 # Docker image variants
-DOCKER_VARIANTS		= alpine \
-			  dockerspec \
+DOCKER_VARIANTS		= dockerspec \
+			  alpine \
 			  centos \
 
 # Make targets propagated to Docker image variants
