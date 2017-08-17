@@ -2,10 +2,12 @@ require "docker_helper"
 
 ################################################################################
 
-# TODO: Run with exec backend
 describe "Server certificate", :test => :server_certs do
 
   ##############################################################################
+
+  user = "root"
+  group = "root"
 
   crt = ENV["SERVER_CRT_FILE"]      || "/etc/ssl/certs/server_crt.pem"
   key = ENV["SERVER_KEY_FILE"]      || "/etc/ssl/private/server_key.pem"
@@ -20,8 +22,8 @@ describe "Server certificate", :test => :server_certs do
     let(:file) { Serverspec::Type::File.new(subject.name) }
     it { expect(file).to be_a_file }
     it { expect(file).to be_mode(644) }
-    it { expect(file).to be_owned_by("root") }
-    it { expect(file).to be_grouped_into("root") }
+    it { expect(file).to be_owned_by(user) }
+    it { expect(file).to be_grouped_into(group) }
     it { is_expected.to be_a_certificate }
     it { is_expected.to be_valid }
     its(:subject) { is_expected.to eq "/#{subj}" }
@@ -44,8 +46,8 @@ describe "Server certificate", :test => :server_certs do
     it { expect(file).to be_a_file }
     # TODO: server_key.pwd is mounted through Docker Compose with strange owner
     # it { expect(file).to be_mode(640) }
-    # it { expect(file).to be_owned_by("root") }
-    # it { expect(file).to be_grouped_into("root") }
+    # it { expect(file).to be_owned_by(user) }
+    # it { expect(file).to be_grouped_into(group) }
   end
 
   ##############################################################################
@@ -54,8 +56,8 @@ describe "Server certificate", :test => :server_certs do
     let(:file) { Serverspec::Type::File.new(key) }
     it { expect(file).to be_a_file }
     it { expect(file).to be_mode(640) }
-    it { expect(file).to be_owned_by("root") }
-    it { expect(file).to be_grouped_into("root") }
+    it { expect(file).to be_owned_by(user) }
+    it { expect(file).to be_grouped_into(group) }
     it { is_expected.to be_encrypted }
     it { is_expected.to be_valid }
     it { is_expected.to have_matching_certificate(crt) }
@@ -69,8 +71,8 @@ describe "Server certificate", :test => :server_certs do
     let(:file) { Serverspec::Type::File.new(p12) }
     it { expect(file).to be_a_file }
     it { expect(file).to be_mode(640) }
-    it { expect(file).to be_owned_by("root") }
-    it { expect(file).to be_grouped_into("root") }
+    it { expect(file).to be_owned_by(user) }
+    it { expect(file).to be_grouped_into(group) }
     # TODO: Serverspec does not support PKCS12 keystores
     # it { is_expected.to be_encrypted }
     # it { is_expected.to be_valid }

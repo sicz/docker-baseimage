@@ -2,7 +2,7 @@ require "docker_helper"
 
 ################################################################################
 
-describe "Docker image", :test => :docker_image, :backend => :docker do
+describe "Docker image", :test => :docker_image do
 
   ##############################################################################
 
@@ -103,12 +103,13 @@ describe "Docker image", :test => :docker_image, :backend => :docker do
 
   ##############################################################################
 
-  # TODO: Run with exec backend
-  # describe docker_image(ENV["DOCKER_IMAGE"]) do
+  # TODO: Serverspec does not support multiple backends
+  # context docker_image(ENV["DOCKER_IMAGE"]) do
+  #   before(:context) { set :backend, :exec }
   #   it { is_expected.to exist }
   # end
 
-##############################################################################
+  ##############################################################################
 
   describe "Operating system" do
     it "should be #{ENV["BASE_IMAGE_OS_NAME"]} #{ENV["BASE_IMAGE_OS_VERSION"]}"  do

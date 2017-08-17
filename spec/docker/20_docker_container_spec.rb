@@ -23,8 +23,9 @@ describe "Docker container", :test => :docker_container do
 
   ##############################################################################
 
-  # TODO: Run with exec backend
+  # TODO: Serverspec does not support multiple backends
   # describe docker_container(ENV["CONTAINER_NAME"]) do
+  #   before(:context) { set :backend, :exec }
   #   it { is_expected.to be_running }
   # end
 
