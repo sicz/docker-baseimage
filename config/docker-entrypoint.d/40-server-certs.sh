@@ -6,20 +6,20 @@
 if [ -n "${SIMPLE_CA_URL}" ]; then
 
   # Create server private key and certificate
-  if [ ! -e ${SERVER_CRT_FILE} ]; then
+  if [ ! -e "${SERVER_CRT_FILE}" ]; then
 
     # Wait for Simple CA
     wait_for_url ${SIMPLE_CA_TIMEOUT:-60} ${SIMPLE_CA_URL}/ca.pem
 
     # Get root CA certificate
-    if [ ! -e ${CA_CRT_FILE} ]; then
+    if [ ! -e "${CA_CRT_FILE}" ]; then
       info "Getting root CA certificate from ${SIMPLE_CA_URL}/ca.pem"
       curl -fksS ${SIMPLE_CA_URL}/ca.pem > ${CA_CRT_FILE}
     else
       info "Using root CA certificate from ${CA_CRT_FILE}"
     fi
 
-    if [ -e ${CA_USER_NAME_FILE} ]; then
+    if [ -e "${CA_USER_NAME_FILE}" ]; then
       info "Using CA user name from ${CA_USER_NAME_FILE}"
       CA_USER_NAME=$(cat ${CA_USER_NAME_FILE})
     fi
@@ -27,7 +27,7 @@ if [ -n "${SIMPLE_CA_URL}" ]; then
       error "Missing CA user name"
       exit 1
     fi
-    if [ -e ${CA_USER_PWD_FILE} ]; then
+    if [ -e "${CA_USER_PWD_FILE}" ]; then
       info "Using CA user password from ${CA_USER_PWD_FILE}"
       CA_USER_PWD=$(cat ${CA_USER_PWD_FILE})
     fi
@@ -79,7 +79,7 @@ if [ -n "${SIMPLE_CA_URL}" ]; then
   fi
 
   # Convert server private key and certificate into PKCS12 file
-  if [ -n "${SERVER_P12_FILE}" -a ! -e ${SERVER_P12_FILE} ]; then
+  if [ -n "${SERVER_P12_FILE}" -a ! -e "${SERVER_P12_FILE}" ]; then
     info "Creating server PKCS12 file in ${SERVER_P12_FILE}"
     openssl pkcs12 -export \
       -in ${SERVER_CRT_FILE} \
@@ -94,6 +94,15 @@ if [ -n "${SIMPLE_CA_URL}" ]; then
     fi
     chmod o-rwx ${SERVER_P12_FILE}
   fi
+fi
+
+################################################################################
+
+# Create CA certificate fingerprint link to /etc/ssl/certs
+CA_CRT_HASH_FILE="/etc/ssl/certs/$(openssl x509 -hash -noout -in ${CA_CRT_FILE}).0"
+if [ -n "${CA_CRT_FILE}" -a -e "${CA_CRT_FILE}" -a ! -e "${CA_CRT_HASH_FILE}" ]; then
+  info "Creating CA certificate hash link server ${CA_CRT_HASH_FILE}"
+  ln -s ${CA_CRT_FILE} ${CA_CRT_HASH_FILE}
 fi
 
 ################################################################################
