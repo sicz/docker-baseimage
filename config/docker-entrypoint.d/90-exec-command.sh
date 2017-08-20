@@ -2,9 +2,8 @@
 
 ################################################################################
 
-# Default command
-if [ "$1" = "${DOCKER_COMMAND}" ]; then
-
+# Container is starting
+if [ -n "${DOCKER_CONTAINER_START}" ]; then
   # Wait for another services
   : ${WAIT_FOR_TIMEOUT:=60}
   wait_for_dns ${WAIT_FOR_DNS_TIMEOUT:=${WAIT_FOR_TIMEOUT}} ${WAIT_FOR_DNS}

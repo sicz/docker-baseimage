@@ -96,7 +96,7 @@ RUN set -exo pipefail; \
     rm -rf /root/.cache /root/.gem; \
   fi
 
-ENTRYPOINT ["/sbin/tini", "--", "/docker-entrypoint.sh"]
+ENTRYPOINT ["/sbin/tini", "--", "/usr/bin/env", "DOCKER_CONTAINER_START=true", "/docker-entrypoint.sh"]
 
 ENV DOCKER_COMMAND="/bin/bash"
 CMD ["${DOCKER_COMMAND}"]

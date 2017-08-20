@@ -82,7 +82,7 @@ RUN set -exo pipefail; \
   ln -s /etc/pki/tls/private /etc/ssl/private; \
   mkdir -p /run/secrets
 
-ENTRYPOINT ["/sbin/tini", "--", "/docker-entrypoint.sh"]
+ENTRYPOINT ["/sbin/tini", "--", "/usr/bin/env", "DOCKER_CONTAINER_START=true", "/docker-entrypoint.sh"]
 
 ENV DOCKER_COMMAND="/bin/bash"
 CMD ["${DOCKER_COMMAND}"]
