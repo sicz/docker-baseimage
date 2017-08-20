@@ -16,9 +16,10 @@ This image only contains essential components:
 * Modular Docker entrypoint
 * `bash` as a shell
 * `ca-certificates` contains common CA certificates
-* `curl` for transferring data using various protocols
+* `curl` for data transfers using various protocols
 * `jq` for JSON parsing
 * `libressl` for PKI and TLS
+* `ncat` for bulk data transfers using various protocols
 * `runit` for services supervision and management
 * `su_exec` for process impersonation
 * `tini` as init process
@@ -33,6 +34,7 @@ This image only contains essential components:
 * `curl` for transferring data using various protocols
 * `jq` for JSON parsing
 * `openssl` for PKI and TLS
+* `ncat` for bulk data transfers using various protocols
 * `runit` for services supervision and management
 * `su_exec` for process impersonation
 * `tini` as init process

@@ -43,6 +43,7 @@ describe "Docker image", :test => :docker_image do
       "curl",
       "jq",
       "libressl",
+      "nmap-ncat",
       "runit",
       "su-exec",
       "tini",
@@ -64,8 +65,9 @@ describe "Docker image", :test => :docker_image do
       "ca-certificates",
       "curl",
       "less",
-      "openssl",
       "net-tools",
+      "nmap-ncat",
+      "openssl",
       "which",
     ]
     processes += [

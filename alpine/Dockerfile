@@ -18,6 +18,7 @@ RUN set -exo pipefail; \
     curl \
     jq \
     libressl \
+    nmap-ncat \
     runit \
     su-exec \
     tini \

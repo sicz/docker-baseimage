@@ -34,6 +34,7 @@ RUN set -exo pipefail; \
       bind-utils \
       less \
       net-tools \
+      nmap-ncat \
       openssl \
       which \
       ; \
