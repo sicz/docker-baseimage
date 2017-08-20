@@ -47,6 +47,8 @@ wait_for_dns () {
     done
     if [ $i -gt 0 ]; then
       info "Got ${HOST} address in ${i}s"
+    else
+      debug "Got ${HOST} address in ${i}s"
     fi
   done
 }
@@ -78,6 +80,8 @@ wait_for_tcp () {
     done
     if [ $i -gt 0 ]; then
       info "Got a connection to tcp://${HOST} in ${i}s"
+    else
+      debug "Got a connection to tcp://${HOST} in ${i}s"
     fi
   done
 }
@@ -104,6 +108,8 @@ wait_for_url () {
     done
     if [ $i -gt 0 ]; then
       info "Got a connection to ${URL} in ${i}s"
+    else
+      debug "Got a connection to ${URL} in ${i}s"
     fi
   done
 }
