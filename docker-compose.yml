@@ -10,10 +10,12 @@ networks:
 services:
   baseimage:
     image: ${DOCKER_IMAGE}
+    # Listen on TCP port 1234 end echo input to output
+    command: /usr/bin/ncat -l 1234 -k -c /bin/cat
     depends_on:
       - simple_ca
     environment:
-      - DOCKER_ENTRYPOINT_DEBUG=true
+      # - DOCKER_ENTRYPOINT_DEBUG=true
       - DOCKER_ENTRYPOINT_INFO=true
       - SERVER_CRT_HOST=baseimage.local
       - SERVER_P12_FILE=${SERVER_P12_FILE}
@@ -22,13 +24,15 @@ services:
       default:
         aliases:
           - baseimage.local
-    tty: true
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ${PROJECT_DIR}/../prehor/serverspec:/usr/lib/ruby/gems/2.4.0/gems/serverspec-2.40.0
+      - ${PROJECT_DIR}/../prehor/specinfra:/usr/lib/ruby/gems/2.4.0/gems/specinfra-2.70.1
 
   simple_ca:
     image: ${SIMPLE_CA_IMAGE}
     environment:
+      # - DOCKER_ENTRYPOINT_DEBUG=true
       - DOCKER_ENTRYPOINT_INFO=true
       - SERVER_CRT_HOST=simple-ca.local
     networks:
@@ -41,11 +45,15 @@ services:
 
   test:
     image: ${TEST_IMAGE}
-    command: ${TEST_CMD}
     depends_on:
       - baseimage
     env_file:
       - ${TEST_ENV_FILE}
+    environment:
+      # - DOCKER_ENTRYPOINT_DEBUG=true
+      - DOCKER_ENTRYPOINT_INFO=true
+      # Wait untill the tested container is started
+      - WAIT_FOR_TCP=baseimage.local:1234
     networks:
       default:
         aliases:
