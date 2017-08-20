@@ -19,7 +19,6 @@ flock -u 100
 
 ################################################################################
 
-debug "Raw command: $@"
 eval info "Executing command: $@"
 eval exec "$@"
 
