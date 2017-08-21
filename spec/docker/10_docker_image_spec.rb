@@ -3,6 +3,8 @@ require "docker_helper"
 ################################################################################
 
 describe "Docker image", :test => :docker_image do
+  # Default Serverspec backend
+  before(:each) { set :backend, :docker }
 
   ##############################################################################
 
@@ -105,11 +107,11 @@ describe "Docker image", :test => :docker_image do
 
   ##############################################################################
 
-  # TODO: Serverspec does not support multiple backends
-  # context docker_image(ENV["DOCKER_IMAGE"]) do
-  #   before(:context) { set :backend, :exec }
-  #   it { is_expected.to exist }
-  # end
+  describe docker_image(ENV["DOCKER_IMAGE"]) do
+    # Execute Serverspec command locally
+    before(:each) { set :backend, :exec }
+    it { is_expected.to exist }
+  end
 
   ##############################################################################
 

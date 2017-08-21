@@ -3,6 +3,8 @@ require "docker_helper"
 ################################################################################
 
 describe "Server certificate", :test => :server_certs do
+  # Default Serverspec backend
+  before(:each) { set :backend, :docker }
 
   ##############################################################################
 

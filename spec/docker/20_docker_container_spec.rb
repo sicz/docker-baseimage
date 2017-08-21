@@ -3,6 +3,8 @@ require "docker_helper"
 ################################################################################
 
 describe "Docker container", :test => :docker_container do
+  # Default Serverspec backend
+  before(:each) { set :backend, :docker }
 
   ##############################################################################
 
@@ -23,11 +25,11 @@ describe "Docker container", :test => :docker_container do
 
   ##############################################################################
 
-  # TODO: Serverspec does not support multiple backends
-  # describe docker_container(ENV["CONTAINER_NAME"]) do
-  #   before(:context) { set :backend, :exec }
-  #   it { is_expected.to be_running }
-  # end
+  describe docker_container(ENV["CONTAINER_NAME"]) do
+    # Execute Serverspec command locally
+    before(:each) { set :backend, :exec }
+    it { is_expected.to be_running }
+  end
 
   ##############################################################################
 
