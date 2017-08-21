@@ -57,7 +57,6 @@ services:
       default:
         aliases:
           - test.local
-    tty: true
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       # Use project dir as host volume for debugging tests if Docker host is local
