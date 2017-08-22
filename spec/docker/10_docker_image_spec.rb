@@ -56,8 +56,8 @@ describe "Docker image", :test => :docker_image do
       ["/sbin/tini",              ENV["TINI_VERSION"]],
     ]
     files += [
-      # TODO: Serverspec does not differentiate between RedHat and CentOS family
-      "/etc/centos-release",
+      # Serverspec does not differentiate between RedHat and CentOS family
+      ["/etc/centos-release",     644, "root", "root", [:be_file]],
     ]
     packages += [
       "bash",
