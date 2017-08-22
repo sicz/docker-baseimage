@@ -18,6 +18,15 @@ fi
 
 ################################################################################
 
+# Default trusted CA certificates bundle
+if [ -e /etc/pki/tls/certs/ca-bundle.crt ]; then
+  # CentOS trusted CA certificates bundle
+  : ${CA_CRT_BUNDLE_FILE:=/etc/pki/tls/certs/ca-bundle.crt}
+fi
+: ${CA_CRT_BUNDLE_FILE:=/etc/ssl/certs/ca-certificates.crt}
+
+################################################################################
+
 # Default server certificate subject
 : ${SERVER_CRT_SUBJECT:=CN=${DOCKER_CONTAINER_NAME}}
 

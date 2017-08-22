@@ -13,7 +13,7 @@ if [ -n "${SIMPLE_CA_URL}" ]; then
 
     # Get root CA certificate
     if [ ! -e "${CA_CRT_FILE}" ]; then
-      info "Getting root CA certificate from ${SIMPLE_CA_URL}/ca.pem"
+      info "Copying root CA certificate from ${SIMPLE_CA_URL}/ca.pem to ${CA_CRT_FILE}"
       curl -fksS ${SIMPLE_CA_URL}/ca.pem > ${CA_CRT_FILE}
     else
       info "Using root CA certificate from ${CA_CRT_FILE}"
@@ -102,8 +102,14 @@ fi
 if [ -n "${CA_CRT_FILE}" -a -e "${CA_CRT_FILE}" ]; then
   CA_CRT_HASH_FILE="/etc/ssl/certs/$(openssl x509 -hash -noout -in ${CA_CRT_FILE}).0"
   if [ ! -e "${CA_CRT_HASH_FILE}" ]; then
-    info "Creating CA certificate hash link server ${CA_CRT_HASH_FILE}"
+    if [ "$(dirname ${CA_CRT_FILE})" != "/etc/ssl/certs" ]; then
+      info "Creating link /etc/ssl/certs/$(basename ${CA_CRT_FILE}) => ${CA_CRT_FILE}"
+      ln -s ${CA_CRT_FILE} /etc/ssl/certs/$(basename ${CA_CRT_FILE})
+    fi
+    info "Creating link ${CA_CRT_HASH_FILE} => ${CA_CRT_FILE}"
     ln -s ${CA_CRT_FILE} ${CA_CRT_HASH_FILE}
+    info "Adding ${CA_CRT_FILE} to ${CA_CRT_BUNDLE_FILE}"
+    cat ${CA_CRT_FILE} >> ${CA_CRT_BUNDLE_FILE}
   fi
 fi
 
