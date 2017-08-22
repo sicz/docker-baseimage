@@ -1,114 +1,20 @@
 require "docker_helper"
 
-################################################################################
+### DOCKER_IMAGE ###############################################################
 
 describe "Docker image", :test => :docker_image do
   # Default Serverspec backend
   before(:each) { set :backend, :docker }
 
-  ##############################################################################
-
-  # [command, version, args]
-  commands = []
-
-  # [file, mode, user, group, [expectations]]
-  files = [
-    ["/etc/bashrc",                                     644, "root", "root", [:be_file, :eq_sha256sum]],
-    ["/etc/inputrc",                                    644, "root", "root", [:be_file, :eq_sha256sum]],
-    ["/etc/profile",                                    644, "root", "root", [:be_file, :eq_sha256sum]],
-    ["/etc/ssl/openssl.cnf",                            644, "root", "root", [:be_file, :eq_sha256sum]],
-    ["/root/.bash_logout",                              644, "root", "root", [:be_file, :eq_sha256sum]],
-    ["/root/.bash_profile",                             644, "root", "root", [:be_file, :eq_sha256sum]],
-    ["/docker-entrypoint.sh",                           755, "root", "root", [:be_file, :eq_sha256sum]],
-    ["/docker-entrypoint.d/01-lib-messages.sh",         644, "root", "root", [:be_file, :eq_sha256sum]],
-    ["/docker-entrypoint.d/02-lib-wait-for.sh",         644, "root", "root", [:be_file, :eq_sha256sum]],
-    ["/docker-entrypoint.d/10-default-command.sh",      644, "root", "root", [:be_file, :eq_sha256sum]],
-    ["/docker-entrypoint.d/20-docker-introspection.sh", 644, "root", "root", [:be_file, :eq_sha256sum]],
-    ["/docker-entrypoint.d/30-environment-certs.sh",    644, "root", "root", [:be_file, :eq_sha256sum]],
-    ["/docker-entrypoint.d/40-server-certs.sh",         644, "root", "root", [:be_file, :eq_sha256sum]],
-    ["/docker-entrypoint.d/90-exec-command.sh",         644, "root", "root", [:be_file, :eq_sha256sum]],
-  ]
-
-  # [package, version, installer]
-  packages = []
-
-  ##############################################################################
-
-  case ENV["BASE_IMAGE_NAME"]
-  when "alpine"
-    packages += [
-      "bash",
-      "ca-certificates",
-      "curl",
-      "jq",
-      "libressl",
-      "nmap-ncat",
-      "runit",
-      "su-exec",
-      "tini",
-    ]
-  when "centos"
-    commands += [
-      ["/usr/bin/jq",             ENV["JQ_VERSION"]],
-      "/sbin/runit",
-      "/sbin/runsvdir",
-      "/sbin/su-exec",
-      ["/sbin/tini",              ENV["TINI_VERSION"]],
-    ]
-    files += [
-      # Serverspec does not differentiate between RedHat and CentOS family
-      ["/etc/centos-release",     644, "root", "root", [:be_file]],
-    ]
-    packages += [
-      "bash",
-      "bind-utils",
-      "ca-certificates",
-      "curl",
-      "less",
-      "net-tools",
-      "nmap-ncat",
-      "openssl",
-      "which",
-    ]
-  else
-    raise "Unknown base image #{ENV["BASE_IMAGE_NAME"]}"
-  end
-
-  ##############################################################################
-
-  case ENV["DOCKER_NAME"]
-  when "baseimage-alpine"
-  when "baseimage-centos"
-  when "dockerspec"
-    commands += [
-      ["/usr/bin/docker",         ENV["DOCKER_VERSION"]],
-      ["/usr/bin/docker-compose", ENV["DOCKER_COMPOSE_VERSION"]],
-    ]
-    packages += [
-      "git",
-      "make",
-      "openssh-client",
-      ["ruby",                    ENV["RUBY_VERSION"]],
-      ["ruby-io-console",         ENV["RUBY_VERSION"]],
-      ["ruby-irb",                ENV["RUBY_VERSION"]],
-      ["ruby-rdoc",               ENV["RUBY_VERSION"]],
-      ["docker-api",              ENV["GEM_DOCKER_API_VERSION"],  "gem"],
-      ["rspec",                   ENV["GEM_RSPEC_VERSION"],       "gem"],
-      ["serverspec",              ENV["GEM_SERVERSPEC_VERSION"],  "gem"],
-    ]
-  else
-    raise "Unknown image #{ENV["DOCKER_NAME"]}"
-  end
-
-  ##############################################################################
+  ### DOCKER_IMAGE #############################################################
 
   describe docker_image(ENV["DOCKER_IMAGE"]) do
-    # Execute Serverspec command locally
+    # Execute Serverspec commands locally
     before(:each) { set :backend, :exec }
     it { is_expected.to exist }
   end
 
-  ##############################################################################
+  ### OS #######################################################################
 
   describe "Operating system" do
     context "family" do
@@ -121,9 +27,56 @@ describe "Docker image", :test => :docker_image do
     end
   end
 
-  ##############################################################################
+  ### PACKAGES #################################################################
 
   describe "Packages" do
+
+    # [package, version, installer]
+    packages = []
+
+    case ENV["BASE_IMAGE_NAME"]
+    when "alpine"
+      packages += [
+        "bash",
+        "ca-certificates",
+        "curl",
+        ["jq",                    ENV["JQ_VERSION"]],
+        "libressl",
+        "nmap-ncat",
+        ["runit",                 ENV["RUNIT_VERSION"]],
+        ["su-exec",               ENV["SU_EXEC_VERSION"]],
+        ["tini",                  ENV["TINY_VERSION"]],
+      ]
+    when "centos"
+      packages += [
+        "bash",
+        "bind-utils",
+        "ca-certificates",
+        "curl",
+        "less",
+        "net-tools",
+        "nmap-ncat",
+        "openssl",
+        "which",
+      ]
+    end
+
+    case ENV["DOCKER_NAME"]
+    when "dockerspec"
+      packages += [
+        "git",
+        "make",
+        "openssh-client",
+        ["ruby",                    ENV["RUBY_VERSION"]],
+        ["ruby-io-console",         ENV["RUBY_VERSION"]],
+        ["ruby-irb",                ENV["RUBY_VERSION"]],
+        ["ruby-rdoc",               ENV["RUBY_VERSION"]],
+        ["docker-api",              ENV["GEM_DOCKER_API_VERSION"],  "gem"],
+        ["rspec",                   ENV["GEM_RSPEC_VERSION"],       "gem"],
+        ["serverspec",              ENV["GEM_SERVERSPEC_VERSION"],  "gem"],
+      ]
+    end
+
     packages.each do |package, version, installer|
       describe package(package) do
         it { is_expected.to be_installed }                        if installer.nil? && version.nil?
@@ -134,13 +87,36 @@ describe "Docker image", :test => :docker_image do
     end
   end
 
-  ##############################################################################
+  ### COMMANDS #################################################################
 
   describe "Commands" do
+
+    # [command, version, args]
+    commands = []
+
+    case ENV["BASE_IMAGE_NAME"]
+    when "centos"
+      commands += [
+        ["/usr/bin/jq",             ENV["JQ_VERSION"]],
+        "/sbin/runit",
+        "/sbin/runsvdir",
+        "/sbin/su-exec",
+        ["/sbin/tini",              ENV["TINI_VERSION"]],
+      ]
+    end
+
+    case ENV["DOCKER_NAME"]
+    when "dockerspec"
+      commands += [
+        ["/usr/bin/docker",         ENV["DOCKER_VERSION"]],
+        ["/usr/bin/docker-compose", ENV["DOCKER_COMPOSE_VERSION"]],
+      ]
+    end
+
     commands.each do |command, version, args|
       describe "Command \"#{command}\"" do
         subject { file(command) }
-        let(:version_regex) { "(^| |-)#{version}( |$)" }
+        let(:version_regex) { "(^|\\W)#{version}(\\W|$)" }
         let(:version_cmd) { "#{command} #{args.nil? ? "--version" : "#{args}"}" }
         it "should be installed#{version.nil? ? "" : " with version \"#{version}\""}" do
           expect(subject).to exist
@@ -151,9 +127,37 @@ describe "Docker image", :test => :docker_image do
     end
   end
 
-  ##############################################################################
+  ### FILES ####################################################################
 
   describe "Files" do
+
+    # [file, mode, user, group, [expectations]]
+    files = [
+      ["/docker-entrypoint.sh",                           755, "root", "root", [:be_file, :eq_sha256sum]],
+      ["/docker-entrypoint.d/01-lib-messages.sh",         644, "root", "root", [:be_file, :eq_sha256sum]],
+      ["/docker-entrypoint.d/02-lib-wait-for.sh",         644, "root", "root", [:be_file, :eq_sha256sum]],
+      ["/docker-entrypoint.d/10-default-command.sh",      644, "root", "root", [:be_file, :eq_sha256sum]],
+      ["/docker-entrypoint.d/20-docker-introspection.sh", 644, "root", "root", [:be_file, :eq_sha256sum]],
+      ["/docker-entrypoint.d/30-environment-certs.sh",    644, "root", "root", [:be_file, :eq_sha256sum]],
+      ["/docker-entrypoint.d/40-server-certs.sh",         644, "root", "root", [:be_file, :eq_sha256sum]],
+      ["/docker-entrypoint.d/90-exec-command.sh",         644, "root", "root", [:be_file, :eq_sha256sum]],
+      ["/etc/bashrc",                                     644, "root", "root", [:be_file, :eq_sha256sum]],
+      ["/etc/inputrc",                                    644, "root", "root", [:be_file, :eq_sha256sum]],
+      ["/etc/profile",                                    644, "root", "root", [:be_file, :eq_sha256sum]],
+      ["/etc/ssl/openssl.cnf",                            644, "root", "root", [:be_file, :eq_sha256sum]],
+      ["/root/.bash_logout",                              644, "root", "root", [:be_file, :eq_sha256sum]],
+      ["/root/.bash_profile",                             644, "root", "root", [:be_file, :eq_sha256sum]],
+    ]
+
+    case ENV["BASE_IMAGE_NAME"]
+    when "centos"
+      files += [
+        # Serverspec does not differentiate between RedHat and CentOS family,
+        # we check CentOS specific file
+        ["/etc/centos-release",                           644, "root", "root", [:be_file]],
+      ]
+    end
+
     files.each do |file, mode, user, group, expectations|
       expectations ||= []
       context file(file) do
