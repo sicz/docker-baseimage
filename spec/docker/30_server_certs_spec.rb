@@ -129,6 +129,24 @@ describe "Server certificate", :test => :server_certs do
     end
   end
 
+  ### FILES ####################################################################
+
+  describe "Simple CA secrets" do
+    [
+      # [file]
+      "/etc/ssl/private/ca_user.name",
+      "/etc/ssl/private/ca_user.pwd",
+    ].each do |file|
+      context file(file) do
+        it { is_expected.to be_file }
+        it { is_expected.to be_mode(640) }
+        # TODO: ca_user.* files are copied to container with strange owner
+        # it { is_expected.to be_owned_by(user) }
+        # it { is_expected.to be_grouped_into(group) }
+      end
+    end
+  end
+
   ##############################################################################
 
 end
