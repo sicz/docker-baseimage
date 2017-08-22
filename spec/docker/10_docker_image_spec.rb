@@ -49,11 +49,15 @@ describe "Docker image", :test => :docker_image do
     ]
   when "centos"
     commands += [
-      "/usr/bin/jq",
+      ["/usr/bin/jq",             ENV["JQ_VERSION"]],
       "/sbin/runit",
       "/sbin/runsvdir",
       "/sbin/su-exec",
-      "/sbin/tini",
+      ["/sbin/tini",              ENV["TINI_VERSION"]],
+    ]
+    files += [
+      # TODO: Serverspec does not differentiate between RedHat and CentOS family
+      "/etc/centos-release",
     ]
     packages += [
       "bash",
@@ -107,9 +111,13 @@ describe "Docker image", :test => :docker_image do
   ##############################################################################
 
   describe "Operating system" do
-    it "should be #{ENV["BASE_IMAGE_OS_NAME"]} #{ENV["BASE_IMAGE_OS_VERSION"]}"  do
-      expect(os[:family]).to eq(ENV["BASE_IMAGE_OS_FAMILY"])
-      expect(os[:release]).to match(/^#{Regexp.escape(ENV["BASE_IMAGE_OS_VERSION"])}\./)
+    context "family" do
+      subject { os[:family] }
+      it { is_expected.to eq(ENV["BASE_IMAGE_OS_FAMILY"]) }
+    end
+    context "release" do
+      subject { os[:release] }
+      it { is_expected.to match(/^#{Regexp.escape(ENV["BASE_IMAGE_OS_VERSION"])}\./) }
     end
   end
 
@@ -132,7 +140,7 @@ describe "Docker image", :test => :docker_image do
     commands.each do |command, version, args|
       describe "Command \"#{command}\"" do
         subject { file(command) }
-        let(:version_regex) { "(^|[^0-9]) #{version}([^0-9]|$)" }
+        let(:version_regex) { "(^| |-)#{version}( |$)" }
         let(:version_cmd) { "#{command} #{args.nil? ? "--version" : "#{args}"}" }
         it "should be installed#{version.nil? ? "" : " with version \"#{version}\""}" do
           expect(subject).to exist
