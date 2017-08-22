@@ -99,11 +99,6 @@ TEST_VARS		+= BASE_IMAGE_OS_NAME \
 			   BASE_IMAGE_OS_FAMILY \
 			   BASE_IMAGE_OS_VERSION
 
-### DOCKER_VERSION_TARGETS #####################################################
-
-DOCKER_ALL_VERSIONS_TARGETS ?= build rebuild ci clean
-DOCKER_VARIANT_DIR	?= $(PROJECT_DIR)/$(BASE_IMAGE_NAME)
-
 ### SIMPLE_CA ##################################################################
 
 # Simple CA image
@@ -111,7 +106,7 @@ SIMPLE_CA_IMAGE_NAME	?= sicz/simple-ca
 SIMPLE_CA_IMAGE_TAG	?= latest
 SIMPLE_CA_IMAGE		?= $(SIMPLE_CA_IMAGE_NAME):$(SIMPLE_CA_IMAGE_TAG)
 
-# Simple CA service name in DOcker Compose file
+# Simple CA service name in Docker Compose file
 SIMPLE_CA_SERVICE_NAME	?= $(shell echo $(SIMPLE_CA_IMAGE_NAME) | sed -E -e "s|^.*/||" -e "s/[^[:alnum:]_]+/_/g")
 
 # Simple CA container name
@@ -182,11 +177,16 @@ SERVER_P12_FILE:	$(SERVER_P12_FILE)
 endef
 export CONFIG_MAKE_VARS
 
+### DOCKER_VERSION_TARGETS #####################################################
+
+DOCKER_ALL_VERSIONS_TARGETS ?= build rebuild ci clean
+DOCKER_VARIANT_DIR	?= $(PROJECT_DIR)/$(BASE_IMAGE_NAME)
+
 ### MAKE_TARGETS #############################################################
 
 # Build and test image
 .PHONY: all ci
-all: destroy build start logs test
+all: build deploy logs test
 ci: build test-all destroy
 
 # Display make variables
