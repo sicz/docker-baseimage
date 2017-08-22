@@ -17,6 +17,9 @@ DOCKER_REBUILD_TARGET	?= docker-rebuild
 
 ### DOCKER_EXECUTOR ############################################################
 
+# Use Docker Compose executor
+DOCKER_EXECUTOR		?= compose
+
 # Use multiple Docker executor configurations
 DOCKER_CONFIGS		?= default \
 			   secrets \
@@ -38,7 +41,6 @@ SERVICE_NAME		?= baseimage
 ### DEFAULT_CONFIG #############################################################
 
 # Default configuration with Simple CA
-DOCKER_EXECUTOR		?= compose
 COMPOSE_VARS		+= SERVER_P12_FILE \
 			   SIMPLE_CA_IMAGE
 
