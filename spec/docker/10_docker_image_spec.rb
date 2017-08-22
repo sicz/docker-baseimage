@@ -32,9 +32,6 @@ describe "Docker image", :test => :docker_image do
   # [package, version, installer]
   packages = []
 
-  # [process, user, group, pid]
-  processes = []
-
   ##############################################################################
 
   case ENV["BASE_IMAGE_NAME"]
@@ -49,9 +46,6 @@ describe "Docker image", :test => :docker_image do
       "runit",
       "su-exec",
       "tini",
-    ]
-    processes += [
-      ["/sbin/tini",              "root", "root", 1],
     ]
   when "centos"
     commands += [
@@ -71,9 +65,6 @@ describe "Docker image", :test => :docker_image do
       "nmap-ncat",
       "openssl",
       "which",
-    ]
-    processes += [
-      ["tini",                    "root", "root", 1],
     ]
   else
     raise "Unknown base image #{ENV["BASE_IMAGE_NAME"]}"
