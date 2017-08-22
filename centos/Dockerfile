@@ -41,6 +41,7 @@ RUN set -exo pipefail; \
   # Install jq
   curl -fL -o /usr/bin/jq https://github.com/stedolan/jq/releases/download/jq-${JQ_VERSION}/jq-linux64; \
   chmod +x /usr//bin/jq; \
+  strip /usr//bin/jq; \
   # Install tini
   curl -fL -o /sbin/tini https://github.com/krallin/tini/releases/download/v${TINI_VERSION}/tini; \
   chmod +x /sbin/tini; \
@@ -67,6 +68,7 @@ RUN set -exo pipefail; \
     | tar xfz - -C /tmp; \
   cd /tmp/su-exec-${SU_EXEC_VERSION}; \
   make; \
+  strip su-exec; \
   mv su-exec /sbin; \
   cd ..; \
   rm -rf su-exec-${SU_EXEC_VERSION}; \
