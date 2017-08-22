@@ -51,8 +51,8 @@ describe "Server certificate", :test => :server_certs do
     context "file" do
       subject { file(pwd) }
       it { is_expected.to be_a_file }
-      # TODO: server_key.pwd is mounted through Docker Compose with strange owner
-      # it { is_expected.to be_mode(640) }
+      it { is_expected.to be_mode(640) }
+      # TODO: server_key.pwd is copied to container with strange owner
       # it { is_expected.to be_owned_by(user) }
       # it { is_expected.to be_grouped_into(group) }
     end
