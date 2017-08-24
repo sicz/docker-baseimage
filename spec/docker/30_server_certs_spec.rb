@@ -2,7 +2,7 @@ require "docker_helper"
 
 ### SERVER_CERTIFICATE #########################################################
 
-describe "Server certificate", :test => :server_certs do
+describe "Server certificate", :test => :server_cert do
   # Default Serverspec backend
   before(:each) { set :backend, :docker }
 
@@ -11,9 +11,9 @@ describe "Server certificate", :test => :server_certs do
   user = "root"
   group = "root"
 
-  crt = ENV["SERVER_CRT_FILE"]      || "/etc/ssl/certs/server_crt.pem"
-  key = ENV["SERVER_KEY_FILE"]      || "/etc/ssl/private/server_key.pem"
-  pwd = ENV["SERVER_KEY_PWD_FILE"]  || "/etc/ssl/private/server_key.pwd"
+  crt = ENV["SERVER_CRT_FILE"]      || "/etc/ssl/certs/server.crt"
+  key = ENV["SERVER_KEY_FILE"]      || "/etc/ssl/private/server.key"
+  pwd = ENV["SERVER_KEY_PWD_FILE"]  || "/etc/ssl/private/server.pwd"
   p12 = ENV["SERVER_P12_FILE"]      || "/etc/ssl/private/server.p12"
 
   subj = ENV["SERVER_CRT_SUBJECT"]  || "CN=#{ENV["CONTAINER_NAME"]}"
@@ -24,7 +24,7 @@ describe "Server certificate", :test => :server_certs do
     context "file" do
       subject { file(crt) }
       it { is_expected.to be_file }
-      it { is_expected.to be_mode(644) }
+      it { is_expected.to be_mode(444) }
       it { is_expected.to be_owned_by(user) }
       it { is_expected.to be_grouped_into(group) }
     end
@@ -33,7 +33,7 @@ describe "Server certificate", :test => :server_certs do
       it { is_expected.to be_valid }
     end
     its(:subject) { is_expected.to eq "/#{subj}" }
-    its(:issuer)  { is_expected.to eq "/CN=Docker Simple CA" }
+    its(:issuer)  { is_expected.to eq "/CN=Simple CA" }
     its(:validity_in_days) { is_expected.to be > 3650 }
     context "subject_alt_names" do
       it { expect(subject.subject_alt_names).to include("DNS:#{ENV["SERVER_CRT_HOST"]}") } unless ENV["SERVER_CRT_HOST"].nil?
@@ -51,7 +51,7 @@ describe "Server certificate", :test => :server_certs do
     context "file" do
       subject { file(pwd) }
       it { is_expected.to be_file }
-      it { is_expected.to be_mode(640) }
+      it { is_expected.to be_mode(440) }
       # TODO: server_key.pwd is copied to container with strange owner
       # it { is_expected.to be_owned_by(user) }
       # it { is_expected.to be_grouped_into(group) }
@@ -64,7 +64,7 @@ describe "Server certificate", :test => :server_certs do
     context "file" do
       subject { file(key) }
       it { is_expected.to be_file }
-      it { is_expected.to be_mode(640) }
+      it { is_expected.to be_mode(440) }
       it { is_expected.to be_owned_by(user) }
       it { is_expected.to be_grouped_into(group) }
     end
@@ -83,7 +83,7 @@ describe "Server certificate", :test => :server_certs do
     context "file" do
       subject { file(p12) }
       it { is_expected.to be_file }
-      it { is_expected.to be_mode(640) }
+      it { is_expected.to be_mode(440) }
       it { is_expected.to be_owned_by(user) }
       it { is_expected.to be_grouped_into(group) }
     end
@@ -134,12 +134,12 @@ describe "Server certificate", :test => :server_certs do
   describe "Simple CA secrets" do
     [
       # [file]
-      "/etc/ssl/private/ca_user.name",
-      "/etc/ssl/private/ca_user.pwd",
+      ENV["CA_USER_NAME_FILE"]    || "/etc/ssl/private/ca_user.name",
+      ENV["CA_USER_PWD_FILE"]     || "/etc/ssl/private/ca_user.pwd",
     ].each do |file|
       context file(file) do
         it { is_expected.to be_file }
-        it { is_expected.to be_mode(640) }
+        it { is_expected.to be_mode(440) }
         # TODO: ca_user.* files are copied to container with strange owner
         # it { is_expected.to be_owned_by(user) }
         # it { is_expected.to be_grouped_into(group) }
