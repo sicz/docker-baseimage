@@ -56,10 +56,10 @@ COMPOSE_VARS		+= CA_CRT_FILE \
 			   CA_USER_NAME_FILE \
 			   CA_USER_PWD_FILE \
 			   SERVER_KEY_PWD_FILE
-CA_CRT_FILE		?= /run/secrets/ca_crt.pem
+CA_CRT_FILE		?= /run/secrets/ca.crt
 CA_USER_NAME_FILE	?= /run/secrets/ca_user.name
 CA_USER_PWD_FILE	?= /run/secrets/ca_user.pwd
-SERVER_KEY_PWD_FILE	?= /run/secrets/server_key.pwd
+SERVER_KEY_PWD_FILE	?= /run/secrets/server.pwd
 SERVER_P12_FILE		?= /etc/ssl/private/server.p12
 endif
 
@@ -188,7 +188,7 @@ DOCKER_VARIANT_DIR	?= $(PROJECT_DIR)/$(BASE_IMAGE_NAME)
 
 # Build and test image
 .PHONY: all ci
-all: build deploy logs test
+all: build deploy wait logs test
 ci: build test-all destroy
 
 # Display make variables
@@ -240,10 +240,10 @@ create: display-executor-config secrets docker-create .docker-$(DOCKER_EXECUTOR)
 	 CA_USER_NAME_FILE=$(CA_USER_NAME_FILE); \
 	 CA_USER_PWD_FILE=$(CA_USER_PWD_FILE); \
 	 SERVER_KEY_PWD_FILE=$(SERVER_KEY_PWD_FILE); \
-	 docker cp secrets/ca_crt.pem     $(CONTAINER_NAME):$${CA_CRT_FILE:-/etc/ssl/certs/ca_crt.pem}; \
-	 docker cp secrets/ca_user.name   $(CONTAINER_NAME):$${CA_USER_NAME_FILE:-/etc/ssl/private/ca_user.name}; \
-	 docker cp secrets/ca_user.pwd    $(CONTAINER_NAME):$${CA_USER_PWD_FILE:-/etc/ssl/private/ca_user.pwd}; \
-	 docker cp secrets/server_key.pwd $(CONTAINER_NAME):$${SERVER_KEY_PWD_FILE:-/etc/ssl/private/server_key.pwd}
+	 docker cp secrets/ca.crt	$(CONTAINER_NAME):$${CA_CRT_FILE:-/etc/ssl/certs/ca.crt}; \
+	 docker cp secrets/ca_user.name	$(CONTAINER_NAME):$${CA_USER_NAME_FILE:-/etc/ssl/private/ca_user.name}; \
+	 docker cp secrets/ca_user.pwd	$(CONTAINER_NAME):$${CA_USER_PWD_FILE:-/etc/ssl/private/ca_user.pwd}; \
+	 docker cp secrets/server.pwd 	$(CONTAINER_NAME):$${SERVER_KEY_PWD_FILE:-/etc/ssl/private/server.pwd}
 	@$(ECHO) "Copying secrets to container $(SIMPLE_CA_CONTAINER_NAME)"
 	@@docker cp secrets $(SIMPLE_CA_CONTAINER_NAME):/var/lib/simple-ca
 	@$(ECHO) $(CONTAINER_NAME) > $@
@@ -251,6 +251,10 @@ create: display-executor-config secrets docker-create .docker-$(DOCKER_EXECUTOR)
 # Start containers
 .PHONY: start
 start: create docker-start
+
+# Wait to container start
+.PHONY: wait
+wait: start docker-wait
 
 # List running containers
 .PHONY: ps
@@ -284,8 +288,8 @@ $(addprefix test-,$(DOCKER_CONFIGS)): secrets
 	@$(ECHO)
 	@$(ECHO)
 	@$(MAKE) $$(echo "$@-config" | sed -E -e "s/^test-//")
-	@$(MAKE) start
-	@$(MAKE) logs test destroy
+	@$(MAKE) start wait logs test
+	@$(MAKE) destroy
 
 # Run shell in test container
 .PHONY: test-shell tsh
@@ -312,10 +316,10 @@ clean: docker-clean clean-secrets
 
 # Create Simple CA secrets
 .PHONY: secrets
-secrets: secrets/ca_user.pwd secrets/server_key.pwd
+secrets: secrets/ca.crt secrets/server.pwd
 	@true
 
-secrets/ca_user.pwd:
+secrets/ca.crt:
 	@$(ECHO) "Starting container $(SIMPLE_CA_CONTAINER_NAME) with command \"secrets\""
 	@docker run --interactive --tty --name=$(SIMPLE_CA_CONTAINER_NAME) $(SIMPLE_CA_IMAGE) secrets
 	@$(ECHO) "Copying secrets from container $(SIMPLE_CA_CONTAINER_NAME)"
@@ -323,16 +327,16 @@ secrets/ca_user.pwd:
 	@$(ECHO) "Destroying container $(SIMPLE_CA_CONTAINER_NAME)"
 	@docker rm --force $(SIMPLE_CA_CONTAINER_NAME) > /dev/null
 
-secrets/server_key.pwd:
+secrets/server.pwd:
 	@mkdir -p secrets
 	@$(ECHO) "Generating random server key password"
-	@openssl rand -hex 32 > secrets/server_key.pwd
-	@chmod o-rwx secrets/server_key.pwd
+	@openssl rand -hex 32 > secrets/server.pwd
+	@chmod 440 secrets/server.pwd
 
 # Clean Simple CA secrets
 .PHONY: clean-secrets
 clean-secrets:
-	@SECRET_FILES=$$(ls secrets/*.pem secrets/*.pwd secrets/*.name 2> /dev/null | tr '\n' ' ' || true); \
+	@SECRET_FILES=$$(ls secrets/*.crt secrets/*.key secrets/*.pwd secrets/*.name 2> /dev/null | tr '\n' ' ' || true); \
 	 if [ -n "$${SECRET_FILES}" ]; then \
 		$(ECHO) "Removing secrets: $${SECRET_FILES}"; \
 		chmod u+w $${SECRET_FILES}; \
