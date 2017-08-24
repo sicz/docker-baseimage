@@ -189,7 +189,7 @@ DOCKER_VARIANT_DIR	?= $(PROJECT_DIR)/$(BASE_IMAGE_NAME)
 # Build and test image
 .PHONY: all ci
 all: build deploy wait logs test
-ci: build test-all destroy
+ci: build test-all clean
 
 # Display make variables
 .PHONY: makevars vars
