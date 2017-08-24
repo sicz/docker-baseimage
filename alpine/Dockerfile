@@ -4,8 +4,9 @@ FROM ${BASE_IMAGE}
 ARG BUILD_DATE
 ARG VCS_REF
 
-LABEL org.label-schema.build-date="${BUILD_DATE}"
-LABEL org.label-schema.vcs-ref="${VCS_REF}"
+LABEL \
+  org.label-schema.build-date="${BUILD_DATE}" \
+  org.label-schema.vcs-ref="${VCS_REF}"
 
 RUN set -exo pipefail; \
   # Upgrade system
@@ -30,12 +31,13 @@ ARG DOCKER_PROJECT_DESC
 ARG DOCKER_PROJECT_URL
 ARG GITHUB_URL
 
-LABEL org.label-schema.schema-version="1.0"
-LABEL org.label-schema.name="${DOCKER_IMAGE_NAME}"
-LABEL org.label-schema.version="${DOCKER_IMAGE_TAG}"
-LABEL org.label-schema.description="${DOCKER_PROJECT_DESC}"
-LABEL org.label-schema.url="${DOCKER_PROJECT_URL}"
-LABEL org.label-schema.vcs-url="${GITHUB_URL}"
+LABEL \
+  org.label-schema.schema-version="1.0" \
+  org.label-schema.name="${DOCKER_IMAGE_NAME}" \
+  org.label-schema.version="${DOCKER_IMAGE_TAG}" \
+  org.label-schema.description="${DOCKER_PROJECT_DESC}" \
+  org.label-schema.url="${DOCKER_PROJECT_URL}" \
+  org.label-schema.vcs-url="${GITHUB_URL}"
 
 ARG DOCKER_NAME
 ARG DOCKER_VERSION
