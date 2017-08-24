@@ -38,7 +38,7 @@ BUILD_VARS		+= DOCKER_VERSION \
 # Docker Compose file version:
 # - docker: 3.3
 # - docker-compose: 3.3
-DOCKER_VERSION		?= 17.06.0-ce
+DOCKER_VERSION		?= 17.06.1-ce
 DOCKER_COMPOSE_VERSION	?= 1.15.0
 
 RUBY_VERSION		?= 2.4.1-r3
