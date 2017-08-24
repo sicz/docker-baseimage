@@ -70,7 +70,7 @@ services:
     environment:
       # - DOCKER_ENTRYPOINT_DEBUG=true
       - DOCKER_ENTRYPOINT_INFO=true
-      - WAIT_FOR_URL=https://simple-ca.local/ca.crt
+      - WAIT_FOR_TCP=baseimage.local:1234
     networks:
       default:
         aliases:
