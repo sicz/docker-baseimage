@@ -99,10 +99,6 @@ RUN set -exo pipefail; \
       serverspec \
       ; \
     rm -rf /root/.cache /root/.gem; \
-    # Download patch for Specinfra
-    # curl -fL \
-    #   -o /usr/lib/ruby/gems/2.4.0/gems/specinfra-2.70.1/lib/specinfra/helper/os.rb \
-    #   https://raw.githubusercontent.com/prehor/specinfra/fix/allow-to-switch-backends/lib/specinfra/helper/os.rb; \
   fi
 
 ENTRYPOINT ["/sbin/tini", "--", "/usr/bin/env", "DOCKER_CONTAINER_START=true", "/docker-entrypoint.sh"]
