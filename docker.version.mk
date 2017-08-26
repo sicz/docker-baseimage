@@ -316,7 +316,7 @@ clean: docker-clean clean-secrets
 
 # Create Simple CA secrets
 .PHONY: secrets
-secrets: secrets/ca.crt secrets/server.pwd
+secrets: secrets/ca.crt
 	@true
 
 secrets/ca.crt:
@@ -326,12 +326,6 @@ secrets/ca.crt:
 	@docker cp $(SIMPLE_CA_CONTAINER_NAME):/var/lib/simple-ca/secrets .
 	@$(ECHO) "Destroying container $(SIMPLE_CA_CONTAINER_NAME)"
 	@docker rm --force $(SIMPLE_CA_CONTAINER_NAME) > /dev/null
-
-secrets/server.pwd:
-	@mkdir -p secrets
-	@$(ECHO) "Generating random server key password"
-	@openssl rand -hex 32 > secrets/server.pwd
-	@chmod 440 secrets/server.pwd
 
 # Clean Simple CA secrets
 .PHONY: clean-secrets
