@@ -49,4 +49,12 @@ $(DOCKER_VARIANT_TARGETS):
 		$(MAKE) $@; \
 	done
 
+### CIRCLE_CI ##################################################################
+
+# Update Dockerspec tag in CircleCI configuration
+.PHONY: ci-update-config
+ci-update-config:
+	@cd alpine; \
+	$(MAKE) $@
+
 ################################################################################
