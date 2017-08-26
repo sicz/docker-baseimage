@@ -19,7 +19,8 @@ RUBY_VERSION		?= 2.4.1-r4
 #
 # GEM_DOCKER_API_VERSION	?= 1.33.6
 # GEM_RSPEC_VERSION		?= 3.6.0
-# GEM_SERVERSPEC_VERSION	?= 2.39.1
+# GEM_SPECINFRA_VERSION		?= 2.71.0
+# GEM_SERVERSPEC_VERSION	?= 2.40.0
 
 # If image configuration variables are not defined, it is assumed that
 # the development image is the same as the production image
@@ -29,6 +30,7 @@ DOCKER_IMAGE_CONF	?= $(BASE_IMAGE_TAG) \
 			   $(RUBY_VERSION) \
 			   $(GEM_DOCKER_API_VERSION) \
 			   $(GEM_RSPEC_VERSION) \
+			   $(GEM_SPECINFRA_VERSION) \
 			   $(GEM_SERVERSPEC_VERSION)
 
 ifeq ($(strip $(DOCKER_IMAGE_CONF)),)

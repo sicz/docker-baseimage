@@ -45,6 +45,7 @@ ARG DOCKER_COMPOSE_VERSION
 ARG RUBY_VERSION
 ARG GEM_DOCKER_API_VERSION
 ARG GEM_RSPEC_VERSION
+ARG GEM_SPECINFRA_VERSION
 ARG GEM_SERVERSPEC_VERSION
 
 COPY config /
@@ -88,18 +89,20 @@ RUN set -exo pipefail; \
     gem install \
       docker-api:${GEM_DOCKER_API_VERSION} \
       rspec:${GEM_RSPEC_VERSION} \
+      specinfra:${GEM_SPECINFRA_VERSION} \
       serverspec:${GEM_SERVERSPEC_VERSION} \
       ; \
     gem list --local --quiet \
       docker-api \
       rspec \
+      specinfra \
       serverspec \
       ; \
     rm -rf /root/.cache /root/.gem; \
     # Download patch for Specinfra
-    curl -fL \
-      -o /usr/lib/ruby/gems/2.4.0/gems/specinfra-2.70.1/lib/specinfra/helper/os.rb \
-      https://raw.githubusercontent.com/prehor/specinfra/fix/allow-to-switch-backends/lib/specinfra/helper/os.rb; \
+    # curl -fL \
+    #   -o /usr/lib/ruby/gems/2.4.0/gems/specinfra-2.70.1/lib/specinfra/helper/os.rb \
+    #   https://raw.githubusercontent.com/prehor/specinfra/fix/allow-to-switch-backends/lib/specinfra/helper/os.rb; \
   fi
 
 ENTRYPOINT ["/sbin/tini", "--", "/usr/bin/env", "DOCKER_CONTAINER_START=true", "/docker-entrypoint.sh"]

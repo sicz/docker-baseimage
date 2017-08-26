@@ -73,6 +73,7 @@ describe "Docker image", :test => :docker_image do
         ["ruby-rdoc",               ENV["RUBY_VERSION"]],
         ["docker-api",              ENV["GEM_DOCKER_API_VERSION"],  "gem"],
         ["rspec",                   ENV["GEM_RSPEC_VERSION"],       "gem"],
+        ["specinfra",               ENV["GEM_SPECINFRA_VERSION"],   "gem"],
         ["serverspec",              ENV["GEM_SERVERSPEC_VERSION"],  "gem"],
       ]
     end
