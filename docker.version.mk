@@ -188,7 +188,7 @@ DOCKER_VARIANT_DIR	?= $(PROJECT_DIR)/$(BASE_IMAGE_NAME)
 
 # Build and test image
 .PHONY: all ci
-all: build deploy wait logs test
+all: build up wait logs test
 ci: build test-all clean
 
 # Display make variables
@@ -219,15 +219,15 @@ config-file: display-config-file
 
 # Change containers configuration
 .PHONY: $(addsuffix -config,$(DOCKER_CONFIGS))
-$(addsuffix -config,$(DOCKER_CONFIGS)): destroy
+$(addsuffix -config,$(DOCKER_CONFIGS)): rm
 	@set -eo pipefail; \
 	$(MAKE) set-executor-config DOCKER_CONFIG=$(shell echo $@ | sed "s/-config//")
 
-# Destroy containers and then start fresh ones
-.PHONY: deploy run up
-deploy run up:
+# Remove containers and then start fresh ones
+.PHONY: run up
+run up:
 	@set -e; \
-	$(MAKE) destroy start
+	$(MAKE) rm start
 
 # Create containers
 .PHONY: create
@@ -278,7 +278,7 @@ test: start docker-test
 
 # Run tests for all executor configurations
 .PHONY: test-all
-test-all: $(addprefix test-,$(DOCKER_CONFIGS))
+test-all: rm $(addprefix test-,$(DOCKER_CONFIGS))
 
 .PHONY: $(addprefix test-,$(DOCKER_CONFIGS))
 $(addprefix test-,$(DOCKER_CONFIGS)): secrets
@@ -288,8 +288,7 @@ $(addprefix test-,$(DOCKER_CONFIGS)): secrets
 	@$(ECHO)
 	@$(ECHO)
 	@$(MAKE) $$(echo "$@-config" | sed -E -e "s/^test-//")
-	@$(MAKE) start wait logs test
-	@$(MAKE) destroy
+	@$(MAKE) start wait logs test rm
 
 # Run shell in test container
 .PHONY: test-shell tsh
@@ -305,8 +304,8 @@ stop: docker-stop
 restart: stop start
 
 # Delete containers
-.PHONY: destroy down rm
-destroy down rm: docker-destroy
+.PHONY: down rm
+down rm: docker-rm
 
 # Clean project
 .PHONY: clean
@@ -324,7 +323,7 @@ secrets/ca.crt:
 	@docker run --interactive --tty --name=$(SIMPLE_CA_CONTAINER_NAME) $(SIMPLE_CA_IMAGE) secrets
 	@$(ECHO) "Copying secrets from container $(SIMPLE_CA_CONTAINER_NAME)"
 	@docker cp $(SIMPLE_CA_CONTAINER_NAME):/var/lib/simple-ca/secrets .
-	@$(ECHO) "Destroying container $(SIMPLE_CA_CONTAINER_NAME)"
+	@$(ECHO) "Removing container $(SIMPLE_CA_CONTAINER_NAME)"
 	@docker rm --force $(SIMPLE_CA_CONTAINER_NAME) > /dev/null
 
 # Clean Simple CA secrets
