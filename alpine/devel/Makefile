@@ -1,7 +1,7 @@
 ### BASE_IMAGE #################################################################
 
-BASE_IMAGE_OS_VERSION	?= 3
-BASE_IMAGE_TAG		?= edge
+# BASE_IMAGE_OS_VERSION	?= 3
+# BASE_IMAGE_TAG	?= edge
 
 ### DOCKER_IMAGE ###############################################################
 
