@@ -225,9 +225,7 @@ $(addsuffix -config,$(DOCKER_CONFIGS)): rm
 
 # Remove containers and then start fresh ones
 .PHONY: run up
-run up:
-	@set -e; \
-	$(MAKE) rm start
+run up: docker-up
 
 # Create containers
 .PHONY: create

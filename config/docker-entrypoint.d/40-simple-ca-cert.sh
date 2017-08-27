@@ -77,6 +77,20 @@ if [ -n "${SIMPLE_CA_URL}" ]; then
       --data-binary @- \
       --output "${SERVER_CRT_FILE}" \
       "${SIMPLE_CA_URL}/sign?dn=${SERVER_CRT_SUBJECT}&dns=${SERVER_CRT_REQ_HOST}&ip=${SERVER_CRT_REQ_IP}&rid=${SERVER_CRT_OID}"
+
+    # Set certificate and private key files permission
+    if [ -n "${SERVER_CRT_FILE_OWNER}" ]; then
+      debug "Changing owner of ${SERVER_CRT_FILE} to ${SERVER_CRT_FILE_OWNER}"
+      chown ${SERVER_CRT_FILE_OWNER} ${SERVER_CRT_FILE}
+    fi
+    debug "Changing mode of ${SERVER_CRT_FILE} to ${SERVER_CRT_FILE_MODE}"
+    chmod ${SERVER_CRT_FILE_MODE} ${SERVER_CRT_FILE}
+    if [ -n "${SERVER_KEY_FILE_OWNER}" ]; then
+      debug "Changing owner of ${SERVER_KEY_FILE} to ${SERVER_KEY_FILE_OWNER}"
+      chown ${SERVER_KEY_FILE_OWNER} ${SERVER_KEY_FILE}
+    fi
+    debug "Changing mode of ${SERVER_KEY_FILE} to ${SERVER_KEY_FILE_MODE}"
+    chmod ${SERVER_KEY_FILE_MODE} ${SERVER_KEY_FILE}
   fi
 fi
 

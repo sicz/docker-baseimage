@@ -70,15 +70,15 @@ fi
 ################################################################################
 
 # Default server certificate, private key and passphrase files owner
-if [ -n "${DOCKER_USER}" ]; then
-  : ${SERVER_KEY_FILE_USER:=${DOCKER_USER}}
-fi
-if [ -n "${SERVER_KEY_FILE_USER}" ]; then
-  : ${SERVER_KEY_FILE_GROUP:=${SERVER_KEY_FILE_USER}}
+: ${DOCKER_GROUP:=${DOCKER_USER}}
+: ${SERVER_KEY_FILE_USER:=${DOCKER_USER}}
+: ${SERVER_KEY_FILE_GROUP:=${DOCKER_GROUP}}
+if [ -n "${SERVER_KEY_FILE_USER}" -a -n "${SERVER_KEY_FILE_GROUP}}" ]; then
   SERVER_KEY_FILE_OWNER="${SERVER_KEY_FILE_USER}:${SERVER_KEY_FILE_GROUP}"
 fi
-if [ -n "${SERVER_CRT_FILE_USER}" ]; then
-  : ${SERVER_CRT_FILE_GROUP:=${SERVER_CRT_FILE_USER}}
+: ${SERVER_CRT_FILE_USER:=${DOCKER_USER}}
+: ${SERVER_CRT_FILE_GROUP=${DOCKER_GROUP}}
+if [ -n "${SERVER_CRT_FILE_USER}" -a -n "${SERVER_CRT_FILE_GROUP}}" ]; then
   SERVER_CRT_FILE_OWNER="${SERVER_CRT_FILE_USER}:${SERVER_CRT_FILE_GROUP}"
 fi
 
