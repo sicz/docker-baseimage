@@ -39,7 +39,7 @@ This image only contains essential components:
 * `su_exec` for process impersonation
 * `tini` as an init process
 
-### DockerSpec images
+### Dockerspec images
 
 This image contains tools for testing Docker images:
 * [Alpine Linux based image](#Alpine Linux based images)
@@ -49,7 +49,7 @@ This image contains tools for testing Docker images:
 * [ServerSpec](http://serverspec.org) provides a server testing framework for RSpec
 * [Docker API](https://github.com/swipely/docker-api) provides an interface for Docker Remote API
 <!--
-* [DockerSpec](https://github.com/zuazo/dockerspec) provides Docker plugin for ServerSpec
+* [Dockerspec](https://github.com/zuazo/dockerspec) provides Docker plugin for ServerSpec
 -->
 ## Getting started
 
@@ -71,8 +71,8 @@ Directories with Docker image variants:
 * `alpine/devel` - Currently Alpine Linux latest release
 * `centos` - CentOS latest branch
 * `centos/devel` - Currently CentOS latest branch
-* `dockerspec` - DockerSpec based on `alpine/latest`
-* `dockerspec/devel` - DockerSpec based on `alpine/devel`
+* `dockerspec` - Dockerspec based on `alpine/latest`
+* `dockerspec/devel` - Dockerspec based on `alpine/devel`
 
 Use command `make` in project directory:
 ```bash
