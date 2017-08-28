@@ -27,10 +27,10 @@ ARG SU_EXEC_VERSION
 ARG TINI_VERSION
 
 RUN set -exo pipefail; \
-  # Update system
+  # Update the operating system
   yum update -y; \
   cat /etc/centos-release; \
-  # Install packages
+  # Install the packages
   yum install -y \
       bind-utils \
       less \
@@ -46,7 +46,7 @@ RUN set -exo pipefail; \
   # Install tini
   curl -fL -o /sbin/tini https://github.com/krallin/tini/releases/download/v${TINI_VERSION}/tini; \
   chmod +x /sbin/tini; \
-  # Install development dependencies
+  # Install the development dependencies
   yum history new || yum history new; \
   yum install -y \
       gcc \
@@ -74,7 +74,7 @@ RUN set -exo pipefail; \
   cd ..; \
   rm -rf su-exec-${SU_EXEC_VERSION}; \
   cd /; \
-  # Uninstall development dependencies
+  # Uninstall the development dependencies
   yum history -y undo 1; \
   # Cleanup yum
   yum clean all

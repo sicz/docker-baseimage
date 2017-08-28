@@ -25,7 +25,7 @@ DOCKER_VERSIONS		?= latest devel
 
 ### BUILD ######################################################################
 
-# Dockerfile lopcation
+# Dockerfile location
 BUILD_DOCKER_FILE	?= $(abspath $(PROJECT_DIR)/$(BASE_IMAGE_NAME)/$(DOCKER_FILE))
 
 # Docker image build variables

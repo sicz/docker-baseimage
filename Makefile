@@ -5,7 +5,7 @@ ifeq ($(realpath $(SHELL)),/bin/dash)
 SHELL   		:= /bin/bash
 endif
 
-# Exit immediately if a command exits with a non-zero status
+# Exit immediately if a command exits with a non-zero exit status
 # TODO: .SHELLFLAGS does not exists on obsoleted macOS X-Code make
 # .SHELLFLAGS		= -ec
 SHELL			+= -e
@@ -17,7 +17,7 @@ DOCKER_VARIANTS		= dockerspec \
 			  alpine \
 			  centos \
 
-# Make targets propagated to Docker image variants
+# Make targets propagated to all Docker image variants
 DOCKER_VARIANT_TARGETS	= build-all \
 			  rebuild-all \
 			  ci-all \
@@ -33,11 +33,11 @@ export PROJECT_DIR	= $(CURDIR)
 
 ################################################################################
 
-# Make ci-all in all subdirs
+# Build all images and run all tests
 .PHONY: all
 all: ci-all
 
-# Clean project
+# Remove all containers and work files
 .PHONY: clean
 clean: clean-all
 
@@ -51,7 +51,7 @@ $(DOCKER_VARIANT_TARGETS):
 
 ### CIRCLE_CI ##################################################################
 
-# Update Dockerspec tag in CircleCI configuration
+# Update yhe Dockerspec tag in the CircleCI configuration
 .PHONY: ci-update-config
 ci-update-config:
 	@cd dockerspec; \

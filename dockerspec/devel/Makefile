@@ -22,8 +22,8 @@ DOCKER_IMAGE_TAGS	?=
 # GEM_SPECINFRA_VERSION		?= 2.71.0
 # GEM_SERVERSPEC_VERSION	?= 2.40.0
 
-# If image configuration variables are not defined, it is assumed that
-# the development image is the same as the production image
+# If the image configuration variables are not defined, the development image is
+# assumed to be the same as the production image
 DOCKER_IMAGE_CONF	?= $(BASE_IMAGE_TAG) \
 			   $(DOCKER_VERSION) \
 			   $(DOCKER_COMPOSE_VERSION) \

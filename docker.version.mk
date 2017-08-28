@@ -17,7 +17,7 @@ DOCKER_REBUILD_TARGET	?= docker-rebuild
 
 ### DOCKER_EXECUTOR ############################################################
 
-# Use Docker Compose executor
+# Use the Docker Compose executor
 DOCKER_EXECUTOR		?= compose
 
 # Use multiple Docker executor configurations
@@ -25,7 +25,7 @@ DOCKER_CONFIGS		?= default \
 			   secrets \
 			   custom
 
-# Docker executor configuration
+# Get the name of the Docker executor configuration
 DOCKER_CONFIG_FILE	?= .docker-executor-config
 DOCKER_CONFIG		?= $(shell \
 				if [ -e $(DOCKER_CONFIG_FILE) ]; then \
@@ -112,7 +112,6 @@ SIMPLE_CA_IMAGE		?= $(SIMPLE_CA_IMAGE_NAME):$(SIMPLE_CA_IMAGE_TAG)
 SIMPLE_CA_SERVICE_NAME	?= $(shell echo $(SIMPLE_CA_IMAGE_NAME) | sed -E -e "s|^.*/||" -e "s/[^[:alnum:]_]+/_/g")
 
 # Simple CA container name
-# Docker container name
 ifeq ($(DOCKER_EXECUTOR),container)
 SIMPLE_CA_CONTAINER_NAME ?= $(DOCKER_EXECUTOR_ID)_$(SIMPLE_CA_SERVICE_NAME)
 else ifeq ($(DOCKER_EXECUTOR),compose)
@@ -126,6 +125,7 @@ endif
 
 ### MAKE_VARS ##################################################################
 
+# Display the make variables
 MAKE_VARS		?= GITHUB_MAKE_VARS \
 			   BASE_IMAGE_OS_MAKE_VARS \
 			   BASE_IMAGE_MAKE_VARS \
@@ -138,7 +138,6 @@ MAKE_VARS		?= GITHUB_MAKE_VARS \
 			   DOCKER_REGISTRY_MAKE_VARS \
 			   DOCKER_VERSION_MAKE_VARS
 
-# Display make variables
 define BASE_IMAGE_OS_MAKE_VARS
 BASE_IMAGE_OS_FAMILY:	$(BASE_IMAGE_OS_FAMILY)
 BASE_IMAGE_OS_NAME:	$(BASE_IMAGE_OS_NAME)
@@ -181,53 +180,59 @@ export CONFIG_MAKE_VARS
 
 ### DOCKER_VERSION_TARGETS #####################################################
 
+# Make targets propagated to all Docker image versions
 DOCKER_ALL_VERSIONS_TARGETS ?= build rebuild ci clean
+
+# Docker image variant directory
 DOCKER_VARIANT_DIR	?= $(PROJECT_DIR)/$(BASE_IMAGE_NAME)
 
 ### MAKE_TARGETS #############################################################
 
-# Build and test image
-.PHONY: all ci
+# Remove the running containers, build a new image and run the current configuration tests
+.PHONY: all
 all: build up wait logs test
-ci: build test-all clean
 
-# Display make variables
-.PHONY: makevars vars
-makevars vars: display-makevars
+# Remove the running containers, build a new image and run the tests in all configurations
+.PHONY: ci
+ci: build test-all clean
 
 ### BUILD_TARGETS ##############################################################
 
-# Build Docker image with cached layers
+# Build a new image with using the Docker layer caching
 .PHONY: build
 build: $(DOCKER_BUILD_TARGET)
 	@true
 
-# Build Docker image without cached layers
+# Build a new image without using the Docker layer caching
 .PHONY: rebuild
 rebuild: $(DOCKER_REBUILD_TARGET)
 	@true
 
 ### EXECUTOR_TARGETS ###########################################################
 
-# Display Docker executor configuration
+# Display the name of the current configuration
 .PHONY: config
 config: display-executor-config
 
-# Display Docker COmpose/Swarm configuration file
+# Display the configuration file for the current configuration
 .PHONY: config-file
 config-file: display-config-file
 
-# Change containers configuration
+# Display the make variables for the current configuration
+.PHONY: makevars vars
+makevars vars: display-makevars
+
+# Switch the configuration environment
 .PHONY: $(addsuffix -config,$(DOCKER_CONFIGS))
 $(addsuffix -config,$(DOCKER_CONFIGS)): rm
 	@set -eo pipefail; \
 	$(MAKE) set-executor-config DOCKER_CONFIG=$(shell echo $@ | sed "s/-config//")
 
-# Remove containers and then start fresh ones
+# Remove the containers and then run them fresh
 .PHONY: run up
 run up: docker-up
 
-# Create containers
+# Create the containers
 .PHONY: create
 create: display-executor-config secrets docker-create .docker-$(DOCKER_EXECUTOR)-secrets
 	@true
@@ -246,35 +251,35 @@ create: display-executor-config secrets docker-create .docker-$(DOCKER_EXECUTOR)
 	@@docker cp secrets $(SIMPLE_CA_CONTAINER_NAME):/var/lib/simple-ca
 	@$(ECHO) $(CONTAINER_NAME) > $@
 
-# Start containers
+# Start the containers
 .PHONY: start
 start: create docker-start
 
-# Wait to container start
+# Wait for the start of the containers
 .PHONY: wait
 wait: start docker-wait
 
-# List running containers
+# Display running containers
 .PHONY: ps
 ps: docker-ps
 
-# Display containers logs
+# Display the container logs
 .PHONY: logs
 logs: docker-logs
 
-# Follow containers logs
+# Follow the container logs
 .PHONY: logs-tail tail
 logs-tail tail: docker-logs-tail
 
-# Run shell in the container
+# Run the shell in the container
 .PHONY: shell sh
 shell sh: start docker-shell
 
-# Run tests for current executor configuration
+# Run the current configuration tests
 .PHONY: test
 test: start docker-test
 
-# Run tests for all executor configurations
+# Run tests for all configurations
 .PHONY: test-all
 test-all: rm $(addprefix test-,$(DOCKER_CONFIGS))
 
@@ -288,30 +293,30 @@ $(addprefix test-,$(DOCKER_CONFIGS)): secrets
 	@$(MAKE) $$(echo "$@-config" | sed -E -e "s/^test-//")
 	@$(MAKE) start wait logs test rm
 
-# Run shell in test container
+# Run the shell in the test container
 .PHONY: test-shell tsh
 test-shell tsh:
 	@$(MAKE) test TEST_CMD=/bin/bash
 
-# Stop containers
+# Stop the containers
 .PHONY: stop
 stop: docker-stop
 
-# Restart containers
+# Restart the containers
 .PHONY: restart
 restart: stop start
 
-# Delete containers
+# Remove the containers
 .PHONY: down rm
 down rm: docker-rm
 
-# Clean project
+# Remove all containers and work files
 .PHONY: clean
 clean: docker-clean clean-secrets
 
 ### SIMPLE_CA_TARGETS ##########################################################
 
-# Create Simple CA secrets
+# Create the Simple CA secrets
 .PHONY: secrets
 secrets: secrets/ca.crt
 	@true
@@ -324,7 +329,7 @@ secrets/ca.crt:
 	@$(ECHO) "Removing container $(SIMPLE_CA_CONTAINER_NAME)"
 	@docker rm --force $(SIMPLE_CA_CONTAINER_NAME) > /dev/null
 
-# Clean Simple CA secrets
+# Clean the Simple CA secrets
 .PHONY: clean-secrets
 clean-secrets:
 	@SECRET_FILES=$$(ls secrets/*.crt secrets/*.key secrets/*.pwd secrets/*.name 2> /dev/null | tr '\n' ' ' || true); \
@@ -333,10 +338,13 @@ clean-secrets:
 		chmod u+w $${SECRET_FILES}; \
 		rm -f $${SECRET_FILES}; \
 	 fi
+	@if [ -e secrets ]; then \
+		$(ECHO) "Removing secrets directory"; \
+		rmdir secrets; \
+	 fi
 
 ### MK_DOCKER_IMAGE ############################################################
 
-# Include Docker common targets
 MK_DIR			?= $(PROJECT_DIR)/../Mk
 include $(MK_DIR)/docker.image.mk
 

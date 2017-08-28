@@ -9,10 +9,10 @@ LABEL \
   org.label-schema.vcs-ref="${VCS_REF}"
 
 RUN set -exo pipefail; \
-  # Upgrade system
+  # Upgrade the operating system
   apk upgrade --no-cache; \
   cat /etc/alpine-release; \
-  # Install base image packages
+  # Install the packages
   apk add --no-cache \
     bash \
     ca-certificates \
@@ -60,7 +60,7 @@ RUN set -exo pipefail; \
   # Install sicz/dockerspec software
   #
   if [ "${DOCKER_NAME}" = "dockerspec" ]; then \
-    # Install packages needed to runn the tests
+    # Install the packages
     apk add --no-cache \
       git \
       make \
