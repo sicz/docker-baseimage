@@ -22,7 +22,7 @@ This image only contains essential components:
 * `ncat` for bulk data transfers using various protocols
 * `runit` for services supervision and management
 * `su_exec` for process impersonation
-* `tini` as init process
+* `tini` as an init process
 
 ### CentOS based images
 
@@ -37,17 +37,17 @@ This image only contains essential components:
 * `ncat` for bulk data transfers using various protocols
 * `runit` for services supervision and management
 * `su_exec` for process impersonation
-* `tini` as init process
+* `tini` as an init process
 
 ### DockerSpec images
 
 This image contains tools for testing Docker images:
 * [Alpine Linux based image](#Alpine Linux based images)
 * [Docker](https://docs.docker.com/engine/) provides Docker command line tools and engine
-* [Docker Compose](https://docs.docker.com/compose/) provides Docker command line tools
+* [Docker Compose](https://docs.docker.com/compose/) provides Docker Compose command line tools
 * [RSpec](http://rspec.info) provides Ruby testing framework
 * [ServerSpec](http://serverspec.org) provides server testing framework for RSpec
-* [Docker API](https://github.com/swipely/docker-api) provides interface for Docker Remote API for ServerSpec
+* [Docker API](https://github.com/swipely/docker-api) provides interface for Docker Remote API
 <!--
 * [DockerSpec](https://github.com/zuazo/dockerspec) provides Docker plugin for ServerSpec
 -->
@@ -78,46 +78,58 @@ Directories with Docker image variants:
 
 Use command `make` in project directory:
 ```bash
-make all        # Build and test all Docker images
-make build      # Build all Docker images
-make rebuild    # Rebuild all Docker images
-make test       # Test all Docker images
-make clean      # Destroy all running containers and clean working files
-make docker-pull              # Pull all images from Docker Registry
-make docker-pull-dependencies # Pull all image dependencies from Docker Registry
-make docker-pull-images       # Pull all project images from Docker Registry
+make all                          # Build and test all Docker images
+make build-all                    # Build all Docker images
+make rebuild-all                  # Rebuild all Docker images
+make clean-all                    # Remove all containers and clean work files
+make docker-pull-all              # Pull all images from Docker Registry
+make docker-pull-dependencies-all # Pull all image dependencies from Docker Registry
+make docker-pull-image-all        # Pull all project images from Docker Registry
+make docker-pull-testimage-all    # Pull all project images from Docker Registry
+make docker-push-all              # Push all project images to Docker Registry
 ```
 
 Use command `make` to simplify Docker container development tasks in
 directories with Docker image variants:
 ```bash
-make all        # Destroy running containers, build new image and run tests
-make default-config # Switch to default configuration environment
-make secrets-config # Switch to configuration environment with Docker Swarm like secrets
-make custom-config  # Switch to heavily customized configuration environment
-make config     # Display `docker-compose` configuration for current configuration environment
-make info       # Display `make` variables for current configuration environment
-make build      # Build new image
-make rebuild    # Build new image without caching
-make deploy     # Run containers
-make stop       # Stop running containers
-make start      # Start stopped containers
-make restart    # Restart containers
-make destroy    # Destroy running containers
-make logs       # Show containers logs
-make logs-tail  # Follow containers logs
-make shell      # Open shell in running container
-make test       # Run tests in current configuration environment
-make test-all   # Run tests in all configuration environments
-make clean      # Destroy running container and clean working files
-make docker-pull              # Pull all images from Docker Registry
-make docker-pull-dependencies # Pull project images dependencies from Docker Registry
-make docker-pull-images       # Pull project images from Docker Registry
+make all                # Remove the running containers, build a new image and run the current configuration tests
+make ci                 # Remove the running containers, build a new image and run the tests with all configurations
+make build              # Build a new image
+make rebuild            # Build a new image without using the Docker layer caching
+make default-config     # Switch to the default configuration
+make secrets-config     # Switch to the configuration with Docker Swarm like secrets
+make custom-config      # Switch to the heavily customized configuration
+make config             # Display the name of the current configuration
+make config-file        # Display the configuration file for the current configuration
+make vars               # Display the make variables for the current configuration
+make up                 # Remove the containers and then run them fresh
+make create             # Create the containers
+make start              # Start the containers
+make stop               # Stop the containers
+make restart            # Restart the containers
+make rm                 # Remove the containers
+make wait               # Wait for the start of the containers
+make ps                 # Display running containers
+make logs               # Display the container logs
+make logs-tail          # Follow the container logs
+make shell              # Run the shell in the running container
+make test               # Run the the current configuration tests
+make test-all           # Run tests with all configurations
+make test-shell         # Run the shell in the test container
+make secrets            # Create the Simple CA secrets
+make clean              # Remove all containers and work files
+make docker-pull        # Pull all images from the Docker Registry
+make docker-pull-dependencies # Pull the project image dependencies from the Docker Registry
+make docker-pull-image  # Pull the project image from the Docker Registry
+make docker-pull-testimage # Pull the test image from the Docker Registry
+make docker-push        # Push the project image into the Docker Registry
 ```
 
 ## Deployment
 
-This images are intended to serve as a base for other images.
+The Dockerspec image is intended to run container tests.
+
+Alpine Linux and CentOS images are intended to serve as a base for other images.
 
 ### Alpine Linux base image
 
@@ -154,7 +166,7 @@ CMD ["${DOCKER_COMMAND}"]
 ### Multiple services in one container
 
 In case you need to run multiple services within one container, you can use the
-`runit`. In short, to create a service create /etc/service/<SERVICE>/run scripts
+`runit`. In short, to create a service create /etc/service/<SERVICE>/run script
 which at the end execs into the service executable you want to run (and supervise
 to keep them running).
 
@@ -190,5 +202,5 @@ This project is licensed under the Apache License, Version 2.0 - see the
 
 ## Acknowledgments
 
-This project is inspired by
+This project was inspired by
 [baseimage-docker](https://hub.docker.com/r/phusion/baseimage/).
