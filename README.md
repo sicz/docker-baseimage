@@ -9,7 +9,7 @@ Docker base images modified for Docker-friendliness.
 
 ## Contents
 
-### Alpine Linux based images
+### Alpine Linux based image
 
 This image only contains essential components:
 * Official [Alpine Linux image](https://store.docker.com/images/alpine) as a base system
@@ -24,7 +24,7 @@ This image only contains essential components:
 * `su_exec` for process impersonation
 * `tini` as an init process
 
-### CentOS based images
+### CentOS based image
 
 This image only contains essential components:
 * Official [CentOS image](https://store.docker.com/images/centos) as a base system
@@ -39,10 +39,10 @@ This image only contains essential components:
 * `su_exec` for process impersonation
 * `tini` as an init process
 
-### Dockerspec images
+### Dockerspec image
 
 This image contains tools for testing Docker images:
-* [Alpine Linux based image](#Alpine Linux based images)
+* [Alpine Linux based image](#alpine-linux-based-image)
 * [Docker](https://docs.docker.com/engine/) provides a Docker command line tools and engine
 * [Docker Compose](https://docs.docker.com/compose/) provides a Docker Compose command line tools
 * [RSpec](http://rspec.info) provides a Ruby testing framework
