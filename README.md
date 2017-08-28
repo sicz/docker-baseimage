@@ -43,11 +43,11 @@ This image only contains essential components:
 
 This image contains tools for testing Docker images:
 * [Alpine Linux based image](#Alpine Linux based images)
-* [Docker](https://docs.docker.com/engine/) provides Docker command line tools and engine
-* [Docker Compose](https://docs.docker.com/compose/) provides Docker Compose command line tools
-* [RSpec](http://rspec.info) provides Ruby testing framework
-* [ServerSpec](http://serverspec.org) provides server testing framework for RSpec
-* [Docker API](https://github.com/swipely/docker-api) provides interface for Docker Remote API
+* [Docker](https://docs.docker.com/engine/) provides a Docker command line tools and engine
+* [Docker Compose](https://docs.docker.com/compose/) provides a Docker Compose command line tools
+* [RSpec](http://rspec.info) provides a Ruby testing framework
+* [ServerSpec](http://serverspec.org) provides a server testing framework for RSpec
+* [Docker API](https://github.com/swipely/docker-api) provides an interface for Docker Remote API
 <!--
 * [DockerSpec](https://github.com/zuazo/dockerspec) provides Docker plugin for ServerSpec
 -->
@@ -67,6 +67,7 @@ git clone https://github.com/sicz/docker-baseimage
 ### Usage
 
 Directories with Docker image variants:
+
 |Directory|Docker image|
 |---------|------------|
 |`alpine`|Alpine Linux latest release|
@@ -112,9 +113,9 @@ make wait               # Wait for the start of the containers
 make ps                 # Display running containers
 make logs               # Display the container logs
 make logs-tail          # Follow the container logs
-make shell              # Run the shell in the running container
-make test               # Run the the current configuration tests
-make test-all           # Run tests with all configurations
+make shell              # Run the shell in the container
+make test               # Run the current configuration tests
+make test-all           # Run tests for all configurations
 make test-shell         # Run the shell in the test container
 make secrets            # Create the Simple CA secrets
 make clean              # Remove all containers and work files
@@ -133,7 +134,7 @@ Alpine Linux and CentOS images are intended to serve as a base for other images.
 
 ### Alpine Linux base image
 
-You can start with this sample `Dockerfile`:
+You can start with this sample `Dockerfile` file:
 ```Dockerfile
 FROM sicz/baseimage-alpine
 ENV DOCKER_COMMAND=MY_COMMAND
@@ -149,7 +150,7 @@ CMD ["${DOCKER_COMMAND}"]
 
 ### CentOS base image
 
-You can start with this sample `Dockerfile`:
+You can start with this sample `Dockerfile` file:
 ```Dockerfile
 FROM sicz/baseimage-centos
 ENV DOCKER_COMMAND=MY_COMMAND
