@@ -65,5 +65,13 @@ fi
 : ${DOCKER_CONTAINER_NAME:=${HOSTNAME}}
 
 info "Docker container name: ${DOCKER_CONTAINER_NAME}"
+debug "Docker IP address: $(
+  ifconfig |
+  egrep "<?inet>?" |
+  sed -E "s/.*inet (addr:)?([^ ]*).*/\2/" |
+  grep -v 127.0.0.1 |
+  tr "\n" "," |
+  sed -E "s/,$//"
+)"
 
 ################################################################################

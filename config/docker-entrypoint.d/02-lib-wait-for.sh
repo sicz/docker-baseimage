@@ -46,9 +46,21 @@ wait_for_dns () {
       sleep 1
     done
     if [ $i -gt 0 ]; then
-      info "Got ${HOST} address in ${i}s"
+      info "Got ${HOST} address $(
+        getent ahosts ${HOST} |
+        grep "STREAM ${HOST}" |
+        cut -d ' ' -f 1 |
+        tr "\n" "," |
+        sed -E "s/,$//"
+      ) in ${i}s"
     else
-      debug "Got ${HOST} address in ${i}s"
+      debug "Got ${HOST} address $(
+        getent ahosts ${HOST} |
+        grep "STREAM ${HOST}" |
+        cut -d ' ' -f 1 |
+        tr "\n" "," |
+        sed -E "s/,$//"
+      ) in ${i}s"
     fi
   done
 }
