@@ -10,7 +10,7 @@ networks:
 services:
   baseimage:
     image: ${DOCKER_IMAGE}
-    # Listen on TCP port 7 (Echo protocol) end mirror input to output
+    # Listen on TCP port 7 (Echo Protocol) and mirror input to output
     command: /usr/bin/ncat -l 7 -k -c /bin/cat
     depends_on:
       - simple_ca
