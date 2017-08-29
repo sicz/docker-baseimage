@@ -89,8 +89,8 @@ make docker-push-all              # Push all project images to Docker Registry
 
 Use the command `make` in directories with Docker image variants:
 ```bash
-make all                          # Remove the running containers, build a new image and run the current configuration tests
-make ci                           # Remove the running containers, build a new image and run the tests with all configurations
+make all                          # Build a new image and run tests for current configuration
+make ci                           # Build a new image and run tests for all configurations
 make build                        # Build a new image
 make rebuild                      # Build a new image without using the Docker layer caching
 make default-config               # Switch to the default configuration

@@ -199,11 +199,11 @@ DOCKER_VARIANT_DIR	?= $(PROJECT_DIR)/$(BASE_IMAGE_NAME)
 
 ### MAKE_TARGETS #############################################################
 
-# Remove the running containers, build a new image and run the current configuration tests
+# Build a new image and run tests for current configuration
 .PHONY: all
 all: build clean start wait logs test
 
-# Remove the running containers, build a new image and run the tests in all configurations
+# Build a new image and run tests for all configurations
 .PHONY: ci
 ci: $(DOCKER_CI_TARGET)
 	@true
