@@ -1,6 +1,6 @@
 # docker-baseimage
 
-[![CircleCI Status Badge](https://circleci.com/gh/sicz/docker-baseimage.svg?style=shield&circle-token=TODO)](https://circleci.com/gh/sicz/docker-baseimage)
+[![CircleCI Status Badge](https://circleci.com/gh/sicz/docker-baseimage.svg?style=shield&circle-token=99591a26383b3ac04a207694c1625d819e53d301)](https://circleci.com/gh/sicz/docker-baseimage)
 
 **This project is not aimed at public consumption.
 It exists to serve as a single endpoint for SICZ containers.**
