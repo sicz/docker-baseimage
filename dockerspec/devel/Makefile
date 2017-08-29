@@ -23,7 +23,7 @@ DOCKER_IMAGE_TAGS	?=
 # GEM_SERVERSPEC_VERSION	?= 2.40.0
 
 # If the image configuration variables are not defined, the development image is
-# assumed to be the same as the production image
+# assumed to be the same as the latest image
 DOCKER_IMAGE_CONF	?= $(BASE_IMAGE_TAG) \
 			   $(DOCKER_VERSION) \
 			   $(DOCKER_COMPOSE_VERSION) \
@@ -34,6 +34,7 @@ DOCKER_IMAGE_CONF	?= $(BASE_IMAGE_TAG) \
 			   $(GEM_SERVERSPEC_VERSION)
 
 ifeq ($(strip $(DOCKER_IMAGE_CONF)),)
+DOCKER_CI_TARGET	?= docker-tag
 DOCKER_BUILD_TARGET	?= docker-tag
 DOCKER_REBUILD_TARGET	?= docker-tag
 endif

@@ -10,8 +10,9 @@ DOCKER_IMAGE_DEPENDENCIES += $(SIMPLE_CA_IMAGE)
 
 ### BUILD ######################################################################
 
-# Allows a change of the build/restore targets to the docker-tag if
-# the development version is the same as the production version
+# Allows a change of the ci/build/restore targets if the development version
+# is the same as the latest version
+DOCKER_CI_TARGET	?= clean build test-all
 DOCKER_BUILD_TARGET	?= docker-build
 DOCKER_REBUILD_TARGET	?= docker-rebuild
 
@@ -204,7 +205,8 @@ all: build up wait logs test
 
 # Remove the running containers, build a new image and run the tests in all configurations
 .PHONY: ci
-ci: clean build test-all
+ci: $(DOCKER_CI_TARGET)
+	@true
 
 ### BUILD_TARGETS ##############################################################
 
