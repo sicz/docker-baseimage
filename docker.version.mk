@@ -236,7 +236,7 @@ makevars vars: display-makevars
 
 # Switch the configuration environment
 .PHONY: $(addsuffix -config,$(DOCKER_CONFIGS))
-$(addsuffix -config,$(DOCKER_CONFIGS)): rm
+$(addsuffix -config,$(DOCKER_CONFIGS)): clean
 	@set -eo pipefail; \
 	$(MAKE) set-executor-config DOCKER_CONFIG=$(shell echo $@ | sed "s/-config//")
 
