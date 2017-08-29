@@ -60,10 +60,10 @@ else
   : ${SERVER_KEY_FILE:=${SERVER_KEY_DIR}/server.key}
 fi
 
-# Default server private key passphrase file location
+# Set default server private key passphrase file location only if file exist
 if [ -e /run/secrets/server.pwd ]; then
   : ${SERVER_KEY_PWD_FILE:=/run/secrets/server.pwd}
-else
+elif [ -e ${SERVER_KEY_DIR}/server.pwd ]; then
   : ${SERVER_KEY_PWD_FILE:=${SERVER_KEY_DIR}/server.pwd}
 fi
 

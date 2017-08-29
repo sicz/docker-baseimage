@@ -41,10 +41,18 @@ SERVICE_NAME		?= baseimage
 ### DEFAULT_CONFIG #############################################################
 
 # Default configuration with Simple CA
-COMPOSE_VARS		+= SERVER_P12_FILE \
-			   SIMPLE_CA_IMAGE
+COMPOSE_VARS		+= SIMPLE_CA_IMAGE
 
 ifeq ($(DOCKER_CONFIG),default)
+COMPOSE_VARS		+= SERVER_P12_FILE
+TEST_VARS		+= CA_CRT_FILE \
+			   CA_USER_NAME_FILE \
+			   CA_USER_PWD_FILE \
+			   SERVER_KEY_PWD_FILE
+CA_CRT_FILE		?= /etc/ssl/certs/ca.crt
+CA_USER_NAME_FILE	?= /etc/ssl/private/ca_user.name
+CA_USER_PWD_FILE	?= /etc/ssl/private/ca_user.pwd
+SERVER_KEY_PWD_FILE	?= /etc/ssl/private/server.pwd
 SERVER_P12_FILE		?= /etc/ssl/private/server.p12
 endif
 
@@ -52,7 +60,8 @@ endif
 
 # Default configuration with Simple CA and Docker Swarm like secrets
 ifeq ($(DOCKER_CONFIG),secrets)
-COMPOSE_VARS		+= CA_CRT_FILE \
+COMPOSE_VARS		+= SERVER_P12_FILE
+TEST_VARS		+= CA_CRT_FILE \
 			   CA_USER_NAME_FILE \
 			   CA_USER_PWD_FILE \
 			   SERVER_KEY_PWD_FILE
@@ -194,7 +203,7 @@ all: build up wait logs test
 
 # Remove the running containers, build a new image and run the tests in all configurations
 .PHONY: ci
-ci: build test-all clean
+ci: clean build test-all
 
 ### BUILD_TARGETS ##############################################################
 
@@ -234,21 +243,15 @@ run up: docker-up
 
 # Create the containers
 .PHONY: create
-create: display-executor-config secrets docker-create .docker-$(DOCKER_EXECUTOR)-secrets
+create: display-executor-config docker-create .docker-$(DOCKER_EXECUTOR)-secrets
 	@true
 
-.docker-$(DOCKER_EXECUTOR)-secrets:
+.docker-$(DOCKER_EXECUTOR)-secrets: secrets
 	@$(ECHO) "Copying secrets to container $(CONTAINER_NAME)"
-	@CA_CRT_FILE=$(CA_CRT_FILE); \
-	 CA_USER_NAME_FILE=$(CA_USER_NAME_FILE); \
-	 CA_USER_PWD_FILE=$(CA_USER_PWD_FILE); \
-	 SERVER_KEY_PWD_FILE=$(SERVER_KEY_PWD_FILE); \
-	 docker cp secrets/ca.crt	$(CONTAINER_NAME):$${CA_CRT_FILE:-/etc/ssl/certs/ca.crt}; \
-	 docker cp secrets/ca_user.name	$(CONTAINER_NAME):$${CA_USER_NAME_FILE:-/etc/ssl/private/ca_user.name}; \
-	 docker cp secrets/ca_user.pwd	$(CONTAINER_NAME):$${CA_USER_PWD_FILE:-/etc/ssl/private/ca_user.pwd}; \
-	 docker cp secrets/server.pwd 	$(CONTAINER_NAME):$${SERVER_KEY_PWD_FILE:-/etc/ssl/private/server.pwd}
-	@$(ECHO) "Copying secrets to container $(SIMPLE_CA_CONTAINER_NAME)"
-	@@docker cp secrets $(SIMPLE_CA_CONTAINER_NAME):/var/lib/simple-ca
+	@docker cp secrets/ca.crt	$(CONTAINER_NAME):$(CA_CRT_FILE)
+	@docker cp secrets/ca_user.name	$(CONTAINER_NAME):$(CA_USER_NAME_FILE)
+	@docker cp secrets/ca_user.pwd	$(CONTAINER_NAME):$(CA_USER_PWD_FILE)
+	@docker cp secrets/ca_user.pwd	$(CONTAINER_NAME):$(SERVER_KEY_PWD_FILE)
 	@$(ECHO) $(CONTAINER_NAME) > $@
 
 # Start the containers
@@ -284,7 +287,7 @@ test: start docker-test
 test-all: rm $(addprefix test-,$(DOCKER_CONFIGS))
 
 .PHONY: $(addprefix test-,$(DOCKER_CONFIGS))
-$(addprefix test-,$(DOCKER_CONFIGS)): secrets
+$(addprefix test-,$(DOCKER_CONFIGS)):
 	@$(ECHO)
 	@$(ECHO)
 	@$(ECHO) "===> $(DOCKER_IMAGE) with $(shell echo $@ | sed -E -e "s/^test-//") configuration"
@@ -318,16 +321,12 @@ clean: docker-clean clean-secrets
 
 # Create the Simple CA secrets
 .PHONY: secrets
-secrets: secrets/ca.crt
-	@true
-
-secrets/ca.crt:
-	@$(ECHO) "Starting container $(SIMPLE_CA_CONTAINER_NAME) with command \"secrets\""
-	@docker run --interactive --tty --name=$(SIMPLE_CA_CONTAINER_NAME) $(SIMPLE_CA_IMAGE) secrets
+secrets:
+	@$(COMPOSE_CMD) up $(COMPOSE_UP_OPTS) $(SIMPLE_CA_SERVICE_NAME)
+	@sleep 0.5
 	@$(ECHO) "Copying secrets from container $(SIMPLE_CA_CONTAINER_NAME)"
 	@docker cp $(SIMPLE_CA_CONTAINER_NAME):/var/lib/simple-ca/secrets .
-	@$(ECHO) "Removing container $(SIMPLE_CA_CONTAINER_NAME)"
-	@docker rm --force $(SIMPLE_CA_CONTAINER_NAME) > /dev/null
+	@openssl rand -hex 32 > secrets/server.pwd
 
 # Clean the Simple CA secrets
 .PHONY: clean-secrets

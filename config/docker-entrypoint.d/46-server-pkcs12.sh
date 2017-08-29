@@ -3,17 +3,8 @@
 ################################################################################
 
 # Convert server certificate and private key into PKCS12 file
-if [ -e "${SERVER_CRT_FILE}" -a -e "${SERVER_KEY_FILE}" ]; then
-  if [ -n "${SERVER_P12_FILE}" -a ! -e "${SERVER_P12_FILE}" ]; then
-    if [ -z "${SERVER_KEY_PWD}" ]; then
-      if [ -e "${SERVER_KEY_PWD_FILE}" ]; then
-        info "Using server private key passphrase from ${SERVER_KEY_PWD_FILE}"
-        SERVER_KEY_PWD=$(cat ${SERVER_KEY_PWD_FILE})
-      else
-        error "Missing CA key passphrase file ${SERVER_KEY_PWD_FILE}"
-        exit 1
-      fi
-    fi
+if [ -n "${SERVER_P12_FILE}" -a ! -e "${SERVER_P12_FILE}" ]; then
+  if [ -e "${SERVER_CRT_FILE}" -a -e "${SERVER_KEY_FILE}" ]; then
     info "Creating server PKCS12 file ${SERVER_P12_FILE}"
     openssl pkcs12 -export \
       -in ${SERVER_CRT_FILE} \

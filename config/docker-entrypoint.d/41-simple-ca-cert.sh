@@ -41,16 +41,13 @@ if [ -n "${SIMPLE_CA_URL}" ]; then
     fi
 
     # Get server private key passphrase
-    info "Creating server private key file ${SERVER_KEY_FILE}"
-    if [ -e "${SERVER_KEY_PWD_FILE}" ]; then
-      info "Using server private key passphrase from ${SERVER_KEY_PWD_FILE}"
-      SERVER_KEY_PWD=$(cat ${SERVER_KEY_PWD_FILE})
-    else
+    if [ -z "${SERVER_KEY_PWD}" ]; then
       info "Creating random server private key passphrase"
       SERVER_KEY_PWD=$(openssl rand -hex 32)
     fi
 
     # Get server certificate attributes
+    info "Creating server private key file ${SERVER_KEY_FILE}"
     info "Creating server certificate file ${SERVER_CRT_FILE}"
     SERVER_CRT_REQ_HOST="${SERVER_CRT_HOST},${DOCKER_CONTAINER_NAME},${HOSTNAME},localhost"
     SERVER_CRT_REQ_IP="${SERVER_CRT_IP},$(
