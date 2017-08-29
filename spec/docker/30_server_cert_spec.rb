@@ -52,9 +52,10 @@ describe "Server certificate", :test => :server_cert do
       subject { file(pwd) }
       it { is_expected.to be_file }
       it { is_expected.to be_mode(440) }
-      # TODO: server_key.pwd is copied to container with strange owner
-      # it { is_expected.to be_owned_by(user) }
-      # it { is_expected.to be_grouped_into(group) }
+      if ENV["DOCKER_CONFIG"] == "custom" then
+        it { is_expected.to be_owned_by(user) }
+        it { is_expected.to be_grouped_into(group) }
+      end
     end
   end
 
@@ -140,9 +141,6 @@ describe "Server certificate", :test => :server_cert do
       context file(file) do
         it { is_expected.to be_file }
         it { is_expected.to be_mode(440) }
-        # TODO: ca_user.* files are copied to container with strange owner
-        # it { is_expected.to be_owned_by(user) }
-        # it { is_expected.to be_grouped_into(group) }
       end
     end
   end

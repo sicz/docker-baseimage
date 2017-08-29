@@ -108,7 +108,8 @@ endif
 
 TEST_VARS		+= BASE_IMAGE_OS_NAME \
 			   BASE_IMAGE_OS_FAMILY \
-			   BASE_IMAGE_OS_VERSION
+			   BASE_IMAGE_OS_VERSION \
+			   DOCKER_CONFIG
 
 ### SIMPLE_CA ##################################################################
 
@@ -251,7 +252,10 @@ create: display-executor-config docker-create .docker-$(DOCKER_EXECUTOR)-secrets
 	@docker cp secrets/ca.crt	$(CONTAINER_NAME):$(CA_CRT_FILE)
 	@docker cp secrets/ca_user.name	$(CONTAINER_NAME):$(CA_USER_NAME_FILE)
 	@docker cp secrets/ca_user.pwd	$(CONTAINER_NAME):$(CA_USER_PWD_FILE)
-	@docker cp secrets/ca_user.pwd	$(CONTAINER_NAME):$(SERVER_KEY_PWD_FILE)
+	@if [ "$(DOCKER_CONFIG)" != "custom" ]; then \
+		$(ECHO) "Copying server key passphrase to container $(CONTAINER_NAME)"; \
+		docker cp secrets/ca_user.pwd	$(CONTAINER_NAME):$(SERVER_KEY_PWD_FILE); \
+	fi
 	@$(ECHO) $(CONTAINER_NAME) > $@
 
 # Start the containers
