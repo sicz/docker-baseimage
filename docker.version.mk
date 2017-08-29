@@ -254,7 +254,7 @@ create: display-executor-config docker-create .docker-$(DOCKER_EXECUTOR)-secrets
 	@docker cp secrets/ca_user.pwd	$(CONTAINER_NAME):$(CA_USER_PWD_FILE)
 	@if [ "$(DOCKER_CONFIG)" != "custom" ]; then \
 		$(ECHO) "Copying server key passphrase to container $(CONTAINER_NAME)"; \
-		docker cp secrets/ca_user.pwd	$(CONTAINER_NAME):$(SERVER_KEY_PWD_FILE); \
+		docker cp secrets/server.pwd	$(CONTAINER_NAME):$(SERVER_KEY_PWD_FILE); \
 	fi
 	@$(ECHO) $(CONTAINER_NAME) > $@
 
