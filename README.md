@@ -59,14 +59,14 @@ for notes on how to deploy the project on a live system.
 
 ### Installing
 
-Clone GitHub repository to your working directory:
+Clone the GitHub repository into your working directory:
 ```bash
 git clone https://github.com/sicz/docker-baseimage
 ```
 
 ### Usage
 
-Directories with Docker image variants:
+The directories with Docker image variants:
 * `alpine` - Alpine Linux latest release
 * `alpine/devel` - Currently Alpine Linux latest release
 * `centos` - CentOS latest branch
@@ -74,7 +74,7 @@ Directories with Docker image variants:
 * `dockerspec` - Dockerspec based on `alpine/latest`
 * `dockerspec/devel` - Dockerspec based on `alpine/devel`
 
-Use command `make` in project directory:
+Use the command `make` in the project directory:
 ```bash
 make all                          # Build and test all Docker images
 make build-all                    # Build all Docker images
@@ -87,8 +87,7 @@ make docker-pull-testimage-all    # Pull all project images from Docker Registry
 make docker-push-all              # Push all project images to Docker Registry
 ```
 
-Use command `make` to simplify Docker container development tasks in
-directories with Docker image variants:
+Use the command `make` in directories with Docker image variants:
 ```bash
 make all                          # Remove the running containers, build a new image and run the current configuration tests
 make ci                           # Remove the running containers, build a new image and run the tests with all configurations
@@ -142,7 +141,6 @@ RUN set -ex && adduser -D -H -u 1000 ${DOCKER_USER}
 RUN set -ex && apk add --no-cache SOME PACKAGES
 # Copy your own entrypoint scripts
 COPY dockerfile-entrypoint.d /dockerfile-entrypoint.d
-CMD ["${DOCKER_COMMAND}"]
 ```
 
 ### CentOS base image
@@ -158,7 +156,6 @@ RUN set -ex && adduser -M -U -u 1000 ${DOCKER_USER}
 RUN set -ex && yum install -y SOME PACKAGES && yum clean all
 # Copy your own entrypoint scripts
 COPY dockerfile-entrypoint.d /dockerfile-entrypoint.d
-CMD ["${DOCKER_COMMAND}"]
 ```
 
 ### Multiple services in one container
@@ -182,7 +179,6 @@ FROM sicz/baseimage-alpine
 COPY services /etc/services
 RUN find /etc/services -type f -exec chmod +x
 ENV DOCKER_COMMAND="/sbin/runsvcdir"
-CMD ["${DOCKER_COMMAND}"]
 ```
 
 ## Authors
