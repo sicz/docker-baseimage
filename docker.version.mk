@@ -300,7 +300,7 @@ $(addprefix test-,$(DOCKER_CONFIGS)):
 	@$(ECHO)
 	@$(ECHO)
 	@$(MAKE) $$(echo "$@-config" | sed -E -e "s/^test-//")
-	@$(MAKE) start wait logs test rm
+	@$(MAKE) start wait logs test clean
 
 # Run the shell in the test container
 .PHONY: test-shell tsh
