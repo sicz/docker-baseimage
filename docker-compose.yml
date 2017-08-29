@@ -10,8 +10,8 @@ networks:
 services:
   baseimage:
     image: ${DOCKER_IMAGE}
-    # Listen on TCP port 1234 end echo input to output
-    command: /usr/bin/ncat -l 1234 -k -c /bin/cat
+    # Listen on TCP port 7 (Echo protocol) end mirror input to output
+    command: /usr/bin/ncat -l 7 -k -c /bin/cat
     depends_on:
       - simple_ca
     environment:
@@ -52,7 +52,7 @@ services:
       # - DOCKER_ENTRYPOINT_DEBUG=true
       - DOCKER_ENTRYPOINT_INFO=true
       # Wait untill the tested container is started
-      - WAIT_FOR_TCP=baseimage.local:1234
+      - WAIT_FOR_TCP=baseimage.local:7
     networks:
       default:
         aliases:
@@ -70,7 +70,7 @@ services:
     environment:
       # - DOCKER_ENTRYPOINT_DEBUG=true
       - DOCKER_ENTRYPOINT_INFO=true
-      - WAIT_FOR_TCP=baseimage.local:1234
+      - WAIT_FOR_TCP=baseimage.local:7
     networks:
       default:
         aliases:
