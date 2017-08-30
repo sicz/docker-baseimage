@@ -11,6 +11,7 @@ if [ -n "${SERVER_P12_FILE}" -a ! -e "${SERVER_P12_FILE}" ]; then
       -inkey ${SERVER_KEY_FILE} \
       -passin "pass:${SERVER_KEY_PWD}" \
       -passout "pass:${SERVER_KEY_PWD}" \
+      -descert \
       -out ${SERVER_P12_FILE}
     # Set server PKCS12 file permissions
     if [ -n "${SERVER_KEY_FILE_OWNER}" ]; then

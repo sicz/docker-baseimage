@@ -98,7 +98,7 @@ describe "Server certificate", :test => :server_cert do
         expect(subject.stderr).to match("MAC verified OK")
       end
       it "should be encrypted" do
-        expect(subject.stderr).to match("PKCS7 Encrypted data: pbeWithSHA1And40BitRC2-CBC")
+        expect(subject.stderr).to match(/^PKCS7 Encrypted data: pbeWithSHA1And3-KeyTripleDES-CBC, Iteration 2048$/)
       end
     end
     # TODO: Serverspec does not support PKCS12 keystores
@@ -125,22 +125,7 @@ describe "Server certificate", :test => :server_cert do
       subject { command("openssl pkcs12 -in #{p12} -passin file:#{pwd} -noout -info") }
       it "should be encrypted" do
         expect(subject.exit_status).to eq(0)
-        expect(subject.stderr).to match("Shrouded Keybag: pbeWithSHA1And3-KeyTripleDES-CBC")
-      end
-    end
-  end
-
-  ### FILES ####################################################################
-
-  describe "Simple CA secrets" do
-    [
-      # [file]
-      ENV["CA_USER_NAME_FILE"]    || "/etc/ssl/private/ca_user.name",
-      ENV["CA_USER_PWD_FILE"]     || "/etc/ssl/private/ca_user.pwd",
-    ].each do |file|
-      context file(file) do
-        it { is_expected.to be_file }
-        it { is_expected.to be_mode(440) }
+        expect(subject.stderr).to match(/^Shrouded Keybag: pbeWithSHA1And3-KeyTripleDES-CBC, Iteration 2048$/)
       end
     end
   end
