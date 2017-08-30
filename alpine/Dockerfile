@@ -66,10 +66,10 @@ RUN set -exo pipefail; \
       make \
       openssh-client \
       python2 \
-      ruby=${RUBY_VERSION} \
-      ruby-io-console=${RUBY_VERSION} \
-      ruby-irb=${RUBY_VERSION} \
-      ruby-rdoc=${RUBY_VERSION} \
+      "ruby>${RUBY_VERSION}" \
+      "ruby-io-console>${RUBY_VERSION}" \
+      "ruby-irb>${RUBY_VERSION}" \
+      "ruby-rdoc>${RUBY_VERSION}" \
       ; \
     # Install Docker
     curl -fL "https://download.docker.com/linux/static/stable/x86_64/docker-${DOCKER_VERSION}.tgz" \
