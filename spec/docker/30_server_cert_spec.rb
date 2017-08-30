@@ -71,7 +71,7 @@ describe "Server certificate", :test => :server_cert do
 
   ### PRIVATE_KEY ##############################################################
 
-  describe x509_private_key(key, {:passin => "file:#{pwd}"}) do
+  describe x509_private_key(key, {:passin => "file:#{key_pwd}"}) do
     context "file" do
       subject { file(key) }
       it { is_expected.to be_file }
@@ -89,7 +89,7 @@ describe "Server certificate", :test => :server_cert do
   ### PKCS12_KEYSTORE ##########################################################
 
   # TODO: Serverspec does not support PKCS12 keystores
-  #describe pkcs12_keystore(p12, {:passin => "file:#{pwd}"}) do
+  #describe pkcs12_keystore(p12, {:passin => "file:#{key_pwd}"}) do
   describe "PKCS12 keystore \"#{p12}\"" do
     context "file" do
       subject { file(p12) }
@@ -102,7 +102,7 @@ describe "Server certificate", :test => :server_cert do
       # TODO: Serverspec does not support PKCS12 keystores
       # it { is_expected.to be_valid }
       # it { is_expected.to be_encrypted }
-      subject { command("openssl pkcs12 -in #{p12} -passin file:#{pwd} -noout -info") }
+      subject { command("openssl pkcs12 -in #{p12} -passin file:#{key_pwd} -noout -info") }
       it "shoud be valid" do
         expect(subject.exit_status).to eq(0)
         expect(subject.stderr).to match("MAC verified OK")
