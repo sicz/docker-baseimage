@@ -45,11 +45,11 @@ COMPOSE_VARS		+= SIMPLE_CA_IMAGE
 
 ifeq ($(DOCKER_CONFIG),default)
 COMPOSE_VARS		+= SERVER_CRT_HOST \
+			   SERVER_KEY_PWD_FILE \
 			   SERVER_P12_FILE
 TEST_VARS		+= CA_CRT_FILE \
 			   CA_USER_NAME_FILE \
-			   CA_USER_PWD_FILE \
-			   SERVER_KEY_PWD_FILE
+			   CA_USER_PWD_FILE
 CA_CRT_FILE		?= /etc/ssl/certs/ca.crt
 CA_USER_NAME_FILE	?= /etc/ssl/private/ca_user.name
 CA_USER_PWD_FILE	?= /etc/ssl/private/ca_user.pwd
@@ -63,11 +63,11 @@ endif
 # Default configuration with Simple CA and Docker Swarm like secrets
 ifeq ($(DOCKER_CONFIG),secrets)
 COMPOSE_VARS		+= SERVER_CRT_HOST \
+			   SERVER_KEY_PWD_FILE \
 			   SERVER_P12_FILE
 TEST_VARS		+= CA_CRT_FILE \
 			   CA_USER_NAME_FILE \
-			   CA_USER_PWD_FILE \
-			   SERVER_KEY_PWD_FILE
+			   CA_USER_PWD_FILE
 CA_CRT_FILE		?= /run/secrets/ca.crt
 CA_USER_NAME_FILE	?= /run/secrets/ca_user.name
 CA_USER_PWD_FILE	?= /run/secrets/ca_user.pwd
@@ -260,10 +260,6 @@ create: display-executor-config docker-create .docker-$(DOCKER_EXECUTOR)-secrets
 	@docker cp secrets/ca.crt	$(CONTAINER_NAME):$(CA_CRT_FILE)
 	@docker cp secrets/ca_user.name	$(CONTAINER_NAME):$(CA_USER_NAME_FILE)
 	@docker cp secrets/ca_user.pwd	$(CONTAINER_NAME):$(CA_USER_PWD_FILE)
-	@if [ "$(DOCKER_CONFIG)" != "custom" ]; then \
-		$(ECHO) "Copying server key passphrase to container $(CONTAINER_NAME)"; \
-		docker cp secrets/server.pwd	$(CONTAINER_NAME):$(SERVER_KEY_PWD_FILE); \
-	fi
 	@$(ECHO) $(CONTAINER_NAME) > $@
 
 # Start the containers
@@ -338,7 +334,6 @@ secrets:
 	@sleep 0.5
 	@$(ECHO) "Copying secrets from container $(SIMPLE_CA_CONTAINER_NAME)"
 	@docker cp $(SIMPLE_CA_CONTAINER_NAME):/var/lib/simple-ca/secrets .
-	@openssl rand -hex 32 > secrets/server.pwd
 
 # Clean the Simple CA secrets
 .PHONY: clean-secrets

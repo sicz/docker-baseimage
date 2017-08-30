@@ -18,6 +18,7 @@ services:
       - DOCKER_ENTRYPOINT_DEBUG=true
       - DOCKER_ENTRYPOINT_INFO=true
       - SERVER_CRT_HOST=${SERVER_CRT_HOST}
+      - SERVER_KEY_PWD_FILE=${SERVER_KEY_PWD_FILE}
       - SERVER_P12_FILE=${SERVER_P12_FILE}
       - SIMPLE_CA_URL=https://simple-ca.local
     expose:

@@ -56,10 +56,8 @@ describe "Server certificate", :test => :server_cert do
       subject { file(pwd) }
       it { is_expected.to be_file }
       it { is_expected.to be_mode(440) }
-      if ENV["DOCKER_CONFIG"] == "custom" then
-        it { is_expected.to be_owned_by(user) }
-        it { is_expected.to be_grouped_into(group) }
-      end
+      it { is_expected.to be_owned_by(user) }
+      it { is_expected.to be_grouped_into(group) }
     end
   end
 
