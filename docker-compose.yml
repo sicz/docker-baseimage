@@ -17,9 +17,11 @@ services:
     environment:
       - DOCKER_ENTRYPOINT_DEBUG=true
       - DOCKER_ENTRYPOINT_INFO=true
-      - SERVER_CRT_HOST=baseimage.local
+      - SERVER_CRT_HOST=${SERVER_CRT_HOST}
       - SERVER_P12_FILE=${SERVER_P12_FILE}
       - SIMPLE_CA_URL=https://simple-ca.local
+    expose:
+      - 7/tcp
     networks:
       default:
         aliases:
@@ -72,6 +74,7 @@ services:
     environment:
       - DOCKER_ENTRYPOINT_DEBUG=true
       - DOCKER_ENTRYPOINT_INFO=true
+      # Wait untill the tested container is started
       - WAIT_FOR_TCP=baseimage.local:7
     networks:
       default:

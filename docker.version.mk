@@ -1,4 +1,4 @@
-### DOCKER_IMAGE #############################################################
+### DOCKER_IMAGE ###############################################################
 
 DOCKER_PROJECT		?= sicz
 DOCKER_PROJECT_DESC	?= $(BASE_IMAGE_OS_NAME) based image modified for Docker-friendliness
@@ -6,7 +6,6 @@ DOCKER_PROJECT_URL	?= $(BASE_IMAGE_OS_URL)
 
 DOCKER_NAME		?= baseimage-$(BASE_IMAGE_NAME)
 DOCKER_IMAGE_TAG	?= $(BASE_IMAGE_TAG)
-DOCKER_IMAGE_DEPENDENCIES += $(SIMPLE_CA_IMAGE)
 
 ### BUILD ######################################################################
 
@@ -45,7 +44,8 @@ SERVICE_NAME		?= baseimage
 COMPOSE_VARS		+= SIMPLE_CA_IMAGE
 
 ifeq ($(DOCKER_CONFIG),default)
-COMPOSE_VARS		+= SERVER_P12_FILE
+COMPOSE_VARS		+= SERVER_CRT_HOST \
+			   SERVER_P12_FILE
 TEST_VARS		+= CA_CRT_FILE \
 			   CA_USER_NAME_FILE \
 			   CA_USER_PWD_FILE \
@@ -53,6 +53,7 @@ TEST_VARS		+= CA_CRT_FILE \
 CA_CRT_FILE		?= /etc/ssl/certs/ca.crt
 CA_USER_NAME_FILE	?= /etc/ssl/private/ca_user.name
 CA_USER_PWD_FILE	?= /etc/ssl/private/ca_user.pwd
+SERVER_CRT_HOST		?= $(SERVICE_NAME).local
 SERVER_KEY_PWD_FILE	?= /etc/ssl/private/server.pwd
 SERVER_P12_FILE		?= /etc/ssl/private/server.p12
 endif
@@ -61,7 +62,8 @@ endif
 
 # Default configuration with Simple CA and Docker Swarm like secrets
 ifeq ($(DOCKER_CONFIG),secrets)
-COMPOSE_VARS		+= SERVER_P12_FILE
+COMPOSE_VARS		+= SERVER_CRT_HOST \
+			   SERVER_P12_FILE
 TEST_VARS		+= CA_CRT_FILE \
 			   CA_USER_NAME_FILE \
 			   CA_USER_PWD_FILE \
@@ -69,6 +71,7 @@ TEST_VARS		+= CA_CRT_FILE \
 CA_CRT_FILE		?= /run/secrets/ca.crt
 CA_USER_NAME_FILE	?= /run/secrets/ca_user.name
 CA_USER_PWD_FILE	?= /run/secrets/ca_user.pwd
+SERVER_CRT_HOST		?= $(SERVICE_NAME).local
 SERVER_KEY_PWD_FILE	?= /run/secrets/server.pwd
 SERVER_P12_FILE		?= /etc/ssl/private/server.p12
 endif
@@ -93,8 +96,8 @@ COMPOSE_VARS		+= CA_CRT_FILE \
 CA_CRT_FILE		?= /root/ca.pem
 CA_USER_NAME_FILE	?= /root/user.name
 CA_USER_PWD_FILE	?= /root/user.pwd
-SERVER_CRT_SUBJECT	?= CN=baseimage,O=test
-SERVER_CRT_HOST		?= baseimage.local
+SERVER_CRT_SUBJECT	?= CN=$(SERVICE_NAME),O=test
+SERVER_CRT_HOST		?= $(SERVICE_NAME).local,$(SERVICE_NAME).test
 SERVER_CRT_IP		?= 1.2.3.4
 SERVER_CRT_OID		?= 1.2.3.4.5.6
 SERVER_CRT_DIR		?= /var/lib
@@ -113,6 +116,8 @@ TEST_VARS		+= BASE_IMAGE_OS_NAME \
 			   DOCKER_CONFIG
 
 ### SIMPLE_CA ##################################################################
+
+DOCKER_IMAGE_DEPENDENCIES += $(SIMPLE_CA_IMAGE)
 
 # Simple CA image
 SIMPLE_CA_IMAGE_NAME	?= sicz/simple-ca

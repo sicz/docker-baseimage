@@ -36,7 +36,11 @@ describe "Server certificate", :test => :server_cert do
     its(:issuer)  { is_expected.to eq "/CN=Simple CA" }
     its(:validity_in_days) { is_expected.to be > 3650 }
     context "subject_alt_names" do
-      it { expect(subject.subject_alt_names).to include("DNS:#{ENV["SERVER_CRT_HOST"]}") } unless ENV["SERVER_CRT_HOST"].nil?
+      if ! ENV["SERVER_CRT_HOST"].nil? then
+        ENV["SERVER_CRT_HOST"].split(/,/).each do |host|
+          it { expect(subject.subject_alt_names).to include("DNS:#{host}") }
+        end
+      end
       it { expect(subject.subject_alt_names).to include("DNS:#{ENV["CONTAINER_NAME"]}") }
       it { expect(subject.subject_alt_names).to include("DNS:localhost") }
       it { expect(subject.subject_alt_names).to include("IP Address:#{ENV["SERVER_CRT_IP"]}") } unless ENV["SERVER_CRT_IP"].nil?
