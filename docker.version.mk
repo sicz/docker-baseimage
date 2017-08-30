@@ -117,6 +117,7 @@ TEST_VARS		+= BASE_IMAGE_OS_NAME \
 
 ### SIMPLE_CA ##################################################################
 
+# Docker image dependencies
 DOCKER_IMAGE_DEPENDENCIES += $(SIMPLE_CA_IMAGE)
 
 # Simple CA image
