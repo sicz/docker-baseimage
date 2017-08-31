@@ -40,7 +40,7 @@ wait_for_dns () {
       fi
       i=$((i+1))
       if [ $i -gt ${TIMEOUT} ]; then
-        error "${HOST} name resolution timeout ${TIMEOUT}s has been reached"
+        error "${HOST} name resolution timeout ${TIMEOUT}s has just expired"
         exit 1
       fi
       sleep 1
@@ -85,7 +85,7 @@ wait_for_tcp () {
       fi
       i=$((i+1))
       if [ $i -gt ${TIMEOUT} ]; then
-        error "tcp://${HOST} connection timeout ${TIMEOUT}s has been reached"
+        error "tcp://${HOST} connection timeout ${TIMEOUT}s has just expired"
         exit 1
       fi
       sleep 1
@@ -113,7 +113,7 @@ wait_for_url () {
       fi
       i=$((i+1))
       if [ $i -gt ${TIMEOUT} ]; then
-        error "${URL} connection timeout ${TIMEOUT}s has been reached"
+        error "${URL} connection timeout ${TIMEOUT}s has just expired"
         exit 1
       fi
       sleep 1
