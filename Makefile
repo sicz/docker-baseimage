@@ -13,8 +13,7 @@ SHELL			+= -e
 ### MAKE_TARGETS ###############################################################
 
 # Docker image variants
-DOCKER_VARIANTS		= dockerspec \
-			  alpine \
+DOCKER_VARIANTS		= alpine \
 			  centos \
 
 # Make targets propagated to all Docker image variants

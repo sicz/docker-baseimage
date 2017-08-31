@@ -36,7 +36,7 @@ DOCKER_CONFIG		?= $(shell \
 			   )
 
 # Use the same service name for all configurations
-SERVICE_NAME		?= baseimage
+SERVICE_NAME		?= container
 
 ### DEFAULT_CONFIG #############################################################
 
@@ -111,7 +111,6 @@ endif
 ### TEST #######################################################################
 
 TEST_VARS		+= BASE_IMAGE_OS_NAME \
-			   BASE_IMAGE_OS_FAMILY \
 			   BASE_IMAGE_OS_VERSION \
 			   DOCKER_CONFIG
 

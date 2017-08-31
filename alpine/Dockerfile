@@ -54,54 +54,7 @@ RUN set -exo pipefail; \
   mkdir -p \
     /etc/ssl/certs \
     /etc/ssl/private \
-    /run/secrets \
-  ; \
-  #
-  # Install sicz/dockerspec software
-  #
-  if [ "${DOCKER_NAME}" = "dockerspec" ]; then \
-    # Install the packages
-    apk add --no-cache \
-      git \
-      make \
-      openssh-client \
-      python2 \
-      "ruby>${RUBY_VERSION}" \
-      "ruby-io-console>${RUBY_VERSION}" \
-      "ruby-irb>${RUBY_VERSION}" \
-      "ruby-rdoc>${RUBY_VERSION}" \
-      ; \
-    # Install Docker
-    curl -fL "https://download.docker.com/linux/static/stable/x86_64/docker-${DOCKER_VERSION}.tgz" \
-     | tar xfz - -C /tmp; \
-    mv /tmp/docker/* /usr/bin; \
-    rm -rf /tmp/docker; \
-    docker --version; \
-    # Install Docker Compose
-    apk add --no-cache --virtual .build-dependencies \
-      py2-pip \
-      ; \
-    pip install --upgrade pip; \
-    pip install docker-compose==${DOCKER_COMPOSE_VERSION}; \
-    apk del --no-cache .build-dependencies; \
-    docker-compose --version; \
-    # Install rspec and serverspec
-    gem install \
-      docker-api:${GEM_DOCKER_API_VERSION} \
-      rspec:${GEM_RSPEC_VERSION} \
-      specinfra:${GEM_SPECINFRA_VERSION} \
-      serverspec:${GEM_SERVERSPEC_VERSION} \
-      ; \
-    gem list --local --quiet \
-      docker-api \
-      rspec \
-      specinfra \
-      serverspec \
-      ; \
-    rm -rf /root/.cache /root/.gem; \
-    curl -o /usr/lib/ruby/gems/2.4.0/gems/specinfra-2.71.0/lib/specinfra/command/alpine/base/package.rb \
-      "https://raw.githubusercontent.com/prehor/specinfra/fix/alpine_is_installed/lib/specinfra/command/alpine/base/package.rb"; \
-  fi
+    /run/secrets
 
 ENTRYPOINT ["/sbin/tini", "--", "/usr/bin/env", "DOCKER_CONTAINER_START=true", "/docker-entrypoint.sh"]
 

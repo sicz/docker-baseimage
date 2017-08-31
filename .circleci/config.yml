@@ -23,36 +23,28 @@ jobs:
             curl -sSL https://github.com/SICZ/Mk/archive/master.tar.gz | tar -xzf -
             mv Mk-master Mk
       - run:
-          # The latest Dockerspec image must be built first because it will be
-          # used to test itself and the subsequent images
-          name: sicz/dockerspec:latest
-          working_directory: dockerspec
+          name: sicz/baseimage-alpine:devel
+          working_directory: alpine/devel
           command: |
-            make ci
-      - run:
-          name: sicz/dockerspec:devel
-          working_directory: dockerspec/devel
-          command: |
+            make docker-pull
             make ci
       - run:
           name: sicz/baseimage-alpine:latest
           working_directory: alpine
           command: |
-            make ci
-      - run:
-          name: sicz/baseimage-alpine:devel
-          working_directory: alpine/devel
-          command: |
-            make ci
-      - run:
-          name: sicz/baseimage-centos:latest
-          working_directory: centos
-          command: |
+            make docker-pull
             make ci
       - run:
           name: sicz/baseimage-centos:devel
           working_directory: centos/devel
           command: |
+            make docker-pull
+            make ci
+      - run:
+          name: sicz/baseimage-centos:latest
+          working_directory: centos
+          command: |
+            make docker-pull
             make ci
       - deploy:
           name: Push images to the Docker Hub

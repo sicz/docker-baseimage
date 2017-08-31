@@ -18,8 +18,11 @@ describe "Docker image", :test => :docker_image do
 
   describe "Operating system" do
     context "family" do
-      subject { os[:family] }
-      it { is_expected.to eq(ENV["BASE_IMAGE_OS_FAMILY"]) }
+      # We can not simple test the os[:family] because CentOS is reported as "redhat"
+      subject { file("/etc/#{ENV["BASE_IMAGE_NAME"]}-release") }
+      it "sould eq \"#{ENV["BASE_IMAGE_NAME"]}\"" do
+        expect(subject).to be_file
+      end
     end
     context "release" do
       subject { os[:release] }
@@ -61,23 +64,6 @@ describe "Docker image", :test => :docker_image do
       ]
     end
 
-    case ENV["DOCKER_NAME"]
-    when "dockerspec"
-      packages += [
-        "git",
-        "make",
-        "openssh-client",
-        ["ruby",                    ENV["RUBY_VERSION"]],
-        ["ruby-io-console",         ENV["RUBY_VERSION"]],
-        ["ruby-irb",                ENV["RUBY_VERSION"]],
-        ["ruby-rdoc",               ENV["RUBY_VERSION"]],
-        ["docker-api",              ENV["GEM_DOCKER_API_VERSION"],  "gem"],
-        ["rspec",                   ENV["GEM_RSPEC_VERSION"],       "gem"],
-        ["specinfra",               ENV["GEM_SPECINFRA_VERSION"],   "gem"],
-        ["serverspec",              ENV["GEM_SERVERSPEC_VERSION"],  "gem"],
-      ]
-    end
-
     packages.each do |package, version, installer|
       describe package(package) do
         it { is_expected.to be_installed }                        if installer.nil? && version.nil?
@@ -103,14 +89,6 @@ describe "Docker image", :test => :docker_image do
         "/sbin/runsvdir",
         "/sbin/su-exec",
         ["/sbin/tini",              ENV["TINI_VERSION"]],
-      ]
-    end
-
-    case ENV["DOCKER_NAME"]
-    when "dockerspec"
-      commands += [
-        ["/usr/bin/docker",         ENV["DOCKER_VERSION"]],
-        ["/usr/bin/docker-compose", ENV["DOCKER_COMPOSE_VERSION"]],
       ]
     end
 
@@ -152,15 +130,6 @@ describe "Docker image", :test => :docker_image do
       ["/root/.bash_logout",                              644, "root", "root", [:be_file, :eq_sha256sum]],
       ["/root/.bash_profile",                             644, "root", "root", [:be_file, :eq_sha256sum]],
     ]
-
-    case ENV["BASE_IMAGE_NAME"]
-    when "centos"
-      files += [
-        # Serverspec does not differentiate between RedHat and CentOS family,
-        # we check CentOS specific file
-        ["/etc/centos-release",                           644, "root", "root", [:be_file]],
-      ]
-    end
 
     files.each do |file, mode, user, group, expectations|
       expectations ||= []

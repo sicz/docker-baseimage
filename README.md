@@ -39,18 +39,6 @@ This image only contains essential components:
 * `su_exec` for process impersonation
 * `tini` as an init process
 
-### Dockerspec image
-
-This image contains tools for testing Docker images:
-* [Alpine Linux based image](#alpine-linux-based-image)
-* [Docker](https://docs.docker.com/engine/) provides a Docker command line tools and engine
-* [Docker Compose](https://docs.docker.com/compose/) provides a Docker Compose command line tools
-* [RSpec](http://rspec.info) provides a Ruby testing framework
-* [ServerSpec](http://serverspec.org) provides a server testing framework for RSpec
-* [Docker API](https://github.com/swipely/docker-api) provides an interface for Docker Remote API
-<!--
-* [Dockerspec](https://github.com/zuazo/dockerspec) provides Docker plugin for ServerSpec
--->
 ## Getting started
 
 These instructions will get you a copy of the project up and running on your
@@ -71,8 +59,6 @@ The directories with Docker image variants:
 * `alpine/devel` - Currently Alpine Linux latest release
 * `centos` - CentOS latest branch
 * `centos/devel` - Currently CentOS latest branch
-* `dockerspec` - Dockerspec based on `alpine/latest`
-* `dockerspec/devel` - Dockerspec based on `alpine/devel`
 
 Use the command `make` in the project directory:
 ```bash
@@ -123,8 +109,6 @@ make docker-push                  # Push the project image into the Docker Regis
 ```
 
 ## Deployment
-
-The Dockerspec image is intended to run container tests.
 
 Alpine Linux and CentOS images are intended to serve as a base for other images.
 
