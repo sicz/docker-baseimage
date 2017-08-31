@@ -55,7 +55,7 @@ services:
     environment:
       - DOCKER_ENTRYPOINT_DEBUG=true
       - DOCKER_ENTRYPOINT_INFO=true
-      # Wait untill the tested container is started
+      # Wait until the tested container is started
       - WAIT_FOR_TCP=baseimage.local:7
     networks:
       default:
