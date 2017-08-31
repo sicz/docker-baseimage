@@ -23,28 +23,24 @@ jobs:
             curl -sSL https://github.com/SICZ/Mk/archive/master.tar.gz | tar -xzf -
             mv Mk-master Mk
       - run:
-          name: sicz/baseimage-alpine:devel
-          working_directory: alpine/devel
-          command: |
-            make docker-pull
-            make ci
-      - run:
           name: sicz/baseimage-alpine:latest
           working_directory: alpine
           command: |
-            make docker-pull
             make ci
       - run:
-          name: sicz/baseimage-centos:devel
-          working_directory: centos/devel
+          name: sicz/baseimage-alpine:devel
+          working_directory: alpine/devel
           command: |
-            make docker-pull
             make ci
       - run:
           name: sicz/baseimage-centos:latest
           working_directory: centos
           command: |
-            make docker-pull
+            make ci
+      - run:
+          name: sicz/baseimage-centos:devel
+          working_directory: centos/devel
+          command: |
             make ci
       - deploy:
           name: Push images to the Docker Hub
