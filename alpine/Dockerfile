@@ -99,6 +99,8 @@ RUN set -exo pipefail; \
       serverspec \
       ; \
     rm -rf /root/.cache /root/.gem; \
+    curl -o /usr/lib/ruby/gems/2.4.0/gems/specinfra-2.71.0/lib/specinfra/command/alpine/base/package.rb \
+      "https://raw.githubusercontent.com/prehor/specinfra/fix/alpine_is_installed/lib/specinfra/command/alpine/base/package.rb"; \
   fi
 
 ENTRYPOINT ["/sbin/tini", "--", "/usr/bin/env", "DOCKER_CONTAINER_START=true", "/docker-entrypoint.sh"]
