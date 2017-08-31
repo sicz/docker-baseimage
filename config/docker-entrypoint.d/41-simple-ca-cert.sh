@@ -11,9 +11,6 @@ if [ -n "${SIMPLE_CA_URL}" ]; then
     # Create directories
     mkdir -p ${CA_CRT_DIR} ${SERVER_CRT_DIR} ${SERVER_KEY_DIR}
 
-    # Wait for CA
-    wait_for_url ${SIMPLE_CA_TIMEOUT:-60} ${SIMPLE_CA_URL}/ca.crt
-
     # Get CA certificate
     if [ ! -e "${CA_CRT_FILE}" ]; then
       info "Copying CA certificate from ${SIMPLE_CA_URL}/ca.crt to ${CA_CRT_FILE}"
