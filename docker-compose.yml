@@ -57,6 +57,7 @@ services:
       - DOCKER_ENTRYPOINT_INFO=true
       # Wait until the tested container is started
       - WAIT_FOR_TCP=baseimage.local:7
+      - WAIT_FOR_TIMEOUT=5
     networks:
       default:
         aliases:
