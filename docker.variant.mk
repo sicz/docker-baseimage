@@ -34,7 +34,7 @@ all: ci
 $(DOCKER_VERSION_TARGETS):
 	@for DOCKER_VERSION in $(DOCKER_VERSIONS); do \
 		cd $(CURDIR)/$${DOCKER_VERSION}; \
-		$(MAKE) display-docker-version $@; \
+		$(MAKE) display-version-header $@; \
 	done
 
 ### CIRCLE_CI ##################################################################
