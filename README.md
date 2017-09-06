@@ -54,26 +54,24 @@ git clone https://github.com/sicz/docker-baseimage
 
 ### Usage
 
-The directories with Docker image variants:
-* `alpine` - Alpine Linux latest release
-* `alpine/devel` - Currently Alpine Linux latest release
-* `centos` - CentOS latest branch
-* `centos/devel` - Currently CentOS latest branch
+The project contains Docker image variant directories:
+* `alpine` - Alpine Linux base images
+* `centos` - CentOS base images
 
-Use the command `make` in the project directory:
+Use the command `make` in the project directory and image variant directories:
 ```bash
 make all                          # Build and test all Docker images
-make build-all                    # Build all Docker images
-make rebuild-all                  # Rebuild all Docker images
-make clean-all                    # Remove all containers and clean work files
-make docker-pull-all              # Pull all images from Docker Registry
-make docker-pull-dependencies-all # Pull all image dependencies from Docker Registry
-make docker-pull-image-all        # Pull all project images from Docker Registry
-make docker-pull-testimage-all    # Pull all project images from Docker Registry
-make docker-push-all              # Push all project images to Docker Registry
+make build                        # Build all Docker images
+make rebuild                      # Rebuild all Docker images
+make clean                        # Remove all containers and clean work files
+make docker-pull                  # Pull all images from Docker Registry
+make docker-pull-dependencies     # Pull all image dependencies from Docker Registry
+make docker-pull-image            # Pull all project images from Docker Registry
+make docker-pull-testimage        # Pull all project images from Docker Registry
+make docker-push                  # Push all project images to Docker Registry
 ```
 
-Use the command `make` in directories with Docker image variants:
+Use the command `make` in the image version directories:
 ```bash
 make all                          # Build a new image and run tests for current configuration
 make ci                           # Build a new image and run tests for all configurations
@@ -122,7 +120,7 @@ ENV DOCKER_USER=MY_USER
 # Create an user account
 RUN set -ex && adduser -D -H -u 1000 ${DOCKER_USER}
 # Install some packages
-RUN set -ex && apk add --no-cache SOME PACKAGES
+RUN set -ex && apk add --no-cache SOME_PACKAGES
 # Copy your own entrypoint scripts
 COPY dockerfile-entrypoint.d /dockerfile-entrypoint.d
 ```
@@ -137,7 +135,7 @@ ENV DOCKER_USER=MY_USER
 # Create an user account
 RUN set -ex && adduser -M -U -u 1000 ${DOCKER_USER}
 # Install some packages
-RUN set -ex && yum install -y SOME PACKAGES && yum clean all
+RUN set -ex && yum install -y SOME_PACKAGES && yum clean all
 # Copy your own entrypoint scripts
 COPY dockerfile-entrypoint.d /dockerfile-entrypoint.d
 ```
