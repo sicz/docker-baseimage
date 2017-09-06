@@ -7,6 +7,10 @@ DOCKER_PROJECT_URL	?= $(BASE_IMAGE_OS_URL)
 DOCKER_NAME		?= baseimage-$(BASE_IMAGE_NAME)
 DOCKER_IMAGE_TAG	?= $(BASE_IMAGE_TAG)
 
+### BUILD ######################################################################
+
+VARIANT_DIR		?= $(PROJECT_DIR)/$(BASE_IMAGE_NAME)
+
 ### DOCKER_EXECUTOR ############################################################
 
 # Use the Docker Compose executor
@@ -142,8 +146,7 @@ MAKE_VARS		?= GITHUB_MAKE_VARS \
 			   EXECUTOR_MAKE_VARS \
 			   CONFIG_MAKE_VARS \
 			   SHELL_MAKE_VARS \
-			   DOCKER_REGISTRY_MAKE_VARS \
-			   DOCKER_VERSION_MAKE_VARS
+			   DOCKER_REGISTRY_MAKE_VARS
 
 define BASE_IMAGE_OS_MAKE_VARS
 BASE_IMAGE_OS_NAME:	$(BASE_IMAGE_OS_NAME)
