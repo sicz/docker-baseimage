@@ -7,14 +7,6 @@ DOCKER_PROJECT_URL	?= $(BASE_IMAGE_OS_URL)
 DOCKER_NAME		?= baseimage-$(BASE_IMAGE_NAME)
 DOCKER_IMAGE_TAG	?= $(BASE_IMAGE_TAG)
 
-### BUILD ######################################################################
-
-# Allows a change of the ci/build/restore targets if the development version
-# is the same as the latest version
-DOCKER_CI_TARGET	?= build test-all
-DOCKER_BUILD_TARGET	?= docker-build
-DOCKER_REBUILD_TARGET	?= docker-rebuild
-
 ### DOCKER_EXECUTOR ############################################################
 
 # Use the Docker Compose executor
@@ -147,7 +139,6 @@ MAKE_VARS		?= GITHUB_MAKE_VARS \
 			   BASE_IMAGE_MAKE_VARS \
 			   DOCKER_IMAGE_MAKE_VARS \
 			   BUILD_MAKE_VARS \
-			   BUILD_TARGETS_MAKE_VARS \
 			   EXECUTOR_MAKE_VARS \
 			   CONFIG_MAKE_VARS \
 			   SHELL_MAKE_VARS \
@@ -160,13 +151,6 @@ BASE_IMAGE_OS_VERSION:	$(BASE_IMAGE_OS_VERSION)
 BASE_IMAGE_OS_URL:	$(BASE_IMAGE_OS_URL)
 endef
 export BASE_IMAGE_OS_MAKE_VARS
-
-define BUILD_TARGETS_MAKE_VARS
-DOCKER_CI_TARGET:	$(DOCKER_CI_TARGET)
-DOCKER_BUILD_TARGET:	$(DOCKER_BUILD_TARGET)
-DOCKER_REBUILD_TARGET:	$(DOCKER_REBUILD_TARGET)
-endef
-export BUILD_TARGETS_MAKE_VARS
 
 define CONFIG_MAKE_VARS
 SIMPLE_CA_IMAGE_NAME:	$(SIMPLE_CA_IMAGE_NAME)
@@ -194,14 +178,6 @@ SERVER_P12_FILE:	$(SERVER_P12_FILE)
 endef
 export CONFIG_MAKE_VARS
 
-### DOCKER_VERSION_TARGETS #####################################################
-
-# Make targets propagated to all Docker image versions
-DOCKER_ALL_VERSIONS_TARGETS ?= build rebuild ci clean
-
-# Docker image variant directory
-DOCKER_VARIANT_DIR	?= $(PROJECT_DIR)/$(BASE_IMAGE_NAME)
-
 ### MAKE_TARGETS #############################################################
 
 # Build a new image and run tests for current configuration
@@ -210,20 +186,17 @@ all: build clean start wait logs test
 
 # Build a new image and run tests for all configurations
 .PHONY: ci
-ci: $(DOCKER_CI_TARGET)
-	@true
+ci: build test-all
 
 ### BUILD_TARGETS ##############################################################
 
 # Build a new image with using the Docker layer caching
 .PHONY: build
-build: $(DOCKER_BUILD_TARGET)
-	@true
+build: docker-build
 
 # Build a new image without using the Docker layer caching
 .PHONY: rebuild
-rebuild: $(DOCKER_REBUILD_TARGET)
-	@true
+rebuild: docker-rebuild
 
 ### EXECUTOR_TARGETS ###########################################################
 
