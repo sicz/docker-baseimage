@@ -168,7 +168,7 @@ ENV DOCKER_COMMAND="/sbin/runsvcdir"
 * [Petr Řehoř](https://github.com/prehor) - Initial work.
 
 See also the list of
-[contributors](https://github.com/sicz/docker-baseimage-alpine/contributors)
+[contributors](https://github.com/sicz/docker-baseimage/contributors)
 who participated in this project.
 
 ## License
