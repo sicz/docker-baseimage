@@ -37,12 +37,4 @@ $(DOCKER_VERSION_TARGETS):
 		$(MAKE) display-version-header $@; \
 	done
 
-### CIRCLE_CI ##################################################################
-
-# Update the Dockerspec tag in the CircleCI configuration
-.PHONY: ci-update-config
-ci-update-config:
-	@cd $(firstword $(DOCKER_VERSIONS)) \
-	$(MAKE) $@
-
 ################################################################################

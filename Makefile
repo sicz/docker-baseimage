@@ -41,12 +41,4 @@ $(DOCKER_VARIANT_TARGETS):
 		$(MAKE) $@; \
 	done
 
-### CIRCLE_CI ##################################################################
-
-# Update yhe Dockerspec tag in the CircleCI configuration
-.PHONY: ci-update-config
-ci-update-config:
-	@cd $(firstword $(DOCKER_VARIANTS)); \
-	$(MAKE) $@
-
 ################################################################################
