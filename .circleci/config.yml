@@ -23,23 +23,18 @@ jobs:
             curl -sSL https://github.com/SICZ/Mk/archive/master.tar.gz | tar -xzf -
             mv Mk-master Mk
       - run:
-          name: sicz/baseimage-alpine:latest
-          working_directory: alpine
+          name: sicz/baseimage-alpine:3.6
+          working_directory: alpine/3.6
           command: |
             make ci
       - run:
-          name: sicz/baseimage-alpine:devel
-          working_directory: alpine/devel
+          name: sicz/baseimage-alpine:edge
+          working_directory: alpine/edge
           command: |
             make ci
       - run:
-          name: sicz/baseimage-centos:latest
-          working_directory: centos
-          command: |
-            make ci
-      - run:
-          name: sicz/baseimage-centos:devel
-          working_directory: centos/devel
+          name: sicz/baseimage-centos:7
+          working_directory: centos/7
           command: |
             make ci
       - deploy:
@@ -47,5 +42,5 @@ jobs:
           command: |
             if [ "${CIRCLE_BRANCH}" == "master" ]; then
               docker login -u ${DOCKER_HUB_USER} -p ${DOCKER_HUB_PASSWD}
-              make docker-push-all
+              make docker-push
             fi

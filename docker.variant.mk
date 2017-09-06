@@ -10,14 +10,10 @@ endif
 # .SHELLFLAGS		= -ec
 SHELL			+= -e
 
-### DOCKER_VARIANTS ############################################################
+### DOCKER_VERSIONS ############################################################
 
-# Docker image variants
-DOCKER_VARIANTS		+= alpine \
-			   centos \
-
-# Make targets propagated to all Docker image variants
-DOCKER_VARIANT_TARGETS	+= build \
+# Make targets propagated to all Docker image versions
+DOCKER_VERSION_TARGETS	+= build \
 			   rebuild \
 			   ci \
 			   clean \
@@ -34,19 +30,19 @@ DOCKER_VARIANT_TARGETS	+= build \
 all: ci
 
 # Subdir targets
-.PHONY: $(DOCKER_VARIANT_TARGETS)
-$(DOCKER_VARIANT_TARGETS):
-	@for DOCKER_VARIANT in $(DOCKER_VARIANTS); do \
-		cd $(CURDIR)/$${DOCKER_VARIANT}; \
-		$(MAKE) $@; \
+.PHONY: $(DOCKER_VERSION_TARGETS)
+$(DOCKER_VERSION_TARGETS):
+	@for DOCKER_VERSION in $(DOCKER_VERSIONS); do \
+		cd $(CURDIR)/$${DOCKER_VERSION}; \
+		$(MAKE) display-docker-version $@; \
 	done
 
 ### CIRCLE_CI ##################################################################
 
-# Update yhe Dockerspec tag in the CircleCI configuration
+# Update the Dockerspec tag in the CircleCI configuration
 .PHONY: ci-update-config
 ci-update-config:
-	@cd $(firstword $(DOCKER_VARIANTS)); \
+	@cd $(firstword $(DOCKER_VERSIONS)) \
 	$(MAKE) $@
 
 ################################################################################
