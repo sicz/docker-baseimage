@@ -56,6 +56,7 @@ describe "Docker image", :test => :docker_image do
         "bind-utils",
         "ca-certificates",
         "curl",
+        "iproute",
         "less",
         "net-tools",
         "nmap-ncat",

@@ -31,6 +31,7 @@ RUN set -exo pipefail; \
   # Install the packages
   yum install -y \
       bind-utils \
+      iproute \
       less \
       net-tools \
       nmap-ncat \
