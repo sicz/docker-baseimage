@@ -81,7 +81,7 @@ wait_for_tcp () {
     local i=0
     while ! nc -z ${HOST:=localhost} ${PORT:=80} >/dev/null 2>&1; do
       if [ $i -eq 0 ]; then
-        info "Waiting for connection to tcp://${HOST} up to ${TIMEOUT}s"
+        info "Waiting for connection to tcp://${HOST}:${PORT} up to ${TIMEOUT}s"
       fi
       i=$((i+1))
       if [ $i -gt ${TIMEOUT} ]; then
@@ -91,9 +91,9 @@ wait_for_tcp () {
       sleep 1
     done
     if [ $i -gt 0 ]; then
-      info "Got a connection to tcp://${HOST} in ${i}s"
+      info "Got a connection to tcp://${HOST}:${PORT} in ${i}s"
     else
-      debug "Got a connection to tcp://${HOST} in ${i}s"
+      debug "Got a connection to tcp://${HOST}:${PORT} in ${i}s"
     fi
   done
 }
