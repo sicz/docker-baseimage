@@ -34,10 +34,13 @@ RUN set -exo pipefail; \
       iproute \
       less \
       net-tools \
-      nmap-ncat \
+      # nmap-ncat \
       openssl \
       which \
       ; \
+  # CentOS 7 contains ncat an obsoleted version of ncat,
+  # docker-entrypoint.d/02-wait-for.sh requires the ncat version 7.x
+  rpm -vhU https://nmap.org/dist/ncat-7.40-1.x86_64.rpm; \
   # Install jq
   curl -fL -o /usr/bin/jq https://github.com/stedolan/jq/releases/download/jq-${JQ_VERSION}/jq-linux64; \
   chmod +x /usr//bin/jq; \

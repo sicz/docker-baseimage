@@ -59,7 +59,10 @@ describe "Docker image", :test => :docker_image do
         "iproute",
         "less",
         "net-tools",
-        "nmap-ncat",
+        # CentOS 7 contains ncat an obsoleted version of ncat,
+        # docker-entrypoint.d/02-wait-for.sh requires the ncat version 7.x
+        # "nmap-ncat",
+        "ncat",
         "openssl",
         "which",
       ]

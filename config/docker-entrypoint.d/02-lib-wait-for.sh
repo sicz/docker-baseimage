@@ -79,7 +79,7 @@ wait_for_tcp () {
     PORT=$(sed -E "s;^${URL_PATTERN}$;\7;" <<< "${URL}")
     wait_for_dns ${TIMEOUT} ${HOST}
     local i=0
-    while ! nc -z ${HOST:=localhost} ${PORT:=80} >/dev/null 2>&1; do
+    while ! ncat -z ${HOST:=localhost} ${PORT:=80} >/dev/null 2>&1; do
       if [ $i -eq 0 ]; then
         info "Waiting for connection to tcp://${HOST}:${PORT} up to ${TIMEOUT}s"
       fi
