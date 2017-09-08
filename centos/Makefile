@@ -1,20 +1,7 @@
-### BASE_IMAGE #################################################################
-
-BASE_IMAGE_NAME		?= centos
-BASE_IMAGE_TAG		?= $(BASE_IMAGE_OS_VERSION)
-
-BASE_IMAGE_OS_NAME	?= CentOS
-BASE_IMAGE_OS_VERSION	?= 7
-BASE_IMAGE_OS_URL	?= https://centos.org
-
-### DOCKER_IMAGE ###############################################################
-
-DOCKER_IMAGE_TAGS	?= latest
-
 ### DOCKER_VERSIONS ############################################################
 
+# Docker image versions
 DOCKER_VERSIONS		?= 7
-
 
 ### MK_DOCKER_IMAGE ############################################################
 
