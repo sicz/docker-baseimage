@@ -42,7 +42,7 @@ describe "Server certificate", :test => :server_cert do
     end
     its(:subject) { is_expected.to eq "/#{crt_subj}" }
     its(:issuer) { is_expected.to eq "/CN=Simple CA" }
-    its(:validity_in_days) { is_expected.to be > 3650 }
+    its(:validity_in_days) { is_expected.to be > 3600 }
     context "subject_alt_names" do
       if ! ENV["SERVER_CRT_HOST"].nil? then
         ENV["SERVER_CRT_HOST"].split(/,/).each do |host|

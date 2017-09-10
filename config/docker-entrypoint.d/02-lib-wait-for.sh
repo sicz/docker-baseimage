@@ -33,20 +33,23 @@ wait_for_dns () {
     # Extract hostname from URL
     HOST=$(sed -E "s;^${URL_PATTERN}$;\5;" <<< "${URL}")
     local i=0
-    #while ! nslookup ${HOST:=localhost} >/dev/null 2>&1; do
+    local after
+    local before="$(date "+%s")"
     while ! getent ahosts ${HOST:=localhost} >/dev/null 2>&1; do
-      if [ $i -eq 0 ]; then
+      if [ ${i} -eq 0 ]; then
         info "Waiting for ${HOST} name resolution up to ${TIMEOUT}s"
       fi
-      i=$((i+1))
-      if [ $i -gt ${TIMEOUT} ]; then
-        error "${HOST} name resolution timeout ${TIMEOUT}s has just expired"
+      after="$(date "+%s")"
+      i=$((i+1+after-before))
+      before="${after}"
+      if [ ${i} -gt ${TIMEOUT} ]; then
+        error "${HOST} name resolution timed out after ${i}s"
         exit 1
       fi
       sleep 1
     done
-    if [ $i -gt 0 ]; then
-      info "Got ${HOST} address $(
+    if [ ${i} -gt 0 ]; then
+      info "Got the ${HOST} address $(
         getent ahosts ${HOST} |
         grep "STREAM ${HOST}" |
         cut -d ' ' -f 1 |
@@ -54,7 +57,7 @@ wait_for_dns () {
         sed -E "s/,$//"
       ) in ${i}s"
     else
-      debug "Got ${HOST} address $(
+      debug "Got the ${HOST} address $(
         getent ahosts ${HOST} |
         grep "STREAM ${HOST}" |
         cut -d ' ' -f 1 |
@@ -75,25 +78,36 @@ wait_for_tcp () {
   local TIMEOUT=$1; shift
   for URL in $*; do
     # Extract hostname and TCP port from URL
+    PROTO=$(sed -E "s;^${URL_PATTERN}$;\3;" <<< "${URL}")
     HOST=$(sed -E "s;^${URL_PATTERN}$;\5;" <<< "${URL}")
     PORT=$(sed -E "s;^${URL_PATTERN}$;\7;" <<< "${URL}")
+    case "${PROTO}" in
+    https)
+      : ${PORT:=443} ;;
+    *)
+      : ${PORT:=80} ;;
+    esac
     wait_for_dns ${TIMEOUT} ${HOST}
     local i=0
+    local after
+    local before="$(date "+%s")"
     while ! ncat -z ${HOST:=localhost} ${PORT:=80} >/dev/null 2>&1; do
-      if [ $i -eq 0 ]; then
-        info "Waiting for connection to tcp://${HOST}:${PORT} up to ${TIMEOUT}s"
+      if [ ${i} -eq 0 ]; then
+        info "Waiting for the connection to tcp://${HOST}:${PORT} up to ${TIMEOUT}s"
       fi
-      i=$((i+1))
-      if [ $i -gt ${TIMEOUT} ]; then
-        error "tcp://${HOST} connection timeout ${TIMEOUT}s has just expired"
+      after="$(date "+%s")"
+      i=$((i+1+after-before))
+      before="${after}"
+      if [ ${i} -gt ${TIMEOUT} ]; then
+        error "Connection to tcp://${HOST}:${PORT} timed out after ${i}s"
         exit 1
       fi
       sleep 1
     done
-    if [ $i -gt 0 ]; then
-      info "Got a connection to tcp://${HOST}:${PORT} in ${i}s"
+    if [ ${i} -gt 0 ]; then
+      info "Got the connection to tcp://${HOST}:${PORT} in ${i}s"
     else
-      debug "Got a connection to tcp://${HOST}:${PORT} in ${i}s"
+      debug "Got the connection to tcp://${HOST}:${PORT} in ${i}s"
     fi
   done
 }
@@ -107,21 +121,25 @@ wait_for_url () {
   for URL in $*; do
     wait_for_dns ${TIMEOUT} ${URL}
     local i=0
+    local after
+    local before="$(date "+%s")"
     while ! curl -fksS ${URL} >/dev/null 2>&1; do
-      if [ $i -eq 0 ]; then
-        info "Waiting for connection to ${URL} up to ${TIMEOUT}s"
+      if [ ${i} -eq 0 ]; then
+        info "Waiting for the connection to ${URL} up to ${TIMEOUT}s"
       fi
-      i=$((i+1))
-      if [ $i -gt ${TIMEOUT} ]; then
-        error "${URL} connection timeout ${TIMEOUT}s has just expired"
+      after="$(date "+%s")"
+      i=$((i+1+after-before))
+      before="${after}"
+      if [ ${i} -gt ${TIMEOUT} ]; then
+        error "Connection to ${URL} timed out after ${i}s"
         exit 1
       fi
       sleep 1
     done
-    if [ $i -gt 0 ]; then
-      info "Got a connection to ${URL} in ${i}s"
+    if [ ${i} -gt 0 ]; then
+      info "Got the connection to ${URL} in ${i}s"
     else
-      debug "Got a connection to ${URL} in ${i}s"
+      debug "Got the connection to ${URL} in ${i}s"
     fi
   done
 }
