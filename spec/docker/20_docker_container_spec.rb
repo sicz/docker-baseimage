@@ -103,7 +103,7 @@ describe "Docker container", :test => :docker_container do
       context "#wait_for_tcp" do
         # [url,                                   exit_status, match]
         [
-          ["#{ENV["SERVER_CRT_HOST"]}:7",         0, "Got the connection to tcp://#{ENV["SERVER_CRT_HOST"]}:7 in 0s"],
+          ["container.local:7",                   0, "Got the connection to tcp://container.local:7 in 0s"],
           ["simple-ca.local:443",                 0, "Got the connection to tcp://simple-ca.local:443 in 0s"],
           ["https://simple-ca.local:443/ca.crt",  0, "Got the connection to tcp://simple-ca.local:443 in 0s"],
           ["https://simple-ca.local/ca.crt",      0, "Got the connection to tcp://simple-ca.local:443 in 0s"],
