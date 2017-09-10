@@ -185,11 +185,11 @@ export CONFIG_MAKE_VARS
 
 # Build a new image and run tests for current configuration
 .PHONY: all
-all: build clean start wait logs test
+all: clean build start wait logs test
 
 # Build a new image and run tests for all configurations
 .PHONY: ci
-ci: build test-all
+ci: clean build test-all
 
 ### BUILD_TARGETS ##############################################################
 
