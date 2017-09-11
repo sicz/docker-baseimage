@@ -19,6 +19,11 @@ LABEL \
   org.label-schema.vcs-ref="${VCS_REF}" \
   org.label-schema.build-date="${BUILD_DATE}"
 
+ENV \
+  CHARSET="UTF-8" \
+  LANG="en_US.UTF-8" \
+  LC_ALL="en_US.UTF-8"
+
 ARG JQ_VERSION
 ARG RUNIT_VERSION
 ARG SU_EXEC_VERSION

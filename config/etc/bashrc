@@ -16,7 +16,6 @@ set rmstar
 # directories have a slash appended.
 set mark-symlinked-directories on
 
-export CHARSET=UTF-8
 export EDITOR=vi
 export HISTSIZE=1000
 export HISTFILESIZE=100000

@@ -19,6 +19,11 @@ LABEL \
   org.label-schema.vcs-ref="${VCS_REF}" \
   org.label-schema.build-date="${BUILD_DATE}"
 
+ENV \
+  CHARSET="UTF-8" \
+  LANG="en_US.UTF-8" \
+  LC_ALL="en_US.UTF-8"
+
 RUN set -exo pipefail; \
   # Upgrade the operating system
   apk upgrade --no-cache; \

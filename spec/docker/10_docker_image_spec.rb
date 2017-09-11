@@ -28,6 +28,20 @@ describe "Docker image", :test => :docker_image do
       subject { os[:release] }
       it { is_expected.to match(/^#{Regexp.escape(ENV["BASE_IMAGE_OS_VERSION"])}\./) }
     end
+    context "locale" do
+      context "CHARSET" do
+        subject { command("echo ${CHARSET}") }
+        it { expect(subject.stdout.strip).to eq("UTF-8") }
+      end
+      context "LANG" do
+        subject { command("echo ${LANG}") }
+        it { expect(subject.stdout.strip).to eq("en_US.UTF-8") }
+      end
+      context "LC_ALL" do
+        subject { command("echo ${LC_ALL}") }
+        it { expect(subject.stdout.strip).to eq("en_US.UTF-8") }
+      end
+    end
   end
 
   ### PACKAGES #################################################################
