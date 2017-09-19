@@ -42,7 +42,7 @@ RUN set -exo pipefail; \
     tini \
     ;
 
-COPY config /
+COPY rootfs /
 RUN set -exo pipefail; \
   chmod +x /docker-entrypoint.sh; \
   mkdir -p \

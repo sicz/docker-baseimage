@@ -87,7 +87,7 @@ RUN set -exo pipefail; \
   # Cleanup yum
   yum clean all
 
-COPY config /
+COPY rootfs /
 RUN set -exo pipefail; \
   chmod +x /docker-entrypoint.sh; \
   ln -s /etc/pki/tls/private /etc/ssl/private; \
