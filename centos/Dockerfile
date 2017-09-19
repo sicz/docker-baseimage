@@ -20,6 +20,7 @@ LABEL \
   org.label-schema.build-date="${BUILD_DATE}"
 
 ENV \
+  DOCKER_COMMAND="/bin/bash" \
   CHARSET="UTF-8" \
   LANG="en_US.UTF-8" \
   LC_ALL="en_US.UTF-8"
@@ -93,6 +94,4 @@ RUN set -exo pipefail; \
   mkdir -p /run/secrets
 
 ENTRYPOINT ["/sbin/tini", "--", "/usr/bin/env", "DOCKER_CONTAINER_START=true", "/docker-entrypoint.sh"]
-
-ENV DOCKER_COMMAND="/bin/bash"
 CMD ["${DOCKER_COMMAND}"]
