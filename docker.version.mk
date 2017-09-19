@@ -306,7 +306,7 @@ clean: docker-clean clean-secrets
 .PHONY: secrets
 secrets:
 	@$(COMPOSE_CMD) up $(COMPOSE_UP_OPTS) $(SIMPLE_CA_SERVICE_NAME)
-	@sleep 0.5
+	@sleep 1
 	@$(ECHO) "Copying secrets from container $(SIMPLE_CA_CONTAINER_NAME)"
 	@docker cp $(SIMPLE_CA_CONTAINER_NAME):/var/lib/simple-ca/secrets .
 
