@@ -52,7 +52,7 @@ services:
     environment:
       - DOCKER_ENTRYPOINT_DEBUG=true
       - DOCKER_ENTRYPOINT_INFO=true
-      # Wait until the tested baseimage is started
+      # Wait until the tested container is started
       - WAIT_FOR_TCP=baseimage.local:7
       - WAIT_FOR_TIMEOUT=5
     volumes:
@@ -69,7 +69,7 @@ services:
     environment:
       - DOCKER_ENTRYPOINT_DEBUG=true
       - DOCKER_ENTRYPOINT_INFO=true
-      # Wait until the tested baseimage is started
+      # Wait until the tested container is started
       - WAIT_FOR_TCP=baseimage.local:7
       - WAIT_FOR_TIMEOUT=5
     volumes:
