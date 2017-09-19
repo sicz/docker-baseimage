@@ -31,8 +31,8 @@ DOCKER_CONFIG		?= $(shell \
 				fi \
 			   )
 
-# Use the same service name for all configurations
-SERVICE_NAME		?= container
+# Use the same service name for all variants
+SERVICE_NAME		?= baseimage
 
 ### DEFAULT_CONFIG #############################################################
 
