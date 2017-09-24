@@ -18,7 +18,7 @@ jobs:
           command: |
             cd ${CI_DIR}
             make ci
-      - run:
+      - deploy:
           name: Save Docker image to workspace
           command: |
             cd ${CI_DIR}
