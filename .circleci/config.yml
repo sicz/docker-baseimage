@@ -1,11 +1,8 @@
 version: 2
 jobs:
-  build:
+  build: &build
     docker:
       - image: sicz/dockerspec
-    environment:
-      - MAKEFLAGS=--no-print-directory
-      - RSPEC_FORMAT=doc
     steps:
       - checkout
       - run:
@@ -17,24 +14,79 @@ jobs:
       - setup_remote_docker:
           version: 17.06.0-ce
       - run:
-          name: sicz/baseimage-alpine:3.6
-          working_directory: alpine/3.6
+          name: Build and test Docker image
           command: |
+            cd ${DOCKER_IMAGE_DIR}
             make ci
+      - deploy:
+          name: Save Docker image to workspace
+          command: |
+            cd ${DOCKER_IMAGE_DIR}
+            mkdir -p /tmp/workspace
+            make docker-save-image DOCKER_IMAGE_DEPOT=/tmp/workspace
+            ls -lh /tmp/workspace
+      - persist_to_workspace:
+          root: /tmp/workspace
+          paths:
+            - "*.image"
+
+  alpine-3.6:
+    <<: *build
+    environment:
+      - DOCKER_IMAGE_DIR=alpine/3.6
+      - MAKEFLAGS=--no-print-directory
+      - RSPEC_FORMAT=doc
+
+  alpine-edge:
+    <<: *build
+    environment:
+      - DOCKER_IMAGE_DIR=alpine/edge
+      - MAKEFLAGS=--no-print-directory
+      - RSPEC_FORMAT=doc
+
+  centos-7:
+    <<: *build
+    environment:
+      - DOCKER_IMAGE_DIR=centos/7
+      - MAKEFLAGS=--no-print-directory
+      - RSPEC_FORMAT=doc
+
+  publish:
+    docker:
+      - image: sicz/dockerspec
+    environment:
+      - MAKEFLAGS=--no-print-directory
+    steps:
+      - checkout
       - run:
-          name: sicz/baseimage-alpine:edge
-          working_directory: alpine/edge
+          name: Checkout make files
           command: |
-            make ci
-      - run:
-          name: sicz/baseimage-centos:7
-          working_directory: centos/7
-          command: |
-            make ci
+            cd ..
+            curl -sSL https://github.com/SICZ/Mk/archive/master.tar.gz | tar -xzf -
+            mv Mk-master Mk
+      - setup_remote_docker:
+          version: 17.06.0-ce
+      - attach_workspace:
+          at: /tmp/workspace
       - deploy:
           name: Push images to the Docker Hub
           command: |
             if [ "${CIRCLE_BRANCH}" == "master" ]; then
+              make docker-load-image DOCKER_IMAGE_DEPOT=/tmp/workspace
               docker login -u ${DOCKER_HUB_USER} -p ${DOCKER_HUB_PASSWD}
               make docker-push
             fi
+
+workflows:
+  version: 2
+
+  build:
+    jobs:
+      - alpine-3.6
+      - alpine-edge
+      - centos-7
+      - publish:
+          requires:
+            - alpine-3.6
+            - alpine-edge
+            - centos-7
