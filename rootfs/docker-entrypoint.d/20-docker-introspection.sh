@@ -4,7 +4,7 @@
 # - https://github.com/docker/docker/issues/8427
 # - https://github.com/docker/docker/pull/26331
 
-################################################################################
+### DOCKER_INTROSPECTION #######################################################
 
 # Docker introspection
 if [ -S /var/run/docker.sock ]; then
@@ -59,7 +59,7 @@ if [ -S /var/run/docker.sock ]; then
   )
 fi
 
-################################################################################
+### DOCKER_CONTAINER_NAME ######################################################
 
 # Fallback to container ID
 : ${DOCKER_CONTAINER_NAME:=${HOSTNAME}}

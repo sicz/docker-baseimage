@@ -1,6 +1,6 @@
 #!/bin/bash -e
 
-################################################################################
+### TRUSTED_CA_CERTS ###########################################################
 
 # Add CA certificate to trusted CA's bundle
 if [ -n "${CA_CRT_FILE}" -a -e "${CA_CRT_FILE}" ]; then

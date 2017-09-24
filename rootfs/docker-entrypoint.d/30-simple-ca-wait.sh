@@ -1,6 +1,6 @@
 #!/bin/bash -e
 
-################################################################################
+### WAIT_FOR_SIMPLE_CA #########################################################
 
 # Wait until the Simple CA service is started
 if [ -n "${SIMPLE_CA_URL}" ]; then

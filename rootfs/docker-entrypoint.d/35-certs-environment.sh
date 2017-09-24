@@ -1,13 +1,13 @@
 #!/bin/bash -e
 
-################################################################################
+### DIR_LOCATIONS ##############################################################
 
 # Default directory locations
 : ${CA_CRT_DIR:=/etc/ssl/certs}
 : ${SERVER_CRT_DIR:=/etc/ssl/certs}
 : ${SERVER_KEY_DIR:=/etc/ssl/private}
 
-################################################################################
+### CA_CRT #####################################################################
 
 # Default CA certificate file location
 if [ -e /run/secrets/ca.crt ]; then
@@ -16,7 +16,7 @@ else
   : ${CA_CRT_FILE:=${CA_CRT_DIR}/ca.crt}
 fi
 
-################################################################################
+### CA_CRT_BUNDLE ##############################################################
 
 # CentOS/Fedora/RHEL trusted CA certificates bundle
 if [ -e /etc/pki/tls/certs/ca-bundle.crt ]; then
@@ -25,7 +25,7 @@ fi
 # Default trusted CA certificates bundle
 : ${CA_CRT_BUNDLE_FILE:=/etc/ssl/certs/ca-certificates.crt}
 
-################################################################################
+### CA_USER ####################################################################
 
 # Default CA user name file location
 if [ -e /run/secrets/ca_user.name ]; then
@@ -41,7 +41,7 @@ else
   : ${CA_USER_PWD_FILE:=${SERVER_KEY_DIR}/ca_user.pwd}
 fi
 
-################################################################################
+### SERVER_CRT #################################################################
 
 # Default server certificate subject
 : ${SERVER_CRT_SUBJECT:=CN=${DOCKER_CONTAINER_NAME}}
@@ -67,7 +67,7 @@ elif [ -e ${SERVER_KEY_DIR}/server.pwd ]; then
   : ${SERVER_KEY_PWD_FILE:=${SERVER_KEY_DIR}/server.pwd}
 fi
 
-################################################################################
+### FILE_PERMISSIONS ###########################################################
 
 # Default server certificate, private key and passphrase files owner
 : ${DOCKER_GROUP:=${DOCKER_USER}}

@@ -1,6 +1,6 @@
 #!/bin/bash -e
 
-################################################################################
+### SERVER_PKCS12 ##############################################################
 
 # Convert server certificate and private key into PKCS12 file
 if [ -n "${SERVER_P12_FILE}" -a ! -e "${SERVER_P12_FILE}" ]; then
