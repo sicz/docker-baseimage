@@ -16,12 +16,12 @@ jobs:
       - run:
           name: Build and test Docker image
           command: |
-            cd ${BUILD_DIR}
+            cd ${CI_DIR}
             make ci
       - run:
           name: Save Docker image to workspace
           command: |
-            cd ${BUILD_DIR}
+            cd ${CI_DIR}
             mkdir -p /tmp/workspace
             make docker-save-image DOCKER_IMAGE_DEPOT=/tmp/workspace
             ls -lh /tmp/workspace
@@ -33,21 +33,21 @@ jobs:
   alpine-3.6:
     <<: *build
     environment:
-      - BUILD_DIR=alpine/3.6
+      - CI_DIR=alpine/3.6
       - MAKEFLAGS=--no-print-directory
       - RSPEC_FORMAT=doc
 
   alpine-edge:
     <<: *build
     environment:
-      - BUILD_DIR=alpine/edge
+      - CI_DIR=alpine/edge
       - MAKEFLAGS=--no-print-directory
       - RSPEC_FORMAT=doc
 
   centos-7:
     <<: *build
     environment:
-      - BUILD_DIR=centos/7
+      - CI_DIR=centos/7
       - MAKEFLAGS=--no-print-directory
       - RSPEC_FORMAT=doc
 
