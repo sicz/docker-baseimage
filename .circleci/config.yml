@@ -9,18 +9,13 @@ jobs:
     steps:
       - checkout
       - run:
-          name: Remote Docker engine version and images
-          command: |
-            docker version
-            docker image ls
-      - setup_remote_docker:
-          version: 17.06.0-ce
-      - run:
           name: Checkout make files
           command: |
             cd ..
             curl -sSL https://github.com/SICZ/Mk/archive/master.tar.gz | tar -xzf -
             mv Mk-master Mk
+      - setup_remote_docker:
+          version: 17.06.0-ce
       - run:
           name: sicz/baseimage-alpine:3.6
           working_directory: alpine/3.6
