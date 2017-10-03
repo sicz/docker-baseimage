@@ -33,20 +33,22 @@ wait_for_dns () {
     # Extract hostname from URL
     HOST=$(sed -E "s;^${URL_PATTERN}$;\5;" <<< "${URL}")
     local i=0
-    local after
-    local before="$(date "+%s")"
+    local j=0
+    local start="$(date "+%s")"
     while ! getent ahosts ${HOST:=localhost} >/dev/null 2>&1; do
       if [ ${i} -eq 0 ]; then
-        info "Waiting for ${HOST} name resolution up to ${TIMEOUT}s"
+        info "Waiting for ${HOST} name resolution up to ${TIMEOUT}s"§
       fi
-      after="$(date "+%s")"
-      i=$((i+1+after-before))
-      before="${after}"
-      if [ ${i} -gt ${TIMEOUT} ]; then
+      i=$(($(date "+%s")-start))
+      if [ ${i} -ge ${TIMEOUT} ]; then
         error "${HOST} name resolution timed out after ${i}s"
         exit 1
       fi
-      sleep 1
+      if [ "${i}" = "${j}" ]; then
+        sleep 1
+        i=$((i+1))
+      fi
+      j="${i}"
     done
     if [ ${i} -gt 0 ]; then
       info "Got the ${HOST} address $(
@@ -89,20 +91,22 @@ wait_for_tcp () {
     esac
     wait_for_dns ${TIMEOUT} ${HOST}
     local i=0
-    local after
-    local before="$(date "+%s")"
+    local j=0
+    local start="$(date "+%s")"
     while ! ncat -z ${HOST:=localhost} ${PORT:=80} >/dev/null 2>&1; do
       if [ ${i} -eq 0 ]; then
         info "Waiting for the connection to tcp://${HOST}:${PORT} up to ${TIMEOUT}s"
       fi
-      after="$(date "+%s")"
-      i=$((i+1+after-before))
-      before="${after}"
-      if [ ${i} -gt ${TIMEOUT} ]; then
+      i=$(($(date "+%s")-start))
+      if [ ${i} -ge ${TIMEOUT} ]; then
         error "Connection to tcp://${HOST}:${PORT} timed out after ${i}s"
         exit 1
       fi
-      sleep 1
+      if [ "${i}" = "${j}" ]; then
+        sleep 1
+        i=$((i+1))
+      fi
+      j="${i}"
     done
     if [ ${i} -gt 0 ]; then
       info "Got the connection to tcp://${HOST}:${PORT} in ${i}s"
@@ -121,20 +125,22 @@ wait_for_url () {
   for URL in $*; do
     wait_for_dns ${TIMEOUT} ${URL}
     local i=0
-    local after
-    local before="$(date "+%s")"
+    local j=0
+    local start="$(date "+%s")"
     while ! curl -fksS ${URL} >/dev/null 2>&1; do
       if [ ${i} -eq 0 ]; then
         info "Waiting for the connection to ${URL} up to ${TIMEOUT}s"
       fi
-      after="$(date "+%s")"
-      i=$((i+1+after-before))
-      before="${after}"
-      if [ ${i} -gt ${TIMEOUT} ]; then
+      i=$(($(date "+%s")-start))
+      if [ ${i} -ge ${TIMEOUT} ]; then
         error "Connection to ${URL} timed out after ${i}s"
         exit 1
       fi
-      sleep 1
+      if [ "${i}" = "${j}" ]; then
+        sleep 1
+        i=$((i+1))
+      fi
+      j="${i}"
     done
     if [ ${i} -gt 0 ]; then
       info "Got the connection to ${URL} in ${i}s"
