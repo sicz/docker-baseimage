@@ -57,10 +57,10 @@ RUN set -exo pipefail; \
   # Install the development dependencies
   yum history new || yum history new; \
   yum install -y \
-      gcc \
-      glibc-static \
-      make \
-      ; \
+    gcc \
+    glibc-static \
+    make \
+    ; \
   # Install runit
   mkdir /package; \
   cd /package; \
