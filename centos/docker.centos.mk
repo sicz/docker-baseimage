@@ -4,7 +4,7 @@ BASE_IMAGE_NAME		?= centos
 BASE_IMAGE_TAG		?= $(BASE_IMAGE_OS_VERSION)
 
 BASE_IMAGE_OS_NAME	?= CentOS
-BASE_IMAGE_OS_URL	?= https://alpinelinux.org
+BASE_IMAGE_OS_URL	?= https://centos.org
 
 ### BUILD #######################################################################
 
