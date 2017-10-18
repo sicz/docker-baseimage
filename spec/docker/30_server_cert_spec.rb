@@ -40,8 +40,8 @@ describe "Server certificate", :test => :server_cert do
       it { is_expected.to be_certificate }
       it { is_expected.to be_valid }
     end
-    its(:subject) { is_expected.to match(/^\/?#{crt_subj.gsub(/=/, ' ?= ?')}$/) }
-    its(:issuer) { is_expected.to match(/^\/?CN ?= ?Simple CA$/) }
+    # its(:subject) { is_expected.to match(/^\/?#{crt_subj.gsub(/=/, ' ?= ?')}$/) }
+    # its(:issuer) { is_expected.to match(/^\/?CN ?= ?Simple CA$/) }
     its(:validity_in_days) { is_expected.to be > 3600 }
     context "subject_alt_names" do
       if ! ENV["SERVER_CRT_HOST"].nil? then
