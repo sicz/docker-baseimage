@@ -36,14 +36,14 @@ RUN set -exo pipefail; \
   cat /etc/centos-release; \
   # Install the packages
   yum install -y \
-      bind-utils \
-      iproute \
-      less \
-      net-tools \
-      # nmap-ncat \
-      openssl \
-      which \
-      ; \
+    bind-utils \
+    iproute \
+    less \
+    net-tools \
+    # nmap-ncat \
+    openssl \
+    which \
+    ; \
   # CentOS 7 contains ncat an obsoleted version of ncat,
   # docker-entrypoint.d/02-wait-for.sh requires the ncat version 7.x
   rpm -vhU https://nmap.org/dist/ncat-7.40-1.x86_64.rpm; \
