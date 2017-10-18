@@ -12,7 +12,7 @@ Docker base images modified for Docker-friendliness.
 ### Alpine Linux based image
 
 This image only contains essential components:
-* Official [Alpine Linux image](https://store.docker.com/images/alpine) as a base system
+* Official [Alpine Linux image](https://hub.docker.com/_/alpine/) as a base system
 * Modular Docker entrypoint
 * `bash` as a shell
 * `ca-certificates` contains common CA certificates
@@ -27,7 +27,7 @@ This image only contains essential components:
 ### CentOS based image
 
 This image only contains essential components:
-* Official [CentOS image](https://store.docker.com/images/centos) as a base system
+* Official [CentOS image](https://hub.docker.com/_/centos/) as a base system
 * Modular Docker entrypoint
 * `bash` as a shell
 * `ca-certificates` contains common CA certificates
