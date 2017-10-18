@@ -37,10 +37,11 @@ RUN set -exo pipefail; \
     jq \
     libressl \
     nmap-ncat \
-    runit \
     su-exec \
+    supervisor \
     tini \
-    ;
+    ; \
+  rm -f /etc/supervisord.conf
 
 COPY rootfs /
 RUN set -exo pipefail; \

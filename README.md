@@ -20,7 +20,7 @@ This image only contains essential components:
 * `jq` for JSON parsing
 * `libressl` for PKI and TLS
 * `ncat` for bulk data transfers using various protocols
-* `runit` for services supervision and management
+* `supervisord` for services supervision and management
 * `su_exec` for process impersonation
 * `tini` as an init process
 
@@ -35,7 +35,7 @@ This image only contains essential components:
 * `jq` for JSON parsing
 * `openssl` for PKI and TLS
 * `ncat` for bulk data transfers using various protocols
-* `runit` for services supervision and management
+* `supervisord` for services supervision and management
 * `su_exec` for process impersonation
 * `tini` as an init process
 
@@ -50,7 +50,7 @@ This image only contains essential components:
 * `jq` for JSON parsing
 * `openssl` for PKI and TLS
 * `ncat` for bulk data transfers using various protocols
-* `runit` for services supervision and management
+* `supervisord` for services supervision and management
 * `su_exec` for process impersonation
 * `tini` as an init process
 
@@ -72,6 +72,7 @@ git clone https://github.com/sicz/docker-baseimage
 The project contains Docker image variant directories:
 * `alpine` - Alpine Linux base images
 * `centos` - CentOS base images
+* `debian` - Debian base images
 
 Use the command `make` in the project directory and image variant directories:
 ```bash
@@ -173,9 +174,9 @@ COPY dockerfile-entrypoint.d /dockerfile-entrypoint.d
 ### Multiple services in one container
 
 In case you need to run multiple services within one container, you can use the
-`runit`. In short, to create a service create /etc/service/<SERVICE>/run script
-which at the end execs into the service executable you want to run (and supervise
-to keep them running).
+`supervisord`. In short, to create a service create /etc/supervisor/<SERVICE>.ini
+script which at the end execs into the service executable you want to run (and
+supervise to keep them running).
 
 Example `services/<SERVICE>/run`:
 ```bash
@@ -209,4 +210,4 @@ This project is licensed under the Apache License, Version 2.0 - see the
 ## Acknowledgments
 
 This project was inspired by
-[baseimage-docker](https://hub.docker.com/r/phusion/baseimage/).
+[baseimage-docker](https://github.com/phusion/baseimage-docker).

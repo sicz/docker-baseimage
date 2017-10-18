@@ -44,32 +44,20 @@ RUN set -exo pipefail; \
     net-tools \
     # nmap-ncat \
     openssl \
+    supervisor \
     which \
     ; \
-  # CentOS 7 contains ncat an obsoleted version of ncat,
-  # docker-entrypoint.d/02-wait-for.sh requires the ncat version 7.x
-  rpm -vhU https://nmap.org/dist/ncat-7.40-1.x86_64.rpm; \
-  # Install tini
-  curl -fL -o /sbin/tini https://github.com/krallin/tini/releases/download/v${TINI_VERSION}/tini; \
-  chmod +x /sbin/tini; \
+  rm -rf /etc/supervisor/*; \
   # Install the development dependencies
-  yum history new || yum history new; \
+  yum history new; \
   yum install -y \
     gcc \
     glibc-static \
     make \
     ; \
-  # Install runit
-  mkdir /package; \
-  cd /package; \
-  curl http://smarden.org/runit/runit-${RUNIT_VERSION}.tar.gz | tar xzf -; \
-  cd admin/runit-${RUNIT_VERSION}; \
-  package/compile; \
-  package/check; \
-  mv command/* /sbin; \
-  mkdir -p /etc/service; \
-  cd /; \
-  rm -rf /package; \
+  # CentOS 7 contains ncat an obsoleted version of ncat,
+  # docker-entrypoint.d/02-wait-for.sh requires the ncat version 7.x
+  rpm -vhU https://nmap.org/dist/ncat-7.40-1.x86_64.rpm; \
   # Install su-exec
   curl -fL https://github.com/ncopa/su-exec/archive/v${SU_EXEC_VERSION}.tar.gz \
     | tar xfz - -C /tmp; \
@@ -80,6 +68,9 @@ RUN set -exo pipefail; \
   cd ..; \
   rm -rf su-exec-${SU_EXEC_VERSION}; \
   cd /; \
+  # Install tini
+  curl -fL -o /sbin/tini https://github.com/krallin/tini/releases/download/v${TINI_VERSION}/tini; \
+  chmod +x /sbin/tini; \
   # Uninstall the development dependencies
   yum history -y undo 1; \
   # Cleanup yum

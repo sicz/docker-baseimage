@@ -57,12 +57,12 @@ describe "Docker image", :test => :docker_image do
         "bash",
         "ca-certificates",
         "curl",
-        ["jq",                    ENV["JQ_VERSION"]],
+        "jq",
         "libressl",
         "nmap-ncat",
-        ["runit",                 ENV["RUNIT_VERSION"]],
-        ["su-exec",               ENV["SU_EXEC_VERSION"]],
-        ["tini",                  ENV["TINY_VERSION"]],
+        "su-exec",
+        "supervisor",
+        "tini",
       ]
     when "centos"
       packages += [
@@ -79,6 +79,7 @@ describe "Docker image", :test => :docker_image do
         # "nmap-ncat",
         "ncat",
         "openssl",
+        "supervisor",
         "which",
       ]
     when "debian"
@@ -86,14 +87,13 @@ describe "Docker image", :test => :docker_image do
         "bash",
         "ca-certificates",
         "curl",
-        # "iproute",
         "jq",
         "less",
         "net-tools",
         "nmap",
         "openssl",
         "procps",
-        "runit",
+        "supervisor",
       ]
     end
 
@@ -117,8 +117,6 @@ describe "Docker image", :test => :docker_image do
     case ENV["BASE_IMAGE_NAME"]
     when "centos"
       commands += [
-        "/sbin/runit",
-        "/sbin/runsvdir",
         "/sbin/su-exec",
         ["/sbin/tini",              ENV["TINI_VERSION"]],
       ]
@@ -150,6 +148,7 @@ describe "Docker image", :test => :docker_image do
     # [file, mode, user, group, [expectations]]
     files = [
       ["/docker-entrypoint.sh",                           755, "root", "root", [:be_file, :eq_sha256sum]],
+      ["/docker-entrypoint.d",                            755, "root", "root", [:be_directory]],
       ["/docker-entrypoint.d/01-lib-messages.sh",         644, "root", "root", [:be_file, :eq_sha256sum]],
       ["/docker-entrypoint.d/02-lib-wait-for.sh",         644, "root", "root", [:be_file, :eq_sha256sum]],
       ["/docker-entrypoint.d/10-default-command.sh",      644, "root", "root", [:be_file, :eq_sha256sum]],
@@ -165,8 +164,12 @@ describe "Docker image", :test => :docker_image do
       ["/etc/inputrc",                                    644, "root", "root", [:be_file, :eq_sha256sum]],
       ["/etc/profile",                                    644, "root", "root", [:be_file, :eq_sha256sum]],
       ["/etc/ssl/openssl.cnf",                            644, "root", "root", [:be_file, :eq_sha256sum]],
+      ["/etc/supervisor",                                 755, "root", "root", [:be_directory]],
+      ["/etc/supervisor/supervisord.conf",                644, "root", "root", [:be_file, :eq_sha256sum]],
       ["/root/.bash_logout",                              644, "root", "root", [:be_file, :eq_sha256sum]],
       ["/root/.bash_profile",                             644, "root", "root", [:be_file, :eq_sha256sum]],
+      ["/var/log/docker.log",                             nil, "root", "root", [:be_pipe]],
+      ["/var/log/docker.err",                             nil, "root", "root", [:be_pipe]],
     ]
 
     files.each do |file, mode, user, group, expectations|
@@ -174,6 +177,7 @@ describe "Docker image", :test => :docker_image do
       context file(file) do
         it { is_expected.to exist }
         it { is_expected.to be_file }       if expectations.include?(:be_file)
+        it { is_expected.to be_pipe }       if expectations.include?(:be_pipe)
         it { is_expected.to be_directory }  if expectations.include?(:be_directory)
         it { is_expected.to be_mode(mode) } unless mode.nil?
         it { is_expected.to be_owned_by(user) } unless user.nil?

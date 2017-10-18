@@ -16,4 +16,30 @@ if [ -n "${DOCKER_CONTAINER_START}" ]; then
   fi
 fi
 
+### DOCKER_LOGS ################################################################
+
+# Default Docker log files owner
+if [ -n "${DOCKER_USER}" ]; then
+  : ${DOCKER_LOG_FILE_OWNER:=${DOCKER_USER}:${DOCKER_GROUP:-${DOCKER_USER}}}
+fi
+
+# Redirect logs to the Docker console
+# - https://github.com/docker/docker/issues/6880#issuecomment-170214851
+if [ -n "${DOCKER_LOG_FILE}" -a ! -e ${DOCKER_LOG_FILE} ]; then
+  info "Creating ${DOCKER_LOG_FILE}"
+  mkfifo -m ${DOCKER_LOG_FILE_MODE:-600} ${DOCKER_LOG_FILE}
+  if [ -n "${DOCKER_LOG_FILE_OWNER}" ]; then
+    chown ${DOCKER_LOG_FILE_OWNER} ${DOCKER_LOG_FILE}
+  fi
+  cat <> ${DOCKER_LOG_FILE} &
+fi
+if [ -n "${DOCKER_ERR_FILE}" -a ! -e ${DOCKER_ERR_FILE} ]; then
+  info "Creating ${DOCKER_ERR_FILE}"
+  mkfifo -m ${DOCKER_LOG_FILE_MODE:-600} ${DOCKER_ERR_FILE}
+  if [ -n "${DOCKER_LOG_FILE_OWNER}" ]; then
+    chown ${DOCKER_LOG_FILE_OWNER} ${DOCKER_ERR_FILE}
+  fi
+  cat <> ${DOCKER_ERR_FILE} 1>&2 &
+fi
+
 ################################################################################

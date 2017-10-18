@@ -59,9 +59,9 @@ RUN set -exo pipefail; \
   apt upgrade -y; \
   # Debian release
   . /etc/os-release; \
-  echo "${PRETTY_NAME}" > /etc/debian-release; \
+  ln -s /etc/debian_version /etc/debian-release; \
   cat /etc/debian-release; \
-  # Install the packages
+  # Install packages
   apt install -y --no-install-recommends \
     ca-certificates \
     curl \
@@ -72,9 +72,10 @@ RUN set -exo pipefail; \
     nmap \
     openssl \
     procps \
-    runit \
+    supervisor \
     ; \
-  # Install the development dependencies
+  rm -rf /etc/supervisord.conf /etc/supervisord.d; \
+  # Install development dependencies
   apt install -y \
       gcc \
       make \
@@ -92,7 +93,7 @@ RUN set -exo pipefail; \
   # Install tini
   curl -fL -o /sbin/tini https://github.com/krallin/tini/releases/download/v${TINI_VERSION}/tini; \
   chmod +x /sbin/tini; \
-  # Uninstall the development dependencies
+  # Uninstall development dependencies
   apt remove -y \
     gcc \
     make \
@@ -104,7 +105,6 @@ RUN set -exo pipefail; \
 COPY rootfs /
 RUN set -exo pipefail; \
   chmod +x /docker-entrypoint.sh; \
-  # ln -s /etc/pki/tls/private /etc/ssl/private; \
   mkdir -p /run/secrets
 
 ENTRYPOINT ["/sbin/tini", "--", "/usr/bin/env", "DOCKER_CONTAINER_START=true", "/docker-entrypoint.sh"]
