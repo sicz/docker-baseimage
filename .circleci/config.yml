@@ -51,6 +51,13 @@ jobs:
       - MAKEFLAGS=--no-print-directory
       - RSPEC_FORMAT=doc
 
+  debian-9:
+    <<: *build
+    environment:
+      - DOCKER_IMAGE_DIR=debian/9
+      - MAKEFLAGS=--no-print-directory
+      - RSPEC_FORMAT=doc
+
   publish:
     docker:
       - image: sicz/dockerspec
@@ -85,8 +92,10 @@ workflows:
       - alpine-3.6
       - alpine-edge
       - centos-7
+      - debian-9
       - publish:
           requires:
             - alpine-3.6
             - alpine-edge
             - centos-7
+            - debian-9
