@@ -71,6 +71,7 @@ describe "Docker image", :test => :docker_image do
         "ca-certificates",
         "curl",
         "iproute",
+        "jq",
         "less",
         "net-tools",
         # CentOS 7 contains ncat an obsoleted version of ncat,
@@ -116,7 +117,6 @@ describe "Docker image", :test => :docker_image do
     case ENV["BASE_IMAGE_NAME"]
     when "centos"
       commands += [
-        ["/usr/bin/jq",             ENV["JQ_VERSION"]],
         "/sbin/runit",
         "/sbin/runsvdir",
         "/sbin/su-exec",

@@ -25,7 +25,6 @@ ENV \
   LANG="en_US.UTF-8" \
   LC_ALL="en_US.UTF-8"
 
-ARG JQ_VERSION
 ARG RUNIT_VERSION
 ARG SU_EXEC_VERSION
 ARG TINI_VERSION
@@ -36,8 +35,11 @@ RUN set -exo pipefail; \
   cat /etc/centos-release; \
   # Install the packages
   yum install -y \
+    epel-release; \
+  yum install -y \
     bind-utils \
     iproute \
+    jq \
     less \
     net-tools \
     # nmap-ncat \
@@ -47,10 +49,6 @@ RUN set -exo pipefail; \
   # CentOS 7 contains ncat an obsoleted version of ncat,
   # docker-entrypoint.d/02-wait-for.sh requires the ncat version 7.x
   rpm -vhU https://nmap.org/dist/ncat-7.40-1.x86_64.rpm; \
-  # Install jq
-  curl -fL -o /usr/bin/jq https://github.com/stedolan/jq/releases/download/jq-${JQ_VERSION}/jq-linux64; \
-  chmod +x /usr//bin/jq; \
-  strip /usr//bin/jq; \
   # Install tini
   curl -fL -o /sbin/tini https://github.com/krallin/tini/releases/download/v${TINI_VERSION}/tini; \
   chmod +x /sbin/tini; \

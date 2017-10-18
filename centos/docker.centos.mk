@@ -8,8 +8,7 @@ BASE_IMAGE_OS_URL	?= https://centos.org
 
 ### BUILD #######################################################################
 
-BUILD_VARS		+= JQ_VERSION \
-			   RUNIT_VERSION \
+BUILD_VARS		+= RUNIT_VERSION \
 			   SU_EXEC_VERSION \
 			   TINI_VERSION
 
