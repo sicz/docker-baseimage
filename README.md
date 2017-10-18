@@ -39,6 +39,21 @@ This image only contains essential components:
 * `su_exec` for process impersonation
 * `tini` as an init process
 
+### Debian based image
+
+This image only contains essential components:
+* Official [Debian image](https://hub.docker.com/_/debian/) as a base system
+* Modular Docker entrypoint
+* `bash` as a shell
+* `ca-certificates` contains common CA certificates
+* `curl` for transferring data using various protocols
+* `jq` for JSON parsing
+* `openssl` for PKI and TLS
+* `ncat` for bulk data transfers using various protocols
+* `runit` for services supervision and management
+* `su_exec` for process impersonation
+* `tini` as an init process
+
 ## Getting started
 
 These instructions will get you a copy of the project up and running on your
@@ -118,9 +133,9 @@ FROM sicz/baseimage-alpine
 ENV DOCKER_COMMAND=MY_COMMAND
 ENV DOCKER_USER=MY_USER
 # Create an user account
-RUN set -ex && adduser -D -H -u 1000 ${DOCKER_USER}
+RUN adduser -D -H -u 1000 ${DOCKER_USER}
 # Install some packages
-RUN set -ex && apk add --no-cache SOME_PACKAGES
+RUN apk add --no-cache SOME_PACKAGES
 # Copy your own entrypoint scripts
 COPY dockerfile-entrypoint.d /dockerfile-entrypoint.d
 ```
@@ -133,9 +148,24 @@ FROM sicz/baseimage-centos
 ENV DOCKER_COMMAND=MY_COMMAND
 ENV DOCKER_USER=MY_USER
 # Create an user account
-RUN set -ex && adduser -M -U -u 1000 ${DOCKER_USER}
+RUN adduser -M -U -u 1000 ${DOCKER_USER}
 # Install some packages
-RUN set -ex && yum install -y SOME_PACKAGES && yum clean all
+RUN yum install -y SOME_PACKAGES && yum clean all
+# Copy your own entrypoint scripts
+COPY dockerfile-entrypoint.d /dockerfile-entrypoint.d
+```
+
+### Debian base image
+
+You can start with this sample `Dockerfile` file:
+```Dockerfile
+FROM sicz/baseimage-debian
+ENV DOCKER_COMMAND=MY_COMMAND
+ENV DOCKER_USER=MY_USER
+# Create an user account
+RUN adduser --no-create-home --uid ${DOCKER_USER}
+# Install some packages
+RUN apt update && apt install -y SOME_PACKAGES && rm -rf /var/lib/apt/lists/*
 # Copy your own entrypoint scripts
 COPY dockerfile-entrypoint.d /dockerfile-entrypoint.d
 ```

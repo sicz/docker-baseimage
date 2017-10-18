@@ -40,8 +40,8 @@ describe "Server certificate", :test => :server_cert do
       it { is_expected.to be_certificate }
       it { is_expected.to be_valid }
     end
-    its(:subject) { is_expected.to eq "/#{crt_subj}" }
-    its(:issuer) { is_expected.to eq "/CN=Simple CA" }
+    its(:subject) { is_expected.to match(/^\/?#{crt_subj.gsub(/=/, ' ?= ?')}$/) }
+    its(:issuer) { is_expected.to match(/^\/?CN ?= ?Simple CA$/) }
     its(:validity_in_days) { is_expected.to be > 3600 }
     context "subject_alt_names" do
       if ! ENV["SERVER_CRT_HOST"].nil? then
@@ -105,7 +105,7 @@ describe "Server certificate", :test => :server_cert do
       subject { command("openssl pkcs12 -in #{p12} -passin file:#{key_pwd} -noout -info") }
       it "shoud be valid" do
         expect(subject.exit_status).to eq(0)
-        expect(subject.stderr).to match("MAC verified OK")
+        expect(subject.stderr).to match(/^MAC(:sha1)? Iteration 2048$/)
       end
       it "should be encrypted" do
         expect(subject.stderr).to match(/^PKCS7 Encrypted data: pbeWithSHA1And3-KeyTripleDES-CBC, Iteration 2048$/)

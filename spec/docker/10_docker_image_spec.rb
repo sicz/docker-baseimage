@@ -80,6 +80,20 @@ describe "Docker image", :test => :docker_image do
         "openssl",
         "which",
       ]
+    when "debian"
+      packages += [
+        "bash",
+        "ca-certificates",
+        "curl",
+        # "iproute",
+        "jq",
+        "less",
+        "net-tools",
+        "nmap",
+        "openssl",
+        "procps",
+        "runit",
+      ]
     end
 
     packages.each do |package, version, installer|
@@ -105,6 +119,11 @@ describe "Docker image", :test => :docker_image do
         ["/usr/bin/jq",             ENV["JQ_VERSION"]],
         "/sbin/runit",
         "/sbin/runsvdir",
+        "/sbin/su-exec",
+        ["/sbin/tini",              ENV["TINI_VERSION"]],
+      ]
+    when "debian"
+      commands += [
         "/sbin/su-exec",
         ["/sbin/tini",              ENV["TINI_VERSION"]],
       ]

@@ -15,6 +15,7 @@ SHELL			+= -e
 # Docker image variants
 DOCKER_VARIANTS		+= alpine \
 			   centos \
+			   debian
 
 # Make targets propagated to all Docker image variants
 DOCKER_VARIANT_TARGETS	+= build \
