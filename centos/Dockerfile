@@ -74,7 +74,8 @@ RUN set -exo pipefail; \
   # Uninstall the development dependencies
   yum history -y undo 1; \
   # Cleanup yum
-  yum clean all
+  yum clean all; \
+  rm -rf /var/cache/yum/*
 
 COPY rootfs /
 RUN set -exo pipefail; \
