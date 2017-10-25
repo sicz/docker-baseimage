@@ -51,4 +51,3 @@ RUN set -exo pipefail; \
     /run/secrets
 
 ENTRYPOINT ["/sbin/tini", "--", "/usr/bin/env", "DOCKER_CONTAINER_START=true", "/docker-entrypoint.sh"]
-CMD ["${DOCKER_COMMAND}"]
