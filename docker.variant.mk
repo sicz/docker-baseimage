@@ -18,6 +18,7 @@ DOCKER_VERSION_TARGETS	+= build \
 			   ci \
 			   clean \
 			   docker-pull \
+			   docker-pull-baseimage \
 			   docker-pull-dependencies \
 			   docker-pull-image \
 			   docker-pull-testimage \
