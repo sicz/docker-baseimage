@@ -37,7 +37,7 @@ wait_for_dns () {
     local start="$(date "+%s")"
     while ! getent ahosts ${HOST:=localhost} >/dev/null 2>&1; do
       if [ ${i} -eq 0 ]; then
-        info "Waiting for ${HOST} name resolution up to ${TIMEOUT}s"§
+        info "Waiting for ${HOST} name resolution up to ${TIMEOUT}s"
       fi
       i=$(($(date "+%s")-start))
       if [ ${i} -ge ${TIMEOUT} ]; then
