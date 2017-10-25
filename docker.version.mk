@@ -68,7 +68,7 @@ CA_CRT_FILE		?= /run/secrets/ca.crt
 CA_USER_NAME_FILE	?= /run/secrets/ca_user.name
 CA_USER_PWD_FILE	?= /run/secrets/ca_user.pwd
 SERVER_CRT_HOST		?= $(SERVICE_NAME).local
-SERVER_KEY_PWD_FILE	?= /run/secrets/server.pwd
+SERVER_KEY_PWD_FILE	?= /run/secrets/ca_user.pwd
 SERVER_P12_FILE		?= /etc/ssl/private/server.p12
 endif
 
@@ -295,7 +295,7 @@ restart: stop start
 
 # Remove the containers
 .PHONY: down rm
-down rm: docker-rm
+down rm: docker-rm clean-secrets
 
 # Remove all containers and work files
 .PHONY: clean
@@ -304,7 +304,6 @@ clean: docker-clean clean-secrets
 ### SIMPLE_CA_TARGETS ##########################################################
 
 # Create the Simple CA secrets
-.PHONY: secrets
 secrets:
 	@$(COMPOSE_CMD) up $(COMPOSE_UP_OPTS) $(SIMPLE_CA_SERVICE_NAME)
 	@sleep 1
@@ -314,15 +313,9 @@ secrets:
 # Clean the Simple CA secrets
 .PHONY: clean-secrets
 clean-secrets:
-	@SECRET_FILES=$$(ls secrets/*.crt secrets/*.key secrets/*.pwd secrets/*.name 2> /dev/null | tr '\n' ' ' || true); \
-	 if [ -n "$${SECRET_FILES}" ]; then \
-		$(ECHO) "Removing secrets: $${SECRET_FILES}"; \
-		chmod u+w $${SECRET_FILES}; \
-		rm -f $${SECRET_FILES}; \
-	 fi
 	@if [ -e secrets ]; then \
 		$(ECHO) "Removing secrets directory"; \
-		rmdir secrets; \
+		rm -rf secrets; \
 	 fi
 
 ### MK_DOCKER_IMAGE ############################################################
