@@ -31,11 +31,13 @@ ARG TINI_VERSION
 
 RUN set -exo pipefail; \
   # Update the operating system
+  rpm --import "file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-${DOCKER_IMAGE_TAG}"; \
   yum update -y; \
   cat /etc/centos-release; \
   # Install the packages
   yum install -y \
     epel-release; \
+  rpm --import "file:///etc/pki/rpm-gpg/RPM-GPG-KEY-EPEL-${DOCKER_IMAGE_TAG}"; \
   yum install -y \
     bind-utils \
     iproute \
