@@ -54,14 +54,14 @@ if [ -n "${SIMPLE_CA_URL}" ]; then
       tr "\n" "," |
       sed "s/,$//"
     )"
-    debug "DN:  ${SERVER_CRT_SUBJECT}"
-    debug "DNS: ${SERVER_CRT_REQ_HOST}"
-    debug "IP:  ${SERVER_CRT_REQ_IP}"
-    debug "OID: ${SERVER_CRT_OID}"
+    debug "SUBJ:   ${SERVER_CRT_SUBJECT}"
+    debug "DNS:    ${SERVER_CRT_REQ_HOST}"
+    debug "IP:     ${SERVER_CRT_REQ_IP}"
+    debug "OID:    ${SERVER_CRT_OID}"
 
     # Create server private key and certificate
     openssl req \
-      -subj "/${SERVER_CRT_SUBJECT}" \
+      -subj "${SERVER_CRT_SUBJECT}" \
       -newkey rsa:2048 \
       -keyout "${SERVER_KEY_FILE}" \
       -passout "pass:${SERVER_KEY_PWD}" | \
@@ -70,7 +70,7 @@ if [ -n "${SIMPLE_CA_URL}" ]; then
       --user "${CA_USER_NAME}:${CA_USER_PWD}" \
       --data-binary @- \
       --output "${SERVER_CRT_FILE}" \
-      "${SIMPLE_CA_URL}/sign?dn=${SERVER_CRT_SUBJECT}&dns=${SERVER_CRT_REQ_HOST}&ip=${SERVER_CRT_REQ_IP}&rid=${SERVER_CRT_OID}"
+      "${SIMPLE_CA_URL}/sign?subj=${SERVER_CRT_SUBJECT}&dns=${SERVER_CRT_REQ_HOST}&ip=${SERVER_CRT_REQ_IP}&rid=${SERVER_CRT_OID}"
 
     # Set certificate and private key files permission
     if [ -n "${SERVER_CRT_FILE_OWNER}" ]; then

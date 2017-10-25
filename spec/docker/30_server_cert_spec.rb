@@ -8,8 +8,10 @@ describe "Server certificate", :test => :server_cert do
 
   ### CONFIG ###################################################################
 
+  ca_subj     = "/CN=Simple CA"
+
   crt         = ENV["SERVER_CRT_FILE"]        || "/etc/ssl/certs/server.crt"
-  crt_subj    = ENV["SERVER_CRT_SUBJECT"]     || "CN=#{ENV["CONTAINER_NAME"]}"
+  crt_subj    = ENV["SERVER_CRT_SUBJECT"]     || "/CN=#{ENV["CONTAINER_NAME"]}"
   crt_user    = ENV["SERVER_CRT_FILE_USER"]   || "root"
   crt_group   = ENV["SERVER_CRT_FILE_GROUP"]  || "root"
   crt_mode    = ENV["SERVER_CRT_FILE_MODE"]   || 444
@@ -26,6 +28,19 @@ describe "Server certificate", :test => :server_cert do
   p12_group   = ENV["SERVER_KEY_FILE_GROUP"]  || "root"
   p12_mode    = ENV["SERVER_KEY_FILE_MODE"]   || 440
 
+  ca_subj_dn   = ca_subj[1..-1]
+    .split(/\//)
+    .map { |attribute| attribute.sub(/^(\w+)=/, '\1 = ') }
+    .join(", ")
+    # .reverse
+
+  crt_subj_dn = crt_subj[1..-1]
+    .split(/\//)
+    .map { |attribute| attribute.sub(/^(\w+)=/, '\1 = ') }
+    .join(", ")
+  #crt_subj_dn = crt_subj.gsub(/(?<!^)\/(\w+)=/, '(?:/|, ?)\1 ?= ?').sub(/^\/(\w+)=/, '\1 ?= ?')
+
+
   ### CERTIFICATE ##############################################################
 
   describe x509_certificate(crt) do
@@ -40,8 +55,8 @@ describe "Server certificate", :test => :server_cert do
       it { is_expected.to be_certificate }
       it { is_expected.to be_valid }
     end
-    its(:subject) { is_expected.to match(/^\/?#{crt_subj.gsub(/=/, ' ?= ?')}$/) }
-    its(:issuer) { is_expected.to match(/^\/?CN ?= ?Simple CA$/) }
+    its(:issuer) { is_expected.to match(/^#{ca_subj}|#{ca_subj_dn}$/) }
+    its(:subject) { is_expected.to match(/^#{crt_subj}|#{crt_subj_dn}$/) }
     its(:validity_in_days) { is_expected.to be > 3600 }
     context "subject_alt_names" do
       if ! ENV["SERVER_CRT_HOST"].nil? then
