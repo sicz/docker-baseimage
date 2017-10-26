@@ -9,7 +9,7 @@ msg() {
   local TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
   ENTRYPOINT=$(basename ${ENTRYPOINT})
 
-  echo "$(printf "[%-25s][%-5s][%-25s] $*" ${TIMESTAMP} ${LEVEL} ${ENTRYPOINT})"
+  echo "$(printf "[%-24s][%-5s][%-25s] $*" ${TIMESTAMP} ${LEVEL} ${ENTRYPOINT})"
 }
 
 ### MESSAGES ###################################################################
