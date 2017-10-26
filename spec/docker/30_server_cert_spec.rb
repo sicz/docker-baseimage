@@ -32,14 +32,11 @@ describe "Server certificate", :test => :server_cert do
     .split(/\//)
     .map { |attribute| attribute.sub(/^(\w+)=/, '\1 = ') }
     .join(", ")
-    # .reverse
 
   crt_subj_dn = crt_subj[1..-1]
     .split(/\//)
     .map { |attribute| attribute.sub(/^(\w+)=/, '\1 = ') }
     .join(", ")
-  #crt_subj_dn = crt_subj.gsub(/(?<!^)\/(\w+)=/, '(?:/|, ?)\1 ?= ?').sub(/^\/(\w+)=/, '\1 ?= ?')
-
 
   ### CERTIFICATE ##############################################################
 
