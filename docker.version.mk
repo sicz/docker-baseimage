@@ -68,7 +68,7 @@ CA_CRT_FILE		?= /run/secrets/ca.crt
 CA_USER_NAME_FILE	?= /run/secrets/ca_user.name
 CA_USER_PWD_FILE	?= /run/secrets/ca_user.pwd
 SERVER_CRT_HOST		?= $(SERVICE_NAME).local
-SERVER_KEY_PWD_FILE	?= /run/secrets/ca_user.pwd
+SERVER_KEY_PWD_FILE	?= /etc/ssl/private/server.pwd
 SERVER_P12_FILE		?= /etc/ssl/private/server.p12
 endif
 
