@@ -46,6 +46,9 @@ fi
 # Default server certificate subject
 : ${SERVER_CRT_SUBJECT:=/CN=${DOCKER_CONTAINER_NAME}}
 
+# Default server host name
+: ${SERVER_CRT_HOST:=${DOCKER_HOST_NAME}}
+
 # Default server certificate file location
 if [ -e /run/secrets/server.crt ]; then
   : ${SERVER_CRT_FILE:=/run/secrets/server.crt}
