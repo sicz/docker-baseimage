@@ -193,7 +193,7 @@ FROM sicz/baseimage-alpine
 # Do some useful stuff here
 COPY supervisor /etc/supervisor
 ENV DOCKER_COMMAND="/usr/bin/supervisord"
-CMD ["--nodaemon", "--configuration", "/etc/supervisor/supervisord.conf"]
+CMD ["--nodaemon", "--configuration", "/etc/supervisor/supervisord.ini"]
 ```
 
 ## Authors

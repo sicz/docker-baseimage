@@ -81,7 +81,7 @@ RUN set -exo pipefail; \
 
 COPY rootfs /
 RUN set -exo pipefail; \
-  chmod +x /docker-entrypoint.sh; \
+  chmod +x /docker-entrypoint.sh /etc/supervisor/listener/terminate-container; \
   ln -s /etc/pki/tls/private /etc/ssl/private; \
   mkdir -p /run/secrets
 

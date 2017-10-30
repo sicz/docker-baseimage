@@ -104,7 +104,7 @@ RUN set -exo pipefail; \
 
 COPY rootfs /
 RUN set -exo pipefail; \
-  chmod +x /docker-entrypoint.sh; \
+  chmod +x /docker-entrypoint.sh /etc/supervisor/listener/terminate-container; \
   mkdir -p /run/secrets
 
 ENTRYPOINT ["/sbin/tini", "--", "/usr/bin/env", "DOCKER_CONTAINER_START=true", "/docker-entrypoint.sh"]
