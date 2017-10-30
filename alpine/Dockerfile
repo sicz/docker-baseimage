@@ -27,9 +27,6 @@ ENV \
 
 RUN set -exo pipefail; \
   # Upgrade the operating system
-  # TODO: Temporarily disable apk upgrade for Alpine Linux edge
-  # - https://github.com/gliderlabs/docker-alpine/issues/350
-  [ "${DOCKER_IMAGE_TAG}" != "edge" ] && \
   apk upgrade --no-cache; \
   cat /etc/alpine-release; \
   # Install the packages
