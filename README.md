@@ -178,20 +178,22 @@ In case you need to run multiple services within one container, you can use the
 script which at the end execs into the service executable you want to run (and
 supervise to keep them running).
 
-Example `services/<SERVICE>/run`:
+Example `supervisor/<SERVICE>.ini`:
 ```bash
-#!/bin/bash
-# Do some usefull stuff here
-exec <SERVICE_BINARY>
+[program:<SERVICE>]
+process_name = <SERVICE>
+command = <SERVICE_BINARY>
+# Some useful config here
+# ...
 ```
 
 Example `Dockerfile`
 ```Dockerfile
 FROM sicz/baseimage-alpine
-# Do some usefull stuff here
-COPY services /etc/services
-RUN find /etc/services -type f -exec chmod +x
-ENV DOCKER_COMMAND="/sbin/runsvcdir"
+# Do some useful stuff here
+COPY supervisor /etc/supervisor
+ENV DOCKER_COMMAND="/usr/bin/supervisord"
+CMD ["--nodaemon", "--configuration", "/etc/supervisor/supervisord.conf"]
 ```
 
 ## Authors
