@@ -1,7 +1,7 @@
 ### DOCKER_VERSIONS ###########################################################
 
 # Docker image versions
-DOCKER_VERSIONS		?= 3.6 edge
+DOCKER_VERSIONS		?= 3.7 3.6 edge
 
 ### MK_DOCKER_IMAGE ############################################################
 
