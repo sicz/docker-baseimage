@@ -13,11 +13,8 @@ ARG SU_EXEC_VERSION
 ARG TINI_VERSION
 
 RUN set -exo pipefail; \
-  # Update the operating system
-  rpm --import "file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-${DOCKER_IMAGE_TAG}"; \
-  yum update -y; \
-  cat /etc/centos-release; \
   # Install the packages
+  rpm --import "file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-${DOCKER_IMAGE_TAG}"; \
   yum install -y \
     epel-release; \
   rpm --import "file:///etc/pki/rpm-gpg/RPM-GPG-KEY-EPEL-${DOCKER_IMAGE_TAG}"; \
@@ -60,7 +57,9 @@ RUN set -exo pipefail; \
   yum history -y undo 1; \
   # Cleanup yum
   yum clean all; \
-  rm -rf /var/cache/yum/*
+  rm -rf /var/cache/yum/*; \
+  # Show CentOS version
+  cat /etc/centos-release
 
 COPY rootfs /
 RUN set -exo pipefail; \

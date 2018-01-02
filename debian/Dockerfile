@@ -36,14 +36,8 @@ ARG SU_EXEC_VERSION
 ARG TINI_VERSION
 
 RUN set -exo pipefail; \
-  # Update the operating system
-  apt update; \
-  apt upgrade -y; \
-  # Debian release
-  . /etc/os-release; \
-  ln -s /etc/debian_version /etc/debian-release; \
-  cat /etc/debian-release; \
   # Install packages
+  apt update; \
   apt install -y --no-install-recommends \
     ca-certificates \
     curl \
@@ -82,7 +76,11 @@ RUN set -exo pipefail; \
     ; \
   apt autoremove -y; \
   # Clean APT cache
-  rm -rf /var/lib/apt/lists/*
+  rm -rf /var/lib/apt/lists/*; \
+  # Show Debian version
+  . /etc/os-release; \
+  ln -s /etc/debian_version /etc/debian-release; \
+  cat /etc/debian-release
 
 COPY rootfs /
 RUN set -exo pipefail; \

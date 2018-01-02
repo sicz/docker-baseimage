@@ -8,9 +8,6 @@ ENV \
   LC_ALL="en_US.UTF-8"
 
 RUN set -exo pipefail; \
-  # Upgrade the operating system
-  apk upgrade --no-cache; \
-  cat /etc/alpine-release; \
   # Install the packages
   apk add --no-cache \
     bash \
@@ -23,7 +20,9 @@ RUN set -exo pipefail; \
     supervisor \
     tini \
     ; \
-  rm -f /etc/supervisord.conf
+  rm -f /etc/supervisord.conf; \
+  # Show Alpine Linux version
+  cat /etc/alpine-release
 
 COPY rootfs /
 RUN set -exo pipefail; \
