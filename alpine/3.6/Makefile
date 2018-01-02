@@ -2,10 +2,6 @@
 
 BASE_IMAGE_OS_VERSION	?= 3.6
 
-### DOCKER_IMAGE ###############################################################
-
-DOCKER_IMAGE_TAGS	?= latest
-
 ### MK_DOCKER_IMAGE ############################################################
 
 PROJECT_DIR		?= $(abspath ../..)
