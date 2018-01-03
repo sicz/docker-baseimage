@@ -14,10 +14,14 @@ jobs:
       - setup_remote_docker:
           version: 17.06.0-ce
       - run:
-          name: Build and test Docker image
+          name: Pull Docker images
           command: |
             cd ${DOCKER_IMAGE_DIR}
             make docker-pull
+      - run:
+          name: Build and test Docker image
+          command: |
+            cd ${DOCKER_IMAGE_DIR}
             make ci
       - deploy:
           name: Save Docker image to workspace
