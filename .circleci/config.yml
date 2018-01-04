@@ -17,7 +17,10 @@ jobs:
           name: Pull Docker images
           command: |
             cd ${DOCKER_IMAGE_DIR}
-            make docker-pull
+            make docker-pull-baseimage
+            make docker-pull-image || true
+            make docker-pull-dependencies
+            make docker-pull-testimage
       - run:
           name: Build and test Docker image
           command: |
