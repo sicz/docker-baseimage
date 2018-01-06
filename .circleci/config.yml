@@ -45,20 +45,6 @@ jobs:
       - MAKEFLAGS=--no-print-directory
       - RSPEC_FORMAT=doc
 
-  alpine-3.6:
-    <<: *build
-    environment:
-      - DOCKER_IMAGE_DIR=alpine/3.6
-      - MAKEFLAGS=--no-print-directory
-      - RSPEC_FORMAT=doc
-
-  alpine-edge:
-    <<: *build
-    environment:
-      - DOCKER_IMAGE_DIR=alpine/edge
-      - MAKEFLAGS=--no-print-directory
-      - RSPEC_FORMAT=doc
-
   centos-7:
     <<: *build
     environment:
@@ -105,14 +91,10 @@ workflows:
   build:
     jobs:
       - alpine-3.7
-      - alpine-3.6
-      - alpine-edge
       - centos-7
       - debian-9
       - publish:
           requires:
             - alpine-3.7
-            - alpine-3.6
-            - alpine-edge
             - centos-7
             - debian-9
