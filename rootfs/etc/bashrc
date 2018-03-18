@@ -30,7 +30,7 @@ if [ "$PS1" ]; then
 
   # Turn on parallel history
   shopt -s histappend
-  history -a
+  PROMPT_COMMAND="history -a"
 
   # Turn on checkwinsize
   shopt -s checkwinsize
