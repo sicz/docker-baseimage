@@ -19,6 +19,7 @@ RUN set -exo pipefail; \
     su-exec \
     supervisor \
     tini \
+    tzdata \
     ; \
   rm -f /etc/supervisord.conf; \
   # Show Alpine Linux version
