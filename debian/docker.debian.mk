@@ -6,6 +6,10 @@ BASE_IMAGE_TAG		?= $(BASE_IMAGE_OS_VERSION)-slim
 BASE_IMAGE_OS_NAME	?= Debian
 BASE_IMAGE_OS_URL	?= https://debian.org
 
+### DOCKER_IMAGE ###############################################################
+
+ DOCKER_IMAGE_TAG	?= $(BASE_IMAGE_OS_VERSION)
+
 ### BUILD #######################################################################
 
 BUILD_VARS		+= SU_EXEC_VERSION \
