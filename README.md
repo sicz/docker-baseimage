@@ -42,7 +42,7 @@ This image only contains essential components:
 ### Debian based image
 
 This image only contains essential components:
-* Official [Debian image](https://hub.docker.com/_/debian/) as a base system
+* Official [Debian slim image](https://hub.docker.com/_/debian/) as a base system
 * Modular Docker entrypoint
 * `bash` as a shell
 * `ca-certificates` contains common CA certificates
