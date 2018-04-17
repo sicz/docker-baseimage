@@ -16,6 +16,7 @@ RUN set -ex; \
   # Clean APT cache
   rm -rf /var/lib/apt/lists/*; \
   # Set locale
+  ln -s /etc/locale.alias /usr/share/locale/locale.alias; \
   echo "${DOCKER_LOCALE} ${DOCKER_CHARSET}" > /etc/locale.gen; \
   locale-gen "${DOCKER_LOCALE}"; \
   dpkg-reconfigure locales; \
