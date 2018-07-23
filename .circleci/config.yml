@@ -38,10 +38,10 @@ jobs:
           paths:
             - "*.image"
 
-  alpine-3.7:
+  alpine-3.8:
     <<: *build
     environment:
-      - DOCKER_IMAGE_DIR=alpine/3.7
+      - DOCKER_IMAGE_DIR=alpine/3.8
       - MAKEFLAGS=--no-print-directory
       - RSPEC_FORMAT=doc
 
@@ -90,11 +90,11 @@ workflows:
 
   build:
     jobs:
-      - alpine-3.7
+      - alpine-3.8
       - centos-7
       - debian-9
       - publish:
           requires:
-            - alpine-3.7
+            - alpine-3.8
             - centos-7
             - debian-9
