@@ -29,6 +29,10 @@ describe "Docker container", :test => :docker_container do
       processes += [
         ["tini",                    "root", "root", 1],
       ]
+    when "debian"
+      processes += [
+        ["tini",                    "root", "root", 1],
+      ]
     end
 
     processes.each do |process, user, group, pid|

@@ -123,7 +123,7 @@ describe "Docker image", :test => :docker_image do
     when "debian"
       commands += [
         "/sbin/su-exec",
-        ["/sbin/tini",              ENV["TINI_VERSION"]],
+        ["/usr/bin/tini",              ENV["TINI_VERSION"]],
       ]
     end
 
