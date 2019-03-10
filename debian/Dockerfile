@@ -68,8 +68,8 @@ RUN set -exo pipefail; \
   cd /; \
   # Install tini
   curl -LO https://github.com/krallin/tini/releases/download/v${TINI_VERSION}/tini_${TINI_VERSION}-amd64.deb; \
-  apt install -y ./tini_{SU_EXEC_VERSION}-amd64.deb; \
-  rm -f tini_{SU_EXEC_VERSION}-amd64.deb; \
+  apt install -y ./tini_${TINI_VERSION}-amd64.deb; \
+  rm -f tini_${TINI_VERSION}-amd64.deb; \
   # Uninstall development dependencies
   apt remove -y \
     gcc \
