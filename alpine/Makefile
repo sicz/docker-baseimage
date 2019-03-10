@@ -1,7 +1,7 @@
 ### DOCKER_VERSIONS ###########################################################
 
 # Docker image versions
-DOCKER_VERSIONS		?= 3.8
+DOCKER_VERSIONS		?= 3.9
 
 ### MK_DOCKER_IMAGE ############################################################
 
