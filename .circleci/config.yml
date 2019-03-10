@@ -12,7 +12,7 @@ jobs:
             curl -sSL https://github.com/SICZ/Mk/archive/master.tar.gz | tar -xzf -
             mv Mk-master Mk
       - setup_remote_docker:
-          version: 18.09.3
+          version: 18.09.0
       - run:
           name: Pull Docker images
           command: |
@@ -73,7 +73,7 @@ jobs:
             curl -sSL https://github.com/SICZ/Mk/archive/master.tar.gz | tar -xzf -
             mv Mk-master Mk
       - setup_remote_docker:
-          version: 18.09.3
+          version: 18.09.0
       - attach_workspace:
           at: /tmp/workspace
       - deploy:
